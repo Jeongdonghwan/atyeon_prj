@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
+<title>{% block title %}Admin{% endblock %} · Admin</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body>
+{% block layout %}
+<aside class="side">
+  <a class="logo" href="{{ url_for('admin.dashboard') }}">ADMIN</a>
+  <a class="n {{ 'on' if request.endpoint=='admin.dashboard' }}" href="{{ url_for('admin.dashboard') }}">대시보드</a>
+  <hr>
+  {% for k,(M,label,_) in models.items() %}
+  <a class="n {{ 'on' if request.view_args.get('name')==k }}" href="{{ url_for('admin.list_', name=k) }}">{{ label }}</a>
+  {% endfor %}
+  <hr>
+  <a class="n {{ 'on' if request.endpoint=='admin.inquiries' }}" href="{{ url_for('admin.inquiries') }}">문의 {% if unread %}<span class="badge">{{ unread }}</span>{% endif %}</a>
+  <a class="n {{ 'on' if request.endpoint=='admin.config' }}" href="{{ url_for('admin.config') }}">사이트 설정</a>
+  <hr>
+  <a class="n" href="/ko" target="_blank">사이트 보기 ↗</a>
+  <a class="n" href="{{ url_for('admin.logout') }}">로그아웃</a>
+</aside>
+<main class="main">
+  {% with msgs = get_flashed_messages() %}{% for mm in msgs %}<div class="flash">{{ mm }}</div>{% endfor %}{% endwith %}
+  {% block main %}{% endblock %}
+</main>
+{% endblock %}
+</body>
+</html>

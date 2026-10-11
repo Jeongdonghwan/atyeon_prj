@@ -1,0 +1,22 @@
+{% extends "base.html" %}{% import "_macros.html" as m with context %}
+{% block title %}Artworks{% endblock %}
+{% block body %}
+{{ m.phero('작품 하나,<br>새로운 시선 하나.', 'Artworks', works[0].image if works else '', '소개하는 작품은 각기 다른 시간과 사유를 담고 있습니다. 작가의 작업 맥락과 매체, 전시 기록을 중심으로 작품을 깊이 만나는 경험을 제안합니다.', 'Archive') }}
+
+<section class="sec one">
+  <div class="wrap">
+    <div class="chips" data-r>
+      <a href="{{ url_for('artworks') }}" class="{{ 'on' if not aid and not medium }}">전체</a>
+      {% for a in artists %}<a href="{{ url_for('artworks', artist=a.id) }}" class="{{ 'on' if aid==a.id }}">{{ a.name_ko }}</a>{% endfor %}
+      {% for md in mediums %}<a href="{{ url_for('artworks', medium=md) }}" class="{{ 'on' if medium==md }}">{{ md }}</a>{% endfor %}
+    </div>
+    {% if works %}
+    <div class="works stag">
+      {% for w in works %}
+      <a href="{{ url_for('artwork', slug=w.slug) }}"><img src="{{ img(w.image, 900) }}" alt="{{ w.title_ko }}" loading="lazy"><div class="i"><b>{{ w.title_ko }}</b><small>{{ w.artist.name_ko if w.artist }} · {{ w.year }} · {{ w.medium_ko }}</small></div></a>
+      {% endfor %}
+    </div>
+    {% else %}<p class="empty">등록된 작품이 없습니다.</p>{% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}{% import "_macros.html" as m with context %}
+{% block title %}Media{% endblock %}
+{% block body %}
+{% call m.phero('예술 이야기를<br>영상으로 만나다.', 'Media', yt[0].thumb if yt and yt[0].thumb else 'https://commons.wikimedia.org/wiki/Special:FilePath/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg', '작가의 작업실에서 전시의 순간까지, 기록하는 예술 현장을 만나보세요. 공식 영상과 짧은 콘텐츠는 각 플랫폼에서 이어집니다.', 'On Screen') %}
+<div class="cta">
+  {% if cfg('youtube') %}<a class="btn solid" href="{{ cfg('youtube') }}" target="_blank" rel="noopener">유튜브에서 보기 <span class="ar">→</span></a>{% endif %}
+  {% if cfg('instagram') %}<a class="btn" href="{{ cfg('instagram') }}" target="_blank" rel="noopener">인스타그램 팔로우</a>{% endif %}
+</div>
+{% endcall %}
+
+{% if yt %}
+<section class="sec">
+  <div class="wrap">
+    {{ m.label('01','대표 영상','Featured') }}
+    <div data-r>{% if yt[0].video_id %}{{ m.yt(yt[0]) }}{% else %}{{ m.vid(yt[0], true) }}{% endif %}<p style="margin-top:14px;font-size:14px;color:var(--muted)"><b style="color:var(--text)">{{ yt[0].title_ko }}</b> · {{ yt[0].series }} · {{ yt[0].date }}</p></div>
+  </div>
+</section>
+<section class="sec alt">
+  <div class="wrap">
+    {{ m.label('02','유튜브 시리즈','Series','IN THE STUDIO · ONE WORK, ONE STORY · ART WITHOUT BORDERS · MIRINI CLASS · EXHIBITION NOTES') }}
+    <div class="grid g2 stag">{% for v in yt[1:] %}{{ m.vid(v) }}{% endfor %}</div>
+  </div>
+</section>
+{% else %}
+<section class="sec one"><div class="wrap"><p class="empty">승인된 영상이 등록되면 이곳에 표시됩니다.</p></div></section>
+{% endif %}
+
+{% if ig %}
+<section class="sec">
+  <div class="wrap">
+    {{ m.label('03','릴스 큐레이션','Instagram') }}
+    <div class="grid g4 stag">
+      {% for v in ig %}<a href="{{ v.url }}" target="_blank" rel="noopener" style="display:block"><figure class="clip" style="aspect-ratio:4/5;overflow:hidden"><img src="{{ img(v.thumb, 600) }}" alt="" style="width:100%;height:100%;object-fit:cover" loading="lazy"></figure><p style="font-size:13px;margin-top:8px">{{ v.title_ko }}</p></a>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if posts %}
+<section class="sec alt">
+  <div class="wrap">
+    {{ m.label('04','저널로 이어지는 이야기','Journal','','저널 전체 보기',url_for('journal')) }}
+    <div class="journal stag">{% for p in posts %}{{ m.post_row(p) }}{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

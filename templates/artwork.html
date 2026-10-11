@@ -1,0 +1,41 @@
+{% extends "base.html" %}{% import "_macros.html" as m with context %}
+{% block title %}{{ w.title_ko }}{% if w.artist %} | {{ w.artist.name_ko }}{% endif %}{% endblock %}
+{% block og %}{{ img(w.image, 1200) }}{% endblock %}
+{% block body %}
+<section class="sec one" style="padding-top:130px">
+  <div class="wrap">
+    <div class="crumb" style="color:var(--muted);margin-bottom:28px"><a href="{{ url_for('home') }}">Home</a><span>/</span><a href="{{ url_for('artworks') }}">Artworks</a><span>/</span>{{ w.title_ko }}</div>
+    <div class="artwork-view">
+      <div class="img clip" data-r><img src="{{ img(w.image, 1600) }}" alt="{{ w.title_ko }}"></div>
+      <div class="info" data-r>
+        <h1>{{ t(w,'title') }}</h1>
+        {% if w.artist %}<div class="by"><a href="{{ url_for('artist', slug=w.artist.slug) }}"><span style="font-family:var(--sans);font-style:normal;font-size:16px">{{ w.artist.name_ko }}</span>{% if w.artist.name_en %} · {{ w.artist.name_en }}{% endif %}</a></div>{% endif %}
+        <dl class="specs">
+          {% if w.year %}<dt>제작연도</dt><dd>{{ w.year }}</dd>{% endif %}
+          {% if w.medium_ko %}<dt>재료</dt><dd>{{ w.medium_ko }}</dd>{% endif %}
+          {% if w.dimensions %}<dt>규격</dt><dd>{{ w.dimensions }}</dd>{% endif %}
+          {% if w.rights %}<dt>출처 · 권리</dt><dd>{{ w.rights }}</dd>{% endif %}
+        </dl>
+        {% if w.note_ko %}<div class="sub-h">Work Note</div><p class="prose" style="font-size:15px">{{ w.note_ko }}</p>{% endif %}
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:32px">
+          {% if w.artist %}<a class="btn p" href="{{ url_for('artist', slug=w.artist.slug) }}">작가 소개 <span class="ar">→</span></a>{% endif %}
+          <a class="btn p" href="{{ url_for('contact', kind='artist') }}">작품 문의</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if related %}
+<section class="sec alt">
+  <div class="wrap">
+    {{ m.label('02','같은 작가의<br>다른 작품','Related Works') }}
+    <div class="works stag">
+      {% for r in related %}
+      <a href="{{ url_for('artwork', slug=r.slug) }}"><img src="{{ img(r.image, 700) }}" alt="{{ r.title_ko }}" loading="lazy"><div class="i"><b>{{ r.title_ko }}</b><small>{{ r.year }} · {{ r.medium_ko }}</small></div></a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

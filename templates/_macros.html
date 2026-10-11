@@ -1,0 +1,65 @@
+{% macro phero(title, crumb, image, desc='', eyebrow='') %}
+<section class="phero">
+  {% if image %}<img src="{{ img(image, 2000) }}" alt="">{% endif %}
+  <div class="wrap">
+    <div class="crumb"><a href="{{ url_for('home') }}">Home</a><span>/</span>{{ crumb|safe }}</div>
+    {% if eyebrow %}<div class="eyebrow serif" style="font-style:italic;font-size:20px;margin-top:18px;opacity:.9">{{ eyebrow }}</div>{% endif %}
+    <h1><span class="ln"><span>{{ title|safe }}</span></span></h1>
+    {% if desc %}<p>{{ desc }}</p>{% endif %}
+    {{ caller() if caller }}
+  </div>
+</section>
+{% endmacro %}
+
+{% macro label(num, title, en='', desc='', btn_text='', btn_href='') %}
+<div class="label" data-r>
+  <div class="num">{{ num }} &nbsp;{{ en }}</div>
+  <h2>{{ title|safe }}</h2>
+  {% if desc %}<p>{{ desc }}</p>{% endif %}
+  {% if btn_text %}<a class="btn" href="{{ btn_href }}">{{ btn_text }} <span class="ar">→</span></a>{% endif %}
+</div>
+{% endmacro %}
+
+{% macro artist_card(a) %}
+<a class="artist" href="{{ url_for('artist', slug=a.slug) }}">
+  <figure class="clip"><img src="{{ img(a.portrait or a.cover, 700) }}" alt="{{ a.name_ko }}" loading="lazy"></figure>
+  <h3>{{ a.name_ko }}<span>{{ a.name_en or 'Artist' }}</span></h3>
+  <p>{{ a.tagline_ko or a.medium }}</p>
+</a>
+{% endmacro %}
+
+{% macro exhib_card(e) %}
+<a href="{{ url_for('exhibition', slug=e.slug) }}">
+  <figure class="clip"><img src="{{ img(e.cover, 900) }}" alt="" loading="lazy"><div class="ov">View exhibition →</div>
+    <span class="tag {{ {'current':'cur','upcoming':'up','past':'past'}[e.phase] }}">{{ {'current':'Current','upcoming':'Upcoming','past':'Archive'}[e.phase] }}</span></figure>
+  <h3>{{ t(e,'title') }}</h3>
+  <div class="d">{{ e.start_date }} – {{ e.end_date }}{% if e.location %} · {{ e.location }}{% endif %}</div>
+</a>
+{% endmacro %}
+
+{% macro program_card(p) %}
+<a class="card" href="{{ url_for('mirini') if p.category=='mirini' else url_for('academy') }}#p{{ p.id }}">
+  <figure class="clip"><img src="{{ img(p.cover, 900) }}" alt="" loading="lazy"></figure>
+  <div class="t">{{ {'mirini':'Mirini','talk':'Artist Talk','lecture':'Lecture','course':'Course'}[p.category] }}</div>
+  <h3>{{ t(p,'title') }}</h3><p>{{ p.schedule or p.audience or '' }}</p>
+</a>
+{% endmacro %}
+
+{% macro post_row(p) %}
+<a class="post" href="{{ url_for('journal_post', slug=p.slug) }}">
+  <figure><img src="{{ img(p.cover, 300) }}" alt="" loading="lazy"></figure>
+  <div><div class="c">{{ p.category }}</div><h3>{{ t(p,'title') }}</h3><div class="d">{{ p.date }}</div></div>
+</a>
+{% endmacro %}
+
+{% macro vid(m, big=false) %}
+<a class="vid" href="{{ m.url or ('https://www.youtube.com/watch?v=' ~ m.video_id) }}" target="_blank" rel="noopener">
+  <img src="{{ img(m.thumb, 1400 if big else 700) if m.thumb else 'https://i.ytimg.com/vi/' ~ m.video_id ~ '/hqdefault.jpg' }}" alt="" loading="lazy">
+  <span class="play"><i>▶</i></span>
+  <span class="capt"><small>{{ m.series }}</small><b>{{ m.title_ko }}</b></span>
+</a>
+{% endmacro %}
+
+{% macro yt(m) %}
+<div class="yt"><iframe src="https://www.youtube-nocookie.com/embed/{{ m.video_id }}" title="{{ m.title_ko }}" loading="lazy" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe></div>
+{% endmacro %}

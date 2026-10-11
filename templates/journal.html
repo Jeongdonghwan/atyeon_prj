@@ -1,0 +1,25 @@
+{% extends "base.html" %}{% import "_macros.html" as m with context %}
+{% block title %}Journal{% endblock %}
+{% block body %}
+{{ m.phero('예술의 장면을<br>기록합니다.', 'Journal', posts[0].cover if posts else '', '전시 뒷이야기, 작가 인터뷰, 작품에 대한 새로운 시선, 국제 미술 현장의 소식을 전합니다.', 'Editorial') }}
+
+<section class="sec one">
+  <div class="wrap">
+    <div class="chips" data-r>
+      <a href="{{ url_for('journal') }}" class="{{ 'on' if not category }}">전체</a>
+      {% for c,l in [('interview','인터뷰'),('behind','전시 뒷이야기'),('global','글로벌'),('review','리뷰'),('news','소식')] %}
+      <a href="{{ url_for('journal', category=c) }}" class="{{ 'on' if category==c }}">{{ l }}</a>
+      {% endfor %}
+    </div>
+    {% if posts %}
+    <div class="journal stag">
+      {% if lead %}
+      <a class="lead" href="{{ url_for('journal_post', slug=lead.slug) }}"><figure class="clip"><img src="{{ img(lead.cover, 1200) }}" alt=""></figure>
+        <div><div class="c">{{ lead.category }}</div><h3>{{ t(lead,'title') }}</h3><p>{{ lead.summary_ko }}</p><div class="d" style="margin-top:14px;font-size:12px;color:var(--muted)">{{ lead.date }}</div></div></a>
+      {% endif %}
+      {% for p in posts if p != lead %}{{ m.post_row(p) }}{% endfor %}
+    </div>
+    {% else %}<p class="empty">게시된 글이 없습니다.</p>{% endif %}
+  </div>
+</section>
+{% endblock %}

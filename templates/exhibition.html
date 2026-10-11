@@ -1,0 +1,43 @@
+{% extends "base.html" %}{% import "_macros.html" as m with context %}
+{% block title %}{{ t(e,'title') }}{% endblock %}
+{% block og %}{{ img(e.cover, 1200) }}{% endblock %}
+{% block body %}
+{% call m.phero(t(e,'title'), '<a href="'~url_for('exhibitions')~'">Exhibitions</a><span>/</span>'~e.title_ko, e.cover, '', {'current':'Current Exhibition','upcoming':'Upcoming','past':'Archive'}[e.phase]) %}
+<div class="meta"><span>{{ e.start_date }} – {{ e.end_date }}</span>{% if e.location %}<span>{{ e.location }}</span>{% endif %}{% if e.artists %}<span>{{ e.artists|map(attribute='name_ko')|join(', ') }}</span>{% endif %}</div>
+{% endcall %}
+
+<section class="sec">
+  <div class="wrap">
+    {{ m.label('01','전시 소개','About the Exhibition') }}
+    <div class="prose" data-r>{% for para in (t(e,'body') or '').split('\n\n') if para.strip() %}<p>{{ para }}</p>{% endfor %}</div>
+  </div>
+</section>
+
+{% if e.artists %}
+<section class="sec alt">
+  <div class="wrap">
+    {{ m.label('02','참여 작가','Artists') }}
+    <div class="artists stag">{% for a in e.artists %}{{ m.artist_card(a) }}{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+
+{% set ws = [] %}{% for a in e.artists %}{% for w in a.artworks if w.status=='published' %}{% if ws.append(w) %}{% endif %}{% endfor %}{% endfor %}
+{% if ws %}
+<section class="sec">
+  <div class="wrap">
+    {{ m.label('03','출품작','Works on View') }}
+    <div class="works stag">{% for w in ws[:9] %}<a href="{{ url_for('artwork', slug=w.slug) }}"><img src="{{ img(w.image, 900) }}" alt="" loading="lazy"><div class="i"><b>{{ w.title_ko }}</b><small>{{ w.artist.name_ko }} · {{ w.year }}</small></div></a>{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+
+{% if videos %}
+<section class="sec alt">
+  <div class="wrap">
+    {{ m.label('04','전시 영상','Exhibition Notes') }}
+    <div class="grid g2 stag">{% for v in videos %}{% if v.video_id %}{{ m.yt(v) }}{% else %}{{ m.vid(v) }}{% endif %}{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

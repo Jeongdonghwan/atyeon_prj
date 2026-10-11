@@ -1,0 +1,53 @@
+{% extends "base.html" %}{% import "_macros.html" as m with context %}
+{% block title %}Global Exchange{% endblock %}
+{% block body %}
+{% call m.phero('K-Art Outbound.<br>Global Art Inbound.', 'Global', 'https://commons.wikimedia.org/wiki/Special:FilePath/Vassily_Kandinsky,_1923_-_Composition_8,_huile_sur_toile,_140_cm_x_201_cm,_Mus%C3%A9e_Guggenheim,_New_York.jpg', '한국 작가의 해외 진출과 해외 작가의 국내 소개가 양방향으로 이루어지는 국제 교류를 지향합니다. 해외 갤러리·큐레이터·기관과 공동 전시, 프리뷰, 콘텐츠, 작가 교류 프로젝트를 제안합니다.', 'Global Exchange') %}
+<div class="cta"><a class="btn solid" href="{{ url_for('partnership') }}">국제 협업 제안하기 <span class="ar">→</span></a><a class="btn" href="{{ url_for('academy') }}">프로그램 보기</a></div>
+{% endcall %}
+
+<section class="sec manifesto">
+  <div class="wrap">
+    <div class="label" data-r><div class="num">01 &nbsp;Manifesto</div></div>
+    <h2 data-r>한국과 세계의 갤러리를 연결하는<br><span class="kr">새로운 협업을 지향합니다.</span></h2>
+    <p data-r>세계적 수준의 갤러리들과 공동 기획·작가 교류·국제 전시 가능성을 논의하고자 합니다. 문화와 도시의 경계를 넘어 작가·갤러리·기관이 함께 새로운 예술적 대화를 만드는 미래.</p>
+  </div>
+</section>
+
+<section class="sec alt">
+  <div class="wrap">
+    {{ m.label('02','교류 모델 4종','Exchange Models') }}
+    <ul class="steps stag">
+      <li><div><b>공동 기획 전시 · 프리뷰</b><p>양국 작가를 함께 소개하는 공동 전시와 사전 프리뷰. 공간·일정·작품 운송을 공동 설계합니다.</p></div></li>
+      <li><div><b>작가 교류 · 레지던시 연계</b><p>작가의 상호 방문과 체류 제작, 현지 작업실 공개를 통해 작업 맥락을 공유합니다.</p></div></li>
+      <li><div><b>큐레이터 대화 · 콘텐츠 공동 제작</b><p>큐레이터 토크, 인터뷰 영상, 저널 기사를 양측 채널에 동시 게재합니다.</p></div></li>
+      <li><div><b>교육 프로그램 · 아카데미 협력</b><p>강연·워크숍·도슨트 프로그램을 공동 운영해 관객층을 넓힙니다.</p></div></li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    {{ m.label('03','협업 대상','Who We Work With','갤러리, 미술관·문화기관, 큐레이터·비평가, 아트페어·페스티벌, 교육기관.') }}
+    <div>
+      <div class="partners stag">
+        {% for b,s in [('갤러리','공동 전시 · 작가 교환 · 프리뷰'),('미술관 · 문화기관','기관전 협력 · 교육 · 아카이브'),('큐레이터 · 비평가','큐레이터 대화 · 기획 참여'),('아트페어 · 페스티벌','참관 · 교류 · 준비도 강화'),('교육기관','아카데미 공동 운영'),('미디어 · 콘텐츠','영상 · 저널 공동 제작')] %}
+        <div><b>{{ b }}</b><small>{{ s }}</small></div>
+        {% endfor %}
+      </div>
+      <p class="empty" style="margin-top:28px">파트너 로고·명칭은 서면 협약 승인 후 게시됩니다.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec alt">
+  <div class="wrap">
+    {{ m.label('04','제안 절차','Process','','파트너십 문의하기',url_for('partnership')) }}
+    <ul class="steps stag">
+      <li><div><b>제안서 접수</b><p>협업 목적, 기간, 작가·작품 범위, 기대 역할을 문의 폼으로 보내주세요.</p></div></li>
+      <li><div><b>검토 · 회신</b><p>담당자가 접수 내용을 확인해 순차적으로 연락드립니다.</p></div></li>
+      <li><div><b>온라인 미팅</b><p>세부 모델과 일정, 역할 분담을 함께 조율합니다.</p></div></li>
+      <li><div><b>협약 · 실행</b><p>서면 협약 후 공동 기획을 시작하고, 과정을 함께 기록합니다.</p></div></li>
+    </ul>
+  </div>
+</section>
+{% endblock %}

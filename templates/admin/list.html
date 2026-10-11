@@ -1,0 +1,24 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ label }}{% endblock %}
+{% block main %}
+<div class="top"><h1>{{ label }} <small style="color:var(--muted);font-weight:400">{{ rows|length }}</small></h1><a class="btn" href="{{ url_for('admin.edit', name=name) }}">+ 새 {{ label }}</a></div>
+<table>
+  <tr><th style="width:56px"></th>{% for c in cols %}<th>{{ labels.get(c, c) }}</th>{% endfor %}<th style="width:140px"></th></tr>
+  {% for r in rows %}
+  <tr>
+    <td>{% set im = r.image if r.image is defined else (r.cover if r.cover is defined else (r.thumb if r.thumb is defined else none)) %}{% set im = im or (r.portrait if r.portrait is defined else none) %}{% if im %}<img src="{{ (im ~ '?width=200') if im.startswith('http') else url_for('static', filename='uploads/' ~ im) }}" alt="">{% endif %}</td>
+    {% for c in cols %}
+    <td>{% set v = r[c] %}
+      {% if c == 'status' %}<span class="st {{ v }}">{{ v }}</span>
+      {% elif c == 'artist_id' %}{{ r.artist.name_ko if r.artist }}
+      {% elif v is sameas true %}★{% elif v is sameas false %}{% else %}{{ v if v is not none }}{% endif %}
+    </td>
+    {% endfor %}
+    <td style="text-align:right;white-space:nowrap">
+      <a class="btn ghost" style="padding:6px 12px;font-size:12px" href="{{ url_for('admin.edit', name=name, id=r.id) }}">수정</a>
+      <form method="post" action="{{ url_for('admin.delete', name=name, id=r.id) }}" style="display:inline" onsubmit="return confirm('삭제할까요?')"><button class="btn danger">삭제</button></form>
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="{{ cols|length + 2 }}" style="color:var(--muted)">아직 없습니다. 오른쪽 위 버튼으로 추가하세요.</td></tr>{% endfor %}
+</table>
+{% endblock %}

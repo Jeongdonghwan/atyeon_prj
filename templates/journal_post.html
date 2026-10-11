@@ -1,0 +1,29 @@
+{% extends "base.html" %}{% import "_macros.html" as m with context %}
+{% block title %}{{ t(p,'title') }}{% endblock %}
+{% block desc %}{{ p.summary_ko }}{% endblock %}
+{% block og %}{{ img(p.cover, 1200) }}{% endblock %}
+{% block body %}
+<section class="sec one" style="padding-top:140px">
+  <div class="wrap">
+    <div class="post-head" data-r>
+      <div class="crumb" style="justify-content:center;color:var(--muted)"><a href="{{ url_for('journal') }}">Journal</a><span>/</span>{{ p.category }}</div>
+      <h1>{{ t(p,'title') }}</h1>
+      <div class="d">{{ p.date }}{% if p.artist %} · <a href="{{ url_for('artist', slug=p.artist.slug) }}">{{ p.artist.name_ko }}</a>{% endif %}</div>
+    </div>
+    {% if p.cover %}<figure class="stage clip" data-r><img src="{{ img(p.cover, 1800) }}" alt=""></figure>{% endif %}
+    <div class="post-body" data-r>
+      {% if p.summary_ko %}<p class="lede" style="max-width:none;margin-bottom:32px">{{ p.summary_ko }}</p>{% endif %}
+      <div class="prose">{% for para in (p.body_ko or '').split('\n\n') if para.strip() %}<p>{{ para }}</p>{% endfor %}</div>
+    </div>
+  </div>
+</section>
+
+{% if more %}
+<section class="sec alt">
+  <div class="wrap">
+    {{ m.label('','더 읽기','More Stories','','저널 전체 보기',url_for('journal')) }}
+    <div class="journal stag">{% for q in more %}{{ m.post_row(q) }}{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

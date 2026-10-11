@@ -1,0 +1,129 @@
+{% extends "base.html" %}{% import "_macros.html" as m with context %}
+{% block title %}Art Beyond Borders{% endblock %}
+{% block body %}
+<section class="hero" id="hero">
+  {% set hero_imgs = (works[:3] if works|length >= 3 else works) %}
+  {% for w in hero_imgs %}<div class="slide{% if loop.first %} on{% endif %}"><img src="{{ img(w.image, 2000) }}" alt=""></div>{% endfor %}
+  <div class="cap">Art Platform · Seoul</div>
+  <div class="wrap">
+    <div class="eyebrow serif fx d1">Art Beyond Borders.</div>
+    <h1><span class="ln"><span>예술의 가능성을</span></span><span class="ln"><span>세계와 연결하다</span></span></h1>
+    <p class="fx d2">작가와 작품, 교육과 국제 협업을 잇는 새로운 미술 생태계.</p>
+    <div class="cta fx d3">
+      <a class="btn solid" href="{{ url_for('about') }}">비전 보기 <span class="ar">→</span></a>
+      <a class="btn" href="{{ url_for('exhibitions') }}">현재 전시 보기</a>
+    </div>
+  </div>
+  <div class="dots" id="dots">{% for w in hero_imgs %}<i{% if loop.first %} class="on"{% endif %}></i>{% endfor %}</div>
+  <div class="scroll fx d4">Scroll <i></i></div>
+</section>
+
+<div class="mq"><div class="t" id="mq"><span>Art Beyond Borders <i>·</i></span><span>예술의 가능성을 세계와 연결하다 <i>·</i></span><span>Global Exchange <i>·</i></span><span>Curated Art <i>·</i></span><span>Art Academy <i>·</i></span></div></div>
+
+<section class="sec manifesto" id="global">
+  <div class="wrap">
+    <div class="label" data-r><div class="num">01 &nbsp;Global Connections</div></div>
+    <h2 data-r>한국에서 세계로,<br><span class="kr">세계에서 한국으로.</span></h2>
+    <p data-r>문화와 도시의 경계를 넘어 작가·갤러리·기관이 함께 새로운 예술적 대화를 만드는 미래를 지향합니다. 해외 갤러리 및 문화기관과 전시·콘텐츠·작가 교류의 가능성을 엽니다.</p>
+    <div class="row">
+      <figure class="clip" data-r><img id="plx" src="{{ img(exhibitions[0].cover if exhibitions else (works[3].image if works|length>3 else ''), 1600) }}" alt=""></figure>
+      <ul class="stag">
+        <li><b>I</b><span>공동 기획 전시 · 프리뷰</span><i>→</i></li>
+        <li><b>II</b><span>작가 교류 · 레지던시 연계</span><i>→</i></li>
+        <li><b>III</b><span>큐레이터 대화 · 콘텐츠 공동 제작</span><i>→</i></li>
+        <li><b>IV</b><span>교육 프로그램 · 아카데미 협력</span><i>→</i></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec alt" id="about">
+  <div class="wrap">
+    {{ m.label('02','세 가지 축으로<br>예술을 <em>연결</em>합니다','What We Do','국제 교류, 작가와 작품의 아카이브, 그리고 미술을 배우는 입구. 세 영역이 하나의 생태계로 이어집니다.') }}
+    <div class="pillars stag">
+      {% for t_,h,p,href,i in [('Global Exchange','국제 교류','세계의 갤러리와 협력의 가능성을 열어갑니다.',url_for('global_'),0),('Curated Art','작가 · 작품','작가의 작업 세계와 작품의 기록을 소개합니다.',url_for('artists'),1),('Art Academy','아카데미','예술을 배우고 경험하는 새로운 입구를 만듭니다.',url_for('academy'),2)] %}
+      <a class="card" href="{{ href }}"><figure class="clip"><img src="{{ img(works[i+4].image if works|length > i+4 else (works[i].image if works|length > i else ''), 900) }}" alt=""></figure>
+        <div class="t">{{ t_ }}</div><h3>{{ h }}</h3><p>{{ p }}</p><span class="more">자세히 보기 →</span></a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="artists">
+  <div class="wrap">
+    {{ m.label('03','주목하는<br>작가와 작품','Artists &amp; Works','작가의 언어, 작품의 맥락, 전시의 기록을 함께 전합니다.','작가 전체 보기',url_for('artists')) }}
+    <div class="artists stag">
+      {% if featured %}
+      <a class="feat" href="{{ url_for('artist', slug=featured.slug) }}">
+        <figure class="clip"><img src="{{ img(featured.cover or featured.portrait, 1000) }}" alt=""></figure>
+        <div class="body">
+          <div class="t">Featured Artist</div>
+          <h3>{{ featured.name_ko }} — {{ featured.tagline_ko }}</h3>
+          {% if featured.note_ko %}<blockquote>“{{ featured.note_ko[:90] }}{% if featured.note_ko|length>90 %}…{% endif %}”</blockquote>{% endif %}
+          <div class="meta">{{ featured.medium }} &nbsp;|&nbsp; 작품 {{ featured.artworks|length }}점 · 전시 {{ featured.exhibitions|length }}건</div>
+          <span class="btn">작가 보기 <span class="ar">→</span></span>
+        </div>
+      </a>
+      {% endif %}
+      {% for a in artists %}{{ m.artist_card(a) }}{% endfor %}
+    </div>
+  </div>
+</section>
+
+{% if works %}
+<section class="strip">
+  <div class="wrap" style="display:block">
+    <div class="head" data-r><h2>Selected Works<span>작품 아카이브</span></h2><a href="{{ url_for('artworks') }}">전체 작품 보기</a></div>
+  </div>
+  <div class="track" id="track">
+    {% for w in works %}
+    <a class="work" href="{{ url_for('artwork', slug=w.slug) }}"><img src="{{ img(w.image, 900) }}" alt="{{ w.title_ko }}"><div class="i"><b>{{ w.title_ko }}</b><small>{{ w.artist.name_ko if w.artist }} · {{ w.year }} · {{ w.medium_ko }}</small></div></a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="sec alt" id="exhibitions">
+  <div class="wrap">
+    {{ m.label('04','예술은 공간에서<br>새로운 대화를<br>시작합니다','Exhibitions','','전시 전체 보기',url_for('exhibitions')) }}
+    <div class="exhib stag">{% for e in exhibitions %}{{ m.exhib_card(e) }}{% endfor %}</div>
+  </div>
+</section>
+
+<section class="sec" id="academy">
+  <div class="wrap">
+    {{ m.label('05','예술을 아는 즐거움,<br>삶에 스며드는 경험','Academy','미술을 처음 접하는 사람부터 더 깊이 이해하고자 하는 관객까지. 작품을 바라보는 눈과 자신만의 언어를 키우는 프로그램.','프로그램 보기',url_for('academy')) }}
+    <div class="pillars stag">{% for p in programs %}{{ m.program_card(p) }}{% endfor %}</div>
+  </div>
+</section>
+
+{% if media %}
+<section class="sec alt" id="media">
+  <div class="wrap">
+    {{ m.label('06','영상과 이야기로<br>만나는 예술','On Screen','작가의 작업실에서 전시의 순간까지, 기록하는 예술 현장을 만나보세요.') }}
+    <div class="media stag">
+      {{ m.vid(media[0], true) }}
+      <div class="side">{% for v in media[1:3] %}{{ m.vid(v) }}{% endfor %}</div>
+      <div class="social">
+        {% if cfg('youtube') %}<a href="{{ cfg('youtube') }}" target="_blank" rel="noopener">▶ YouTube</a>{% endif %}
+        {% if cfg('instagram') %}<a href="{{ cfg('instagram') }}" target="_blank" rel="noopener">◎ Instagram</a>{% endif %}
+        <a href="{{ url_for('media') }}">▦ 미디어 전체</a><a href="{{ url_for('journal') }}">✎ Journal 읽기</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="sec" id="journal">
+  <div class="wrap">
+    {{ m.label('07','예술의 장면을<br>기록합니다','Journal','','저널 전체 보기',url_for('journal')) }}
+    <div class="journal stag">
+      {% if posts %}
+      <a class="lead" href="{{ url_for('journal_post', slug=posts[0].slug) }}"><figure class="clip"><img src="{{ img(posts[0].cover, 1200) }}" alt=""></figure>
+        <div><div class="c">{{ posts[0].category }}</div><h3>{{ t(posts[0],'title') }}</h3><p>{{ posts[0].summary_ko }}</p><div class="d" style="margin-top:14px;font-size:12px;color:var(--muted)">{{ posts[0].date }}</div></div></a>
+      {% for p in posts[1:3] %}{{ m.post_row(p) }}{% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

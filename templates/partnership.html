@@ -1,0 +1,42 @@
+{% extends "base.html" %}{% import "_macros.html" as m with context %}
+{% block title %}Partnership{% endblock %}
+{% block body %}
+{{ m.phero('세계의 갤러리와 함께<br>새로운 예술적 기회를 만듭니다.', '<a href="'~url_for('global_')~'">Global</a><span>/</span>Partnership', 'https://commons.wikimedia.org/wiki/Special:FilePath/Paul_Klee,_Swiss_-_Fish_Magic_-_Google_Art_Project.jpg', '국제 공동 기획과 작가 교류, 큐레이터 대화, 교육·콘텐츠 공동 제작을 위한 제안을 기다립니다. 파트너의 정체성과 작가의 예술적 가치를 존중하는 장기적 협력을 추구합니다.', 'Partnership') }}
+
+<section class="sec">
+  <div class="wrap">
+    {{ m.label('01','가능한 협업 모델','Models') }}
+    <div class="grid g2 stag">
+      {% for h,p in [('공동 전시','양측 공간에서 순회하거나 한 공간에서 함께 여는 전시'),('작가 교류','작가 상호 방문·레지던시·현지 제작'),('콘텐츠 공동 제작','인터뷰 영상·저널·출판물 공동 기획'),('교육 협력','강연·워크숍·아카데미 프로그램 공동 운영')] %}
+      <div style="border-top:1px solid var(--text);padding-top:18px"><b style="font-size:18px;font-weight:600">{{ h }}</b><p style="color:var(--muted);font-size:14px;margin-top:8px">{{ p }}</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="sec alt">
+  <div class="wrap">
+    {{ m.label('02','필요 자료','What to Include','간단해도 좋습니다. 아래 항목이 있으면 검토가 빨라집니다.') }}
+    <ul class="steps stag">
+      <li><div><b>기관 · 갤러리 소개</b><p>공간, 운영 방향, 대표 전시 이력</p></div></li>
+      <li><div><b>제안 개요</b><p>협업 모델, 희망 시기, 참여 작가 또는 작품 범위</p></div></li>
+      <li><div><b>기대 역할</b><p>양측이 맡을 역할과 예산 구조에 대한 대략적 생각</p></div></li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    {{ m.label('03','제안 접수','Submit','접수 후 담당자가 순차적으로 회신드립니다.') }}
+    <form class="form" method="post" action="{{ url_for('contact') }}" data-r>
+      <input type="hidden" name="kind" value="global">
+      <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off">
+      <div class="row"><label>이름 *<input name="name" required></label><label>이메일 *<input type="email" name="email" required></label></div>
+      <div class="row"><label>기관 · 갤러리<input name="organization"></label><label>국가 · 도시<input name="country"></label></div>
+      <label>제안 내용 *<textarea name="message" required placeholder="협업 모델, 희망 시기, 작가·작품 범위, 기대 역할"></textarea></label>
+      <label class="chk"><input type="checkbox" name="consent" required> 개인정보 수집·이용에 동의합니다. (문의 회신 목적, 1년 보관)</label>
+      <div><button class="btn p" type="submit">파트너십 문의하기 <span class="ar">→</span></button></div>
+    </form>
+  </div>
+</section>
+{% endblock %}

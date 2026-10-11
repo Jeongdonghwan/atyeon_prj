@@ -1,0 +1,40 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ label }} {{ '수정' if obj.id else '추가' }}{% endblock %}
+{% block main %}
+<div class="top"><h1>{{ label }} {{ '수정' if obj.id else '추가' }}</h1><a class="btn ghost" href="{{ url_for('admin.list_', name=name) }}">← 목록</a></div>
+<form class="form" method="post" enctype="multipart/form-data">
+  {% for f, kind, choices, lab in fields %}
+  {% set v = obj[f] %}
+  {% if kind == 'image' %}
+  <label>{{ lab }}
+    <div class="img">
+      <img src="{{ (v ~ '?width=200') if v and v.startswith('http') else (url_for('static', filename='uploads/' ~ v) if v else '') }}" alt="">
+      <div>
+        <input type="file" name="{{ f }}" accept="image/*">
+        <input type="text" name="{{ f }}_url" value="{{ v if v and v.startswith('http') else '' }}" placeholder="또는 이미지 URL" style="margin-top:6px">
+        <small>업로드 시 WebP로 변환·2000px 이내로 축소됩니다. {% if v and not v.startswith('http') %}현재: {{ v }}{% endif %}</small>
+      </div>
+    </div>
+  </label>
+  {% elif kind == 'text' %}
+  <label>{{ lab }}<textarea name="{{ f }}">{{ v or '' }}</textarea></label>
+  {% elif kind == 'select' %}
+  <label>{{ lab }}<select name="{{ f }}">{% for val, txt in choices %}<option value="{{ val }}" {{ 'selected' if (v is not none and val == v|string) }}>{{ txt }}</option>{% endfor %}</select></label>
+  {% elif kind == 'bool' %}
+  <label class="chk"><input type="checkbox" name="{{ f }}" {{ 'checked' if v }}> {{ lab }}</label>
+  {% elif kind == 'date' %}
+  <label>{{ lab }}<input type="date" name="{{ f }}" value="{{ v or '' }}"></label>
+  {% elif kind == 'number' %}
+  <label>{{ lab }}<input type="number" name="{{ f }}" value="{{ v if v is not none else 0 }}"></label>
+  {% else %}
+  <label>{{ lab }}<input type="text" name="{{ f }}" value="{{ v or '' }}" {% if f == 'slug' %}placeholder="비우면 자동 생성"{% endif %}></label>
+  {% endif %}
+  {% endfor %}
+  {% if artists is defined %}
+  <label>참여 작가 (Ctrl/⌘ 클릭으로 여러 명)
+    <select name="artists" multiple class="ms">{% for a in artists %}<option value="{{ a.id }}" {{ 'selected' if a in obj.artists }}>{{ a.name_ko }}</option>{% endfor %}</select>
+  </label>
+  {% endif %}
+  <div><button class="btn" type="submit">저장</button></div>
+</form>
+{% endblock %}

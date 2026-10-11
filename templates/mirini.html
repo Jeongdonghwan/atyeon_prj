@@ -1,0 +1,40 @@
+{% extends "base.html" %}{% import "_macros.html" as m with context %}
+{% block title %}Mirini Project{% endblock %}
+{% block body %}
+{% call m.phero('처음 만나는 미술,<br>새로운 취향의 시작.', '<a href="'~url_for('academy')~'">Academy</a><span>/</span>Mirini', programs[0].cover if programs else 'https://commons.wikimedia.org/wiki/Special:FilePath/Gustav_Klimt_016.jpg', '미린이는 미술을 어렵게 느끼는 사람을 위해 배우고, 작가를 만나고, 자신만의 관점을 나누는 예술 입문 프로젝트입니다. 미술은 아는 만큼 가까워집니다.', 'Mirini Project') %}
+<div class="cta"><a class="btn solid" href="{{ url_for('contact', kind='academy') }}">참여 문의 <span class="ar">→</span></a></div>
+{% endcall %}
+
+<section class="sec">
+  <div class="wrap">
+    {{ m.label('01','네 가지 단계','Learn · Meet · Make · Share') }}
+    <ul class="steps stag">
+      <li><div><b>LEARN — 처음 미술을 보는 사람을 위한 5분</b><p>작품을 보는 세 가지 질문부터. 짧은 강의와 영상으로 부담 없이 시작합니다.</p></div></li>
+      <li><div><b>MEET — 작가와의 만남</b><p>작업실 방문, 토크, 전시 투어. 작품이 만들어지는 자리를 직접 봅니다.</p></div></li>
+      <li><div><b>MAKE — 만들어 보기</b><p>재료를 만지고 손으로 시도하며 작가의 선택을 이해합니다.</p></div></li>
+      <li><div><b>SHARE — 나의 관점 나누기</b><p>감상을 말하고 쓰고 기록합니다. 취향은 나눌수록 선명해집니다.</p></div></li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec alt">
+  <div class="wrap">
+    {{ m.label('02','과정','Courses') }}
+    {% if programs %}
+    <div class="pillars stag">{% for p in programs %}{{ m.program_card(p) }}{% endfor %}</div>
+    {% else %}<p class="empty">미린이 101 / 201 과정을 준비 중입니다.</p>{% endif %}
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    {{ m.label('03','자주 묻는 질문','FAQ') }}
+    <div class="faq" data-r>
+      <details><summary>미술을 전혀 모르는데 참여할 수 있나요?</summary><p>네. 미린이는 '처음'을 위한 프로젝트입니다. 사전 지식 없이 시작합니다.</p></details>
+      <details><summary>수업은 어디서 진행되나요?</summary><p>[전시 공간·작업실·온라인 — 과정별 일정에 따라 안내] 실제 장소와 일정은 발주처 확정 후 게시됩니다.</p></details>
+      <details><summary>비용과 신청 방법은요?</summary><p>[과정별 비용·신청 방식 — 확정 후 게시] 문의 폼으로 남겨주시면 안내드립니다.</p></details>
+      <details><summary>아이와 함께 참여할 수 있나요?</summary><p>[대상 연령 안내 — 확정 후 게시]</p></details>
+    </div>
+  </div>
+</section>
+{% endblock %}

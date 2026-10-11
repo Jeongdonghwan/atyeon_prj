@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{% endblock %} — {{ cfg('site_name','CHEONGYEON') }}</title>
+<meta name="description" content="{% block desc %}{{ cfg('tagline','예술의 가능성을 세계와 연결하다') }}{% endblock %}">
+<meta property="og:title" content="{{ self.title() }} — {{ cfg('site_name','CHEONGYEON') }}">
+<meta property="og:image" content="{% block og %}{{ cfg('og_image') }}{% endblock %}">
+{% if request.endpoint and request.endpoint != 'nf' %}
+<link rel="alternate" hreflang="ko" href="{{ url_for(request.endpoint, lang='ko', **request.view_args) }}">
+<link rel="alternate" hreflang="en" href="{{ url_for(request.endpoint, lang='en', **request.view_args) }}">
+{% endif %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Serif+KR:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}">
+</head>
+<body>
+{% if request.endpoint == 'home' %}<div class="intro"><b>{{ cfg('site_name','CHEONGYEON') }}</b></div>{% endif %}
+<div class="cursor"></div>
+
+<header class="hdr" id="hdr">
+  <div class="wrap">
+    <a class="logo" href="{{ url_for('home') }}">{{ cfg('site_name','CHEONGYEON') }}</a>
+    <nav class="nav">
+      <a href="{{ url_for('about') }}">About</a><a href="{{ url_for('global_') }}">Global</a><a href="{{ url_for('artists') }}">Artists</a>
+      <a href="{{ url_for('exhibitions') }}">Exhibitions</a><a href="{{ url_for('academy') }}">Academy</a>
+      <a href="{{ url_for('journal') }}">Journal</a><a href="{{ url_for('contact') }}">Contact</a>
+      <span class="lang">
+        {% if request.endpoint and request.endpoint != 'nf' %}
+        <a href="{{ url_for(request.endpoint, lang='ko', **request.view_args) }}">KR</a> · <a href="{{ url_for(request.endpoint, lang='en', **request.view_args) }}">EN</a>
+        {% else %}KR · EN{% endif %}
+      </span>
+    </nav>
+    <button class="burger" id="burger" aria-label="menu"></button>
+  </div>
+</header>
+<nav class="mnav">
+  {% for ep,l in [('about','About'),('global_','Global'),('artists','Artists'),('exhibitions','Exhibitions'),('academy','Academy'),('journal','Journal'),('contact','Contact')] %}
+  <a href="{{ url_for(ep) }}" style="--i:{{ loop.index0 }}"><span>0{{ loop.index }}</span>{{ l }}</a>
+  {% endfor %}
+</nav>
+
+{% block body %}{% endblock %}
+
+{% block cta %}
+<section class="close">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <div class="wrap" data-r>
+    <div class="serif">Let's start a conversation.</div>
+    <h2>새로운 예술적 연결은<br>한 번의 대화에서 시작됩니다.</h2>
+    <a class="btn" href="{{ url_for('contact') }}">문의하기 <span class="ar">→</span></a>
+  </div>
+</section>
+{% endblock %}
+
+<footer class="ftr">
+  <div class="wrap">
+    <div><div class="logo">{{ cfg('site_name','CHEONGYEON') }}</div><p>{{ cfg('tagline','한국의 예술적 자산을 세계와 잇고, 세계의 다양한 예술적 시선을 한국에 소개하는 아트·교류·교육 플랫폼.') }}</p></div>
+    <div><h4>Explore</h4><ul>
+      <li><a href="{{ url_for('about') }}">About</a></li><li><a href="{{ url_for('global_') }}">Global</a></li><li><a href="{{ url_for('artists') }}">Artists</a></li>
+      <li><a href="{{ url_for('artworks') }}">Artworks</a></li><li><a href="{{ url_for('exhibitions') }}">Exhibitions</a></li></ul></div>
+    <div><h4>Programs</h4><ul>
+      <li><a href="{{ url_for('academy') }}">Academy</a></li><li><a href="{{ url_for('mirini') }}">Mirini Project</a></li><li><a href="{{ url_for('journal') }}">Journal</a></li>
+      <li><a href="{{ url_for('media') }}">Media</a></li><li><a href="{{ url_for('partnership') }}">Partnership</a></li></ul></div>
+    <div><h4>Contact</h4><ul>
+      <li>{{ cfg('address','[주소]') }}</li><li>{{ cfg('email','[대표 이메일]') }}</li><li>{{ cfg('phone','[전화]') }}</li>
+      <li style="margin-top:8px">
+        {% if cfg('youtube') %}<a href="{{ cfg('youtube') }}" target="_blank" rel="noopener">YouTube</a>{% else %}YouTube{% endif %} ·
+        {% if cfg('instagram') %}<a href="{{ cfg('instagram') }}" target="_blank" rel="noopener">Instagram</a>{% else %}Instagram{% endif %}
+      </li></ul></div>
+    <div class="bot"><span>© {{ today.year }} {{ cfg('site_name','CHEONGYEON') }}. All rights reserved.</span><span>개인정보처리방침 · 이용약관 · KR / EN</span></div>
+  </div>
+</footer>
+<script src="{{ url_for('static', filename='site.js') }}"></script>
+</body>
+</html>
