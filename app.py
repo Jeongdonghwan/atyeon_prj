@@ -11,8 +11,8 @@ LANGS = ("ko", "en")
 
 # 상황 이미지 기본값 (발주처 사진 수급 전 임시 · Wikimedia Commons CC BY / PD). 어드민 사이트 설정에서 URL 교체.
 PICS = {
-    "gallery": "https://commons.wikimedia.org/wiki/Special:FilePath/" + "Gallery_of_Polish_Painting_and_European_Decorative_Arts,_National_Museum_in_Kielce,_czerwiec_2025,_SOULinPIX_092.jpg",
-    "museum":  "https://commons.wikimedia.org/wiki/Special:FilePath/" + "Visitors_looking_at_italian_paintings_in_the_Louvre_Museum_-_Paris,_France,_2019_49.jpg",
+    "gallery": "https://commons.wikimedia.org/wiki/Special:FilePath/" + "Inside_MAAT_Lisbon_%E2%80%93_Photography_Exhibit_in_the_Oval_Gallery_(54702984107).jpg",
+    "museum":  "https://commons.wikimedia.org/wiki/Special:FilePath/" + "Corning_Museum_of_Glass_-_20220212_-_08_-_Contemporary_Art_+_Design_gallery.jpg",
     "studio":  "https://commons.wikimedia.org/wiki/Special:FilePath/" + "DFC_5422_An_artist_at_work_in_a_lively_studio_in_Pattaya_surrounded_by_colorful_paintings_as_he_adds_finishing_touches_to_a_vibrant_floral_canvas.jpg",
     "class":   "https://commons.wikimedia.org/wiki/Special:FilePath/" + "USMC-100519-M-9780H-005.jpg",
     "mentor":  "https://commons.wikimedia.org/wiki/Special:FilePath/" + "USMC-100519-M-9780H-017.jpg",
