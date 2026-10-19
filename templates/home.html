@@ -22,17 +22,24 @@
 
 <section class="sec manifesto" id="global">
   <div class="wrap">
-    <div class="label" data-r><div class="num">01 &nbsp;Global Connections</div></div>
-    <h2 data-r>한국에서 세계로,<br><span class="kr">세계에서 한국으로.</span></h2>
-    <p data-r>문화와 도시의 경계를 넘어 작가·갤러리·기관이 함께 새로운 예술적 대화를 만드는 미래를 지향합니다. 해외 갤러리 및 문화기관과 전시·콘텐츠·작가 교류의 가능성을 엽니다.</p>
-    <div class="row">
-      <figure class="clip" data-r><img id="plx" src="{{ img(pic('museum'), 1600) }}" alt=""></figure>
+    <div class="copy">
+      <div class="label" data-r><div class="num">01 &nbsp;Global Connections</div></div>
+      <h2 data-r>한국에서 세계로,<br><span class="kr">세계에서 한국으로.</span></h2>
+      <p data-r>문화와 도시의 경계를 넘어 작가·갤러리·기관이 함께 새로운 예술적 대화를 만드는 미래를 지향합니다. 해외 갤러리 및 문화기관과 전시·콘텐츠·작가 교류의 가능성을 엽니다.</p>
       <ul class="stag">
         <li><b>I</b><span>공동 기획 전시 · 프리뷰</span><i>→</i></li>
         <li><b>II</b><span>작가 교류 · 레지던시 연계</span><i>→</i></li>
         <li><b>III</b><span>큐레이터 대화 · 콘텐츠 공동 제작</span><i>→</i></li>
         <li><b>IV</b><span>교육 프로그램 · 아카데미 협력</span><i>→</i></li>
       </ul>
+      <a class="btn" href="{{ url_for('global_') }}" data-r>국제 교류 알아보기 <span class="ar">→</span></a>
+    </div>
+    {% set cw = works|selectattr('artist')|list %}
+    <div class="collage stag">
+      {% for w in cw[:3] %}
+      <a class="c{{ loop.index }}" href="{{ url_for('artwork', slug=w.slug) }}"><figure class="clip"><img src="{{ img(w.image, 1000) }}" alt="{{ w.title_ko }}"></figure><span>{{ w.artist.name_ko }} 〈{{ w.title_ko }}〉</span></a>
+      {% endfor %}
+      <div class="tag-k">K-Art<br><em>Outbound</em></div>
     </div>
   </div>
 </section>
