@@ -179,13 +179,13 @@ body.menu{overflow:hidden}
 .track{display:flex;gap:24px;width:max-content;animation:strip 60s linear infinite}
 .strip:hover .track{animation-play-state:paused}
 @keyframes strip{to{transform:translateX(-50%)}}
-.work{flex:none;height:clamp(240px,32vw,420px);position:relative;overflow:hidden;background:#eee}
-.work img{height:100%;width:auto;display:block;transition:transform 1s var(--ease)}
-.work:hover img{transform:scale(1.05)}
-.work .i{position:absolute;left:0;right:0;bottom:0;padding:40px 16px 14px;background:linear-gradient(transparent,rgba(11,31,61,.85));color:#fff;font-size:13px;opacity:0;transform:translateY(10px);transition:.5s var(--ease)}
-.work:hover .i{opacity:1;transform:none}
+.work{flex:none;display:block}
+.work figure{height:clamp(240px,32vw,420px);overflow:hidden;background:#eee}
+.work figure img{height:100%;width:auto;display:block;transition:transform 1s var(--ease)}
+.work:hover figure img{transform:scale(1.04)}
+.work .i{padding:14px 2px 0;font-size:14px;max-width:420px}
 .work .i b{display:block;font-weight:600}
-.work .i small{opacity:.8}
+.work .i small{color:var(--muted);display:block;margin-top:2px}
 
 /* exhibitions */
 .exhib{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
@@ -278,7 +278,7 @@ body.menu{overflow:hidden}
   .feat{grid-template-columns:1fr}
   .journal .lead{grid-template-columns:1fr}
   .ftr .wrap{grid-template-columns:1fr 1fr}
-  .work{height:220px}
+  .work figure{height:220px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -391,3 +391,8 @@ body.menu{overflow:hidden}
 .thumbs{display:flex;gap:10px;margin-top:12px}
 .thumbs img{width:72px;height:72px;object-fit:cover;cursor:pointer;opacity:.55;border:1px solid transparent;transition:.3s}
 .thumbs img.on,.thumbs img:hover{opacity:1;border-color:var(--p)}
+
+.artists.lg{grid-template-columns:repeat(3,1fr);gap:32px 24px}
+.artists.lg .artist figure{aspect-ratio:4/5}
+.artists.lg .artist h3{font-size:19px;margin-top:16px}
+@media (max-width:900px){.artists.lg{grid-template-columns:1fr 1fr;gap:20px 14px}}

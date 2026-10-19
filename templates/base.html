@@ -69,7 +69,8 @@
         {% if cfg('youtube') %}<a href="{{ cfg('youtube') }}" target="_blank" rel="noopener">YouTube</a>{% else %}YouTube{% endif %} ·
         {% if cfg('instagram') %}<a href="{{ cfg('instagram') }}" target="_blank" rel="noopener">Instagram</a>{% else %}Instagram{% endif %}
       </li></ul></div>
-    <div class="bot"><span>© {{ today.year }} {{ cfg('site_name','CHEONGYEON') }}. All rights reserved.</span><span>개인정보처리방침 · 이용약관 · KR / EN</span></div>
+    <div class="bot"><span>© {{ today.year }} {{ cfg('site_name','CHEONGYEON') }}. All rights reserved.</span><span>개인정보처리방침 · 이용약관 · KR / EN</span>
+      {% if not cfg('img_gallery') %}<span style="flex-basis:100%;font-size:11px;opacity:.6">공간·수업 사진은 임시 자료입니다 (Wikimedia Commons, CC BY / Public Domain).</span>{% endif %}</div>
   </div>
 </footer>
 <script src="{{ url_for('static', filename='site.js') }}"></script>

@@ -9,6 +9,16 @@ load_dotenv()
 BASE = os.path.dirname(os.path.abspath(__file__))
 LANGS = ("ko", "en")
 
+# 상황 이미지 기본값 (발주처 사진 수급 전 임시 · Wikimedia Commons CC BY / PD). 어드민 사이트 설정에서 URL 교체.
+PICS = {
+    "gallery": "https://commons.wikimedia.org/wiki/Special:FilePath/" + "Gallery_of_Polish_Painting_and_European_Decorative_Arts,_National_Museum_in_Kielce,_czerwiec_2025,_SOULinPIX_092.jpg",
+    "museum":  "https://commons.wikimedia.org/wiki/Special:FilePath/" + "Visitors_looking_at_italian_paintings_in_the_Louvre_Museum_-_Paris,_France,_2019_49.jpg",
+    "studio":  "https://commons.wikimedia.org/wiki/Special:FilePath/" + "DFC_5422_An_artist_at_work_in_a_lively_studio_in_Pattaya_surrounded_by_colorful_paintings_as_he_adds_finishing_touches_to_a_vibrant_floral_canvas.jpg",
+    "class":   "https://commons.wikimedia.org/wiki/Special:FilePath/" + "USMC-100519-M-9780H-005.jpg",
+    "mentor":  "https://commons.wikimedia.org/wiki/Special:FilePath/" + "USMC-100519-M-9780H-017.jpg",
+}
+
+
 app = Flask(__name__)
 app.config.update(
     SECRET_KEY=os.getenv("SECRET_KEY", "dev-secret"),
@@ -44,7 +54,8 @@ def ctx():
         return url_for("static", filename="uploads/" + v)
     def t(obj, field):  # 언어별 필드: en 없으면 ko 폴백
         return getattr(obj, f"{field}_{g.lang}", None) or getattr(obj, f"{field}_ko", "")
-    return dict(img=img, t=t, cfg=SiteConfig.get, lang=g.get("lang", "ko"), today=date.today())
+    def pic(key): return SiteConfig.get("img_" + key) or PICS[key]
+    return dict(img=img, t=t, pic=pic, cfg=SiteConfig.get, lang=g.get("lang", "ko"), today=date.today())
 
 
 @app.route("/")
@@ -56,7 +67,7 @@ def root(): return redirect("/ko")
 def home():
     return render_template("home.html",
         featured=Artist.live().filter_by(featured=True).first(),
-        artists=Artist.live().limit(4).all(),
+        artists=Artist.live().filter(Artist.featured.is_(False)).limit(6).all(),
         works=Artwork.live().filter(Artwork.image.isnot(None)).limit(8).all(),
         exhibitions=Exhibition.live().limit(3).all(),
         programs=Program.live().limit(3).all(),

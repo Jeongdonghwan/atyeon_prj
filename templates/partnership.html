@@ -1,7 +1,7 @@
 {% extends "base.html" %}{% import "_macros.html" as m with context %}
 {% block title %}Partnership{% endblock %}
 {% block body %}
-{{ m.phero('세계의 갤러리와 함께<br>새로운 예술적 기회를 만듭니다.', '<a href="'~url_for('global_')~'">Global</a><span>/</span>Partnership', 'https://commons.wikimedia.org/wiki/Special:FilePath/Paul_Klee,_Swiss_-_Fish_Magic_-_Google_Art_Project.jpg', '국제 공동 기획과 작가 교류, 큐레이터 대화, 교육·콘텐츠 공동 제작을 위한 제안을 기다립니다. 파트너의 정체성과 작가의 예술적 가치를 존중하는 장기적 협력을 추구합니다.', 'Partnership') }}
+{{ m.phero('세계의 갤러리와 함께<br>새로운 예술적 기회를 만듭니다.', '<a href="'~url_for('global_')~'">Global</a><span>/</span>Partnership', pic('gallery'), '국제 공동 기획과 작가 교류, 큐레이터 대화, 교육·콘텐츠 공동 제작을 위한 제안을 기다립니다. 파트너의 정체성과 작가의 예술적 가치를 존중하는 장기적 협력을 추구합니다.', 'Partnership') }}
 
 <section class="sec">
   <div class="wrap">

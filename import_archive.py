@@ -73,7 +73,7 @@ with app.app_context():
         a = Artist.query.filter_by(name_ko=n).first()
         if not a:
             a = Artist(slug=slugify(n, f"artist-{len(artists)+1:02d}"), name_ko=n, medium=MEDIUM.get(r["category"], "회화"),
-                       cover=None, status=STATUS, sort=len(artists),
+                       cover=None, status=STATUS, sort=len(artists), featured=(n == "김훈섭"),
                        review_note="작가 소개·영문명·CV·초상 이미지 수급 필요")
             db.session.add(a)
         artists[n] = a
@@ -96,10 +96,11 @@ with app.app_context():
         if notes: review.append(notes)
         if r["id"] in extra: review.append(f"동일 작품 촬영본 {len(extra[r['id']])}장 포함(이미지 2·3) — 별개 작품이면 분리")
         if r.get("year", "").find("확인") >= 0 and not year: review.append("제작연도 확인")
+        if r["id"] == 3: review.append("저해상도(485px)·세로 비율 — 고해상 원본 수급 전 비공개")
         w = Artwork(slug=slugify(r["title"], f"work-{r['id']:02d}"), title_ko=r["title"], artist=a, category=r["category"],
                     dimensions=dims, medium_ko=medium, year=year, note_ko=r["description"],
                     image=copy_image(r["image"]), rights="© 작가 · 원본 파일: " + r["original_filename"],
-                    featured=(r["id"] in (8, 16, 4, 2)), status=STATUS, sort=r["id"],
+                    featured=(r["id"] in (8, 16, 4, 2)), status=("draft" if r["id"] == 3 else STATUS), sort=r["id"],
                     review_note=" / ".join(review) or None)
         for k, e in zip(("image_2", "image_3"), extra.get(r["id"], [])):
             setattr(w, k, copy_image(e["image"]))

@@ -2,7 +2,7 @@
 실행: python seed.py  (기존 DB 삭제 후 재생성)"""
 import os
 from datetime import date, timedelta
-from app import app
+from app import app, PICS as PIC
 from models import db, Artist, Artwork, Exhibition, Program, Journal, Media, SiteConfig
 
 W = "https://commons.wikimedia.org/wiki/Special:FilePath/"
@@ -76,10 +76,10 @@ with app.app_context():
                    location="일조원갤러리", cover=IMG["kiss"], artists=[a5], status=P, body_ko="[지난 전시 기록 — 승인 문안으로 교체]"),
     ])
     db.session.add_all([
-        Program(slug="mirini-101", title_ko="미린이 101 · 처음 만나는 미술", category="mirini", audience="입문", schedule="격주 토요일 · 4회", cover=IMG["almond"], summary_ko="LEARN · MEET · MAKE · SHARE", status=P, sort=0),
-        Program(slug="mirini-201", title_ko="미린이 201 · 작품을 읽는 법", category="mirini", audience="입문 수료자", schedule="매월 1회", cover=IMG["cezanne"], summary_ko="한 작품을 이해하는 세 가지 질문", status=P, sort=1),
-        Program(slug="artist-talk", title_ko="작가와의 만남", category="talk", audience="누구나", schedule="전시 기간 중", cover=IMG["gris"], summary_ko="작업실에서 듣는 작품의 시작", status=P, sort=2),
-        Program(slug="lecture-series", title_ko="렉처 시리즈 · 국제 미술 현장", category="lecture", audience="누구나", schedule="분기 1회", cover=IMG["kandinsky"], summary_ko="한국과 세계가 만나는 아트 현장", status=P, sort=3),
+        Program(slug="mirini-101", title_ko="미린이 101 · 처음 만나는 미술", category="mirini", audience="입문", schedule="격주 토요일 · 4회", cover=PIC["class"], summary_ko="LEARN · MEET · MAKE · SHARE", status=P, sort=0),
+        Program(slug="mirini-201", title_ko="미린이 201 · 작품을 읽는 법", category="mirini", audience="입문 수료자", schedule="매월 1회", cover=PIC["museum"], summary_ko="한 작품을 이해하는 세 가지 질문", status=P, sort=1),
+        Program(slug="artist-talk", title_ko="작가와의 만남", category="talk", audience="누구나", schedule="전시 기간 중", cover=PIC["studio"], summary_ko="작업실에서 듣는 작품의 시작", status=P, sort=2),
+        Program(slug="lecture-series", title_ko="렉처 시리즈 · 국제 미술 현장", category="lecture", audience="누구나", schedule="분기 1회", cover=PIC["gallery"], summary_ko="한국과 세계가 만나는 아트 현장", status=P, sort=3),
     ])
     db.session.add_all([
         Journal(slug="interview-hokusai", title_ko="[인터뷰] 파도 하나에 세계를 담다", category="interview", date=T - timedelta(days=8), cover=IMG["wave"], artist=a1, status=P,
@@ -93,14 +93,14 @@ with app.app_context():
     ])
     # 영상: video_id는 샘플(교체 필요). thumb 없으면 YouTube 썸네일 사용
     db.session.add_all([
-        Media(slug="in-the-studio-1", platform="youtube", series="IN THE STUDIO", title_ko="작가의 공간에서 발견하는 작품의 시작", video_id="", url="#", thumb=IMG["starry"], date=T - timedelta(days=5), artist=a2, status=P),
-        Media(slug="one-work-1", platform="youtube", series="ONE WORK, ONE STORY", title_ko="한 작품을 이해하는 세 가지 질문", video_id="", url="#", thumb=IMG["wave"], date=T - timedelta(days=12), artist=a1, status=P),
-        Media(slug="exhibition-notes-1", platform="youtube", series="EXHIBITION NOTES", title_ko="전시가 만들어지는 순간", video_id="", url="#", thumb=IMG["scream"], date=T - timedelta(days=20), status=P),
-        Media(slug="mirini-class-1", platform="youtube", series="MIRINI CLASS", title_ko="처음 미술을 보는 사람을 위한 5분", video_id="", url="#", thumb=IMG["almond"], date=T - timedelta(days=28), status=P),
-        Media(slug="reel-1", platform="instagram", series="Reels", title_ko="설치 전경 타임랩스", url="#", thumb=IMG["kiss"], date=T - timedelta(days=3), status=P),
-        Media(slug="reel-2", platform="instagram", series="Reels", title_ko="작가 토크 하이라이트", url="#", thumb=IMG["gris"], date=T - timedelta(days=6), status=P),
-        Media(slug="reel-3", platform="instagram", series="Reels", title_ko="미린이 101 현장", url="#", thumb=IMG["cezanne"], date=T - timedelta(days=9), status=P),
-        Media(slug="reel-4", platform="instagram", series="Reels", title_ko="오프닝 스케치", url="#", thumb=IMG["klee"], date=T - timedelta(days=14), status=P),
+        Media(slug="in-the-studio-1", platform="youtube", series="IN THE STUDIO", title_ko="작가의 공간에서 발견하는 작품의 시작", video_id="", url="#", thumb=PIC["studio"], date=T - timedelta(days=5), artist=a2, status=P),
+        Media(slug="one-work-1", platform="youtube", series="ONE WORK, ONE STORY", title_ko="한 작품을 이해하는 세 가지 질문", video_id="", url="#", thumb=PIC["museum"], date=T - timedelta(days=12), artist=a1, status=P),
+        Media(slug="exhibition-notes-1", platform="youtube", series="EXHIBITION NOTES", title_ko="전시가 만들어지는 순간", video_id="", url="#", thumb=PIC["gallery"], date=T - timedelta(days=20), status=P),
+        Media(slug="mirini-class-1", platform="youtube", series="MIRINI CLASS", title_ko="처음 미술을 보는 사람을 위한 5분", video_id="", url="#", thumb=PIC["class"], date=T - timedelta(days=28), status=P),
+        Media(slug="reel-1", platform="instagram", series="Reels", title_ko="설치 전경 타임랩스", url="#", thumb=PIC["gallery"], date=T - timedelta(days=3), status=P),
+        Media(slug="reel-2", platform="instagram", series="Reels", title_ko="작가 토크 하이라이트", url="#", thumb=PIC["mentor"], date=T - timedelta(days=6), status=P),
+        Media(slug="reel-3", platform="instagram", series="Reels", title_ko="미린이 101 현장", url="#", thumb=PIC["class"], date=T - timedelta(days=9), status=P),
+        Media(slug="reel-4", platform="instagram", series="Reels", title_ko="오프닝 스케치", url="#", thumb=PIC["studio"], date=T - timedelta(days=14), status=P),
     ])
     for k, v in {"site_name": "CHEONGYEON", "tagline": "한국의 예술적 자산을 세계와 잇고, 세계의 다양한 예술적 시선을 한국에 소개하는 아트·교류·교육 플랫폼.",
                  "email": "", "phone": "", "address": "", "youtube": "", "instagram": ""}.items():
