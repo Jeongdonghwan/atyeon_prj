@@ -27,7 +27,7 @@
 <section class="sec">
   <div class="wrap">
     {{ m.label('03','출품작','Works on View') }}
-    <div class="works stag">{% for w in ws[:9] %}<a href="{{ url_for('artwork', slug=w.slug) }}"><img src="{{ img(w.image, 900) }}" alt="" loading="lazy"><div class="i"><b>{{ w.title_ko }}</b><small>{{ w.artist.name_ko }} · {{ w.year }}</small></div></a>{% endfor %}</div>
+    <div class="works stag">{% for w in ws[:9] %}<a href="{{ url_for('artwork', slug=w.slug) }}"><img src="{{ img(w.image, 900) }}" alt="" loading="lazy"><div class="i"><b>{{ w.title_ko }}</b><small>{{ m.wmeta(w) }}</small></div></a>{% endfor %}</div>
   </div>
 </section>
 {% endif %}

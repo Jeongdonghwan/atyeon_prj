@@ -387,3 +387,7 @@ body.menu{overflow:hidden}
   .artwork-view{grid-template-columns:1fr}
   .artwork-view .info{position:static}
 }
+
+.thumbs{display:flex;gap:10px;margin-top:12px}
+.thumbs img{width:72px;height:72px;object-fit:cover;cursor:pointer;opacity:.55;border:1px solid transparent;transition:.3s}
+.thumbs img.on,.thumbs img:hover{opacity:1;border-color:var(--p)}

@@ -63,3 +63,12 @@
 {% macro yt(m) %}
 <div class="yt"><iframe src="https://www.youtube-nocookie.com/embed/{{ m.video_id }}" title="{{ m.title_ko }}" loading="lazy" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe></div>
 {% endmacro %}
+
+{% macro wmeta(w, with_artist=true) -%}
+{%- set parts = [] -%}
+{%- if with_artist %}{% if w.artist %}{% if parts.append(w.artist.name_ko) %}{% endif %}{% else %}{% if parts.append('작가 미표기') %}{% endif %}{% endif %}{% endif -%}
+{%- if w.year %}{% if parts.append(w.year) %}{% endif %}{% endif -%}
+{%- if w.medium_ko %}{% if parts.append(w.medium_ko) %}{% endif %}{% endif -%}
+{%- if w.dimensions %}{% if parts.append(w.dimensions ~ ' cm') %}{% endif %}{% endif -%}
+{{ parts|join(' · ') }}
+{%- endmacro %}

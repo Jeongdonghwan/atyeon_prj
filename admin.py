@@ -11,20 +11,20 @@ bp = Blueprint("admin", __name__, url_prefix="/admin")
 
 # 어드민에 노출할 모델: name -> (Model, 라벨, 목록 컬럼)
 MODELS = {
-    "artist":     (Artist,     "작가",     ["name_ko", "medium", "featured", "status"]),
-    "artwork":    (Artwork,    "작품",     ["title_ko", "artist_id", "year", "featured", "status"]),
+    "artist":     (Artist,     "작가",     ["name_ko", "medium", "featured", "status", "review_note"]),
+    "artwork":    (Artwork,    "작품",     ["title_ko", "artist_id", "category", "year", "featured", "status", "review_note"]),
     "exhibition": (Exhibition, "전시",     ["title_ko", "start_date", "end_date", "location", "status"]),
     "program":    (Program,    "아카데미", ["title_ko", "category", "schedule", "status"]),
     "journal":    (Journal,    "저널",     ["title_ko", "category", "date", "status"]),
     "media":      (Media,      "미디어",   ["title_ko", "platform", "series", "date", "status"]),
 }
-IMAGE_COLS = {"portrait", "cover", "image", "thumb"}
+IMAGE_COLS = {"portrait", "cover", "image", "image_2", "image_3", "thumb"}
 HIDDEN = {"id", "created_at"}
 LABELS = {  # 폼 라벨 (없으면 컬럼명)
     "name_ko": "이름(국문)", "name_en": "이름(영문)", "title_ko": "제목(국문)", "title_en": "제목(영문)",
     "tagline_ko": "한 문장 소개", "medium": "매체", "medium_ko": "재료/매체", "bio_ko": "소개(국문)", "bio_en": "소개(영문)",
     "note_ko": "노트", "cv_ko": "CV / 전시 이력 (한 줄에 하나)", "portrait": "초상 이미지", "cover": "커버 이미지",
-    "image": "작품 이미지", "thumb": "썸네일", "featured": "메인 추천", "status": "상태", "sort": "정렬(낮을수록 앞)",
+    "image": "작품 이미지 (정면)", "image_2": "이미지 2 (디테일)", "image_3": "이미지 3 (설치)", "category": "카테고리", "review_note": "검수 메모 (사이트 비노출)", "thumb": "썸네일", "featured": "메인 추천", "status": "상태", "sort": "정렬(낮을수록 앞)",
     "slug": "URL 슬러그", "artist_id": "작가", "exhibition_id": "전시", "year": "제작연도", "dimensions": "규격(cm)",
     "rights": "저작권/출처", "start_date": "시작일", "end_date": "종료일", "location": "장소", "body_ko": "본문(국문)",
     "body_en": "본문(영문)", "category": "분류", "audience": "대상", "summary_ko": "요약", "schedule": "일정",

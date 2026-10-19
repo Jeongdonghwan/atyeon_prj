@@ -6,11 +6,15 @@
   <div class="wrap">
     <div class="crumb" style="color:var(--muted);margin-bottom:28px"><a href="{{ url_for('home') }}">Home</a><span>/</span><a href="{{ url_for('artworks') }}">Artworks</a><span>/</span>{{ w.title_ko }}</div>
     <div class="artwork-view">
-      <div class="img clip" data-r><img src="{{ img(w.image, 1600) }}" alt="{{ w.title_ko }}"></div>
+      <div data-r>
+        <div class="img clip"><img id="main-img" src="{{ img(w.image, 1600) }}" alt="{{ w.title_ko }}"></div>
+        {% if w.images|length > 1 %}<div class="thumbs">{% for im in w.images %}<img src="{{ img(im, 400) }}" alt="" class="{{ 'on' if loop.first }}" data-full="{{ img(im, 1600) }}">{% endfor %}</div>{% endif %}
+      </div>
       <div class="info" data-r>
         <h1>{{ t(w,'title') }}</h1>
         {% if w.artist %}<div class="by"><a href="{{ url_for('artist', slug=w.artist.slug) }}"><span style="font-family:var(--sans);font-style:normal;font-size:16px">{{ w.artist.name_ko }}</span>{% if w.artist.name_en %} · {{ w.artist.name_en }}{% endif %}</a></div>{% endif %}
         <dl class="specs">
+          {% if w.category %}<dt>분류</dt><dd>{{ w.category }}</dd>{% endif %}
           {% if w.year %}<dt>제작연도</dt><dd>{{ w.year }}</dd>{% endif %}
           {% if w.medium_ko %}<dt>재료</dt><dd>{{ w.medium_ko }}</dd>{% endif %}
           {% if w.dimensions %}<dt>규격</dt><dd>{{ w.dimensions }}</dd>{% endif %}
@@ -29,13 +33,14 @@
 {% if related %}
 <section class="sec alt">
   <div class="wrap">
-    {{ m.label('02','같은 작가의<br>다른 작품','Related Works') }}
+    {{ m.label('02', '같은 작가의<br>다른 작품' if w.artist else '같은 분류의<br>다른 작품', 'Related Works') }}
     <div class="works stag">
       {% for r in related %}
-      <a href="{{ url_for('artwork', slug=r.slug) }}"><img src="{{ img(r.image, 700) }}" alt="{{ r.title_ko }}" loading="lazy"><div class="i"><b>{{ r.title_ko }}</b><small>{{ r.year }} · {{ r.medium_ko }}</small></div></a>
+      <a href="{{ url_for('artwork', slug=r.slug) }}"><img src="{{ img(r.image, 700) }}" alt="{{ r.title_ko }}" loading="lazy"><div class="i"><b>{{ r.title_ko }}</b><small>{{ m.wmeta(r, not w.artist) }}</small></div></a>
       {% endfor %}
     </div>
   </div>
 </section>
 {% endif %}
 {% endblock %}
+{% block scripts %}<script>document.querySelectorAll('.thumbs img').forEach(t=>t.onclick=()=>{document.getElementById('main-img').src=t.dataset.full;document.querySelectorAll('.thumbs img').forEach(x=>x.classList.remove('on'));t.classList.add('on');});</script>{% endblock %}

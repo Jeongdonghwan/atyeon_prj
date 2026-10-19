@@ -77,7 +77,7 @@
   </div>
   <div class="track" id="track">
     {% for w in works %}
-    <a class="work" href="{{ url_for('artwork', slug=w.slug) }}"><img src="{{ img(w.image, 900) }}" alt="{{ w.title_ko }}"><div class="i"><b>{{ w.title_ko }}</b><small>{{ w.artist.name_ko if w.artist }} · {{ w.year }} · {{ w.medium_ko }}</small></div></a>
+    <a class="work" href="{{ url_for('artwork', slug=w.slug) }}"><img src="{{ img(w.image, 900) }}" alt="{{ w.title_ko }}"><div class="i"><b>{{ w.title_ko }}</b><small>{{ m.wmeta(w) }}</small></div></a>
     {% endfor %}
   </div>
 </section>

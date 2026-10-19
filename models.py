@@ -37,6 +37,7 @@ class Artist(Base):
     portrait = db.Column(db.String(400))
     cover = db.Column(db.String(400))
     featured = db.Column(db.Boolean, default=False)
+    review_note = db.Column(db.Text)             # 검수 메모 (어드민 전용)
     artworks = db.relationship("Artwork", backref="artist", lazy=True)
     media = db.relationship("Media", backref="artist", lazy=True)
 
@@ -50,10 +51,17 @@ class Artwork(Base):
     year = db.Column(db.String(10))
     medium_ko = db.Column(db.String(120))
     dimensions = db.Column(db.String(80))
+    category = db.Column(db.String(40))         # 자연 · 추상 · 회화 · 도시 · 인물 · 공예
     image = db.Column(db.String(400))
+    image_2 = db.Column(db.String(400))         # 디테일 · 설치 모습 (최대 3종)
+    image_3 = db.Column(db.String(400))
     note_ko = db.Column(db.Text)
     rights = db.Column(db.String(160))
     featured = db.Column(db.Boolean, default=False)
+    review_note = db.Column(db.Text)             # 검수 메모 (어드민 전용)
+
+    @property
+    def images(self): return [i for i in (self.image, self.image_2, self.image_3) if i]
 
     def __str__(self): return self.title_ko
 

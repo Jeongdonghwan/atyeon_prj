@@ -1,6 +1,6 @@
 {% extends "base.html" %}{% import "_macros.html" as m with context %}
 {% block title %}{{ a.name_ko }}{% endblock %}
-{% block desc %}{{ a.tagline_ko }}{% endblock %}
+{% block desc %}{{ a.tagline_ko or (a.name_ko ~ ' · ' ~ (a.medium or 'Artist')) }}{% endblock %}
 {% block og %}{{ img(a.cover or a.portrait, 1200) }}{% endblock %}
 {% block body %}
 {% call m.phero(a.name_ko ~ (' <span class="serif" style="font-style:italic;font-weight:400;opacity:.8">' ~ a.name_en ~ '</span>' if a.name_en else ''), '<a href="'~url_for('artists')~'">Artists</a><span>/</span>'~a.name_ko, a.cover or a.portrait, a.tagline_ko, 'Artist') %}
@@ -17,7 +17,7 @@
       <div class="en">{{ a.name_en or "Artist" }}</div><p style="margin-top:8px">{{ a.medium }}</p>
     </div>
     <div class="prose" data-r>
-      {% for para in (t(a,'bio') or '').split('\n\n') if para.strip() %}<p>{{ para }}</p>{% endfor %}
+      {% set bio = t(a,'bio') %}{% if bio %}{% for para in bio.split('\n\n') if para.strip() %}<p>{{ para }}</p>{% endfor %}{% else %}<p class="empty" style="border:0;padding:0">작가 소개가 준비 중입니다.</p>{% endif %}
       {% if a.note_ko %}
       <div class="sub-h">Artist's Note</div>
       <blockquote style="font-family:var(--serifkr);font-size:20px;line-height:1.7;color:var(--muted);border-left:2px solid var(--gold);padding-left:24px">{{ a.note_ko }}</blockquote>
@@ -32,7 +32,7 @@
     {% if works %}
     <div class="works stag">
       {% for w in works %}
-      <a href="{{ url_for('artwork', slug=w.slug) }}"><img src="{{ img(w.image, 900) }}" alt="{{ w.title_ko }}" loading="lazy"><div class="i"><b>{{ w.title_ko }}</b><small>{{ w.year }} · {{ w.medium_ko }}{% if w.dimensions %} · {{ w.dimensions }}{% endif %}</small></div></a>
+      <a href="{{ url_for('artwork', slug=w.slug) }}"><img src="{{ img(w.image, 900) }}" alt="{{ w.title_ko }}" loading="lazy"><div class="i"><b>{{ w.title_ko }}</b><small>{{ m.wmeta(w, false) }}</small></div></a>
       {% endfor %}
     </div>
     {% else %}<p class="empty">등록된 작품이 없습니다.</p>{% endif %}

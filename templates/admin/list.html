@@ -10,7 +10,8 @@
     {% for c in cols %}
     <td>{% set v = r[c] %}
       {% if c == 'status' %}<span class="st {{ v }}">{{ v }}</span>
-      {% elif c == 'artist_id' %}{{ r.artist.name_ko if r.artist }}
+      {% elif c == 'artist_id' %}{% if r.artist %}{{ r.artist.name_ko }}{% else %}<span class="st" style="background:#fef3c7;color:#92400e">미확인</span>{% endif %}
+      {% elif c == 'review_note' %}{% if v %}<span class="st" style="background:#fef3c7;color:#92400e" title="{{ v }}">검수 · {{ v[:26] }}{{ '…' if v|length>26 }}</span>{% endif %}
       {% elif v is sameas true %}★{% elif v is sameas false %}{% else %}{{ v if v is not none }}{% endif %}
     </td>
     {% endfor %}

@@ -97,17 +97,19 @@ def artist(slug):
 @app.route("/<lang>/artworks")
 def artworks():
     q = Artwork.live()
-    aid, m = request.args.get("artist", type=int), request.args.get("medium")
+    aid, c = request.args.get("artist", type=int), request.args.get("category")
     if aid: q = q.filter_by(artist_id=aid)
-    if m: q = q.filter(Artwork.medium_ko.contains(m))
-    mediums = sorted({w.medium_ko for w in Artwork.live() if w.medium_ko})
-    return render_template("artworks.html", works=q.all(), artists=Artist.live().all(), mediums=mediums, aid=aid, medium=m)
+    if c: q = q.filter_by(category=c)
+    categories = sorted({w.category for w in Artwork.live() if w.category})
+    return render_template("artworks.html", works=q.all(), artists=Artist.live().all(), categories=categories, aid=aid, category=c)
 
 
 @app.route("/<lang>/artworks/<slug>")
 def artwork(slug):
     w = Artwork.query.filter_by(slug=slug, status="published").first_or_404()
-    related = Artwork.live().filter(Artwork.artist_id == w.artist_id, Artwork.id != w.id).limit(4).all()
+    rel = Artwork.live().filter(Artwork.id != w.id)
+    rel = rel.filter(Artwork.artist_id == w.artist_id) if w.artist_id else rel.filter(Artwork.category == w.category)
+    related = rel.limit(4).all()
     return render_template("artwork.html", w=w, related=related)
 
 
