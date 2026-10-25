@@ -76,12 +76,6 @@ with app.app_context():
                    location="일조원갤러리", cover=IMG["kiss"], artists=[a5], status=P, body_ko="[지난 전시 기록 — 승인 문안으로 교체]"),
     ])
     db.session.add_all([
-        Program(slug="mirini-101", title_ko="미린이 101 · 처음 만나는 미술", category="mirini", audience="입문", schedule="격주 토요일 · 4회", cover=PIC["class"], summary_ko="LEARN · MEET · MAKE · SHARE", status=P, sort=0),
-        Program(slug="mirini-201", title_ko="미린이 201 · 작품을 읽는 법", category="mirini", audience="입문 수료자", schedule="매월 1회", cover=PIC["museum"], summary_ko="한 작품을 이해하는 세 가지 질문", status=P, sort=1),
-        Program(slug="artist-talk", title_ko="작가와의 만남", category="talk", audience="누구나", schedule="전시 기간 중", cover=PIC["studio"], summary_ko="작업실에서 듣는 작품의 시작", status=P, sort=2),
-        Program(slug="lecture-series", title_ko="렉처 시리즈 · 국제 미술 현장", category="lecture", audience="누구나", schedule="분기 1회", cover=PIC["gallery"], summary_ko="한국과 세계가 만나는 아트 현장", status=P, sort=3),
-    ])
-    db.session.add_all([
         Journal(slug="interview-hokusai", title_ko="[인터뷰] 파도 하나에 세계를 담다", category="interview", date=T - timedelta(days=8), cover=IMG["wave"], artist=a1, status=P,
                 summary_ko="한 장의 판화가 어떻게 세계의 이미지가 되었는지, 작가의 작업실에서 묻습니다.", body_ko="[인터뷰 본문 — 승인 문안으로 교체]\n\n[문단 2]\n\n[문단 3]"),
         Journal(slug="behind-art-beyond-borders", title_ko="전시 뒷이야기 — Art Beyond Borders가 만들어지기까지", category="behind", date=T - timedelta(days=16), cover=IMG["seurat"], status=P,

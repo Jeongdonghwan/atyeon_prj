@@ -647,3 +647,25 @@ body.menu{overflow:hidden}
 .lp .card .split small{display:block;font-size:11px;letter-spacing:.08em;color:var(--goldl)}
 .lp .card .split b{display:block;margin-top:4px;font-family:var(--serif);font-size:22px;font-weight:500;color:#fff}
 .lp .card .split span{display:block;margin-top:4px;font-size:12.5px;line-height:1.55;color:#cdd6ea}
+
+/* 행사 홍보 팝업 */
+.evpop{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:16px;background:rgba(5,10,24,.6);backdrop-filter:blur(4px);opacity:0;transition:opacity .4s}
+.evpop.on{opacity:1}
+.evpop .box{position:relative;width:min(420px,100%);max-height:calc(100svh - 32px);overflow:auto;background:#0A1630;border:1px solid rgba(231,201,135,.45);border-radius:14px;color:#fff;
+  transform:translateY(24px) scale(.97);transition:transform .5s var(--ease);box-shadow:0 40px 80px -20px rgba(0,0,0,.6)}
+.evpop.on .box{transform:none}
+.evpop .x{position:absolute;right:10px;top:8px;z-index:2;width:36px;height:36px;border:0;border-radius:50%;background:rgba(10,22,48,.7);color:#fff;font-size:22px;cursor:pointer}
+.evpop .pimg img{width:100%;display:block}
+.evpop .ptxt{padding:18px 20px 16px}
+.evpop .ptxt small{font-size:12px;color:#E7C987;letter-spacing:.04em}
+.evpop .ptxt b{display:block;margin-top:4px;font-size:19px}
+.evpop .ptxt span{display:block;margin-top:2px;font-size:13px;color:#cdd6ea}
+.evpop .pbtn{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.evpop .pbtn a{display:grid;place-items:center;min-height:44px;border-radius:999px;border:1px solid rgba(255,255,255,.3);font-size:14px}
+.evpop .pbtn a.go{background:linear-gradient(135deg,#E7C987,#B8935A);border:0;color:#0A1630;font-weight:700}
+.evpop .pbtn a:only-child{grid-column:1/-1}
+.evpop .pfoot{display:flex;justify-content:space-between;border-top:1px solid rgba(255,255,255,.12)}
+.evpop .pfoot button{flex:1;padding:13px;border:0;background:none;color:#9fb0cf;font:inherit;font-size:13px;cursor:pointer}
+.evpop .pfoot button+button{border-left:1px solid rgba(255,255,255,.12)}
+.evpop .pfoot button:hover{color:#fff}
+.evpop[hidden]{display:none}

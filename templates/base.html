@@ -79,5 +79,35 @@
 </footer>
 <script src="{{ url_for('static', filename='site.js') }}"></script>
 {% block scripts %}{% endblock %}
+{% if request.endpoint == 'home' %}{% set pe = event_banner() %}{% if pe %}
+<div class="evpop" id="evpop" role="dialog" aria-modal="true" aria-label="{{ pe.title_ko }}" hidden>
+  <div class="box">
+    <button class="x" type="button" aria-label="닫기" data-close>×</button>
+    {% if pe.poster %}<a class="pimg" href="{{ url_for('exhibition', slug=pe.slug) }}"><img src="{{ img(pe.poster, 900) }}" alt="{{ pe.title_ko }} 포스터"></a>{% endif %}
+    <div class="ptxt">
+      <small>{{ pe.start_date.strftime('%Y. %m. %d') }} {{ '월화수목금토일'[pe.start_date.weekday()] }} · {{ pe.location }}</small>
+      <b>{{ pe.program_title }}</b>
+      <span>{{ pe.program_time }} · 사전 신청 {{ pe.capacity }}명 · 참가비 {{ "{:,}".format(pe.fee) }}원</span>
+      <div class="pbtn">
+        {% if pe.can_apply %}<a class="go" href="{{ url_for('event_apply', slug=pe.slug) }}">참가 신청 →</a>{% endif %}
+        <a href="{{ url_for('exhibition', slug=pe.slug) }}">자세히 보기</a>
+      </div>
+    </div>
+    <div class="pfoot"><button type="button" data-today>오늘 하루 보지 않기</button><button type="button" data-close>닫기</button></div>
+  </div>
+</div>
+<script>
+(()=>{const p=document.getElementById('evpop'),k='evpop-{{ pe.slug }}',d=new Date().toISOString().slice(0,10);
+let hide=false;try{hide=localStorage.getItem(k)===d}catch(e){}
+if(hide)return;
+const close=()=>{p.classList.remove('on');setTimeout(()=>p.hidden=true,400);document.removeEventListener('keydown',esc)};
+const esc=e=>{if(e.key==='Escape')close()};
+setTimeout(()=>{p.hidden=false;requestAnimationFrame(()=>p.classList.add('on'));document.addEventListener('keydown',esc)},2600);
+p.querySelectorAll('[data-close]').forEach(b=>b.onclick=close);
+p.querySelector('[data-today]').onclick=()=>{try{localStorage.setItem(k,d)}catch(e){}close()};
+p.addEventListener('click',e=>{if(e.target===p)close()});})();
+</script>
+{% endif %}{% endif %}
+
 </body>
 </html>

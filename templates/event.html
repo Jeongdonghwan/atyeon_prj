@@ -23,19 +23,19 @@
       <p class="sub fx d2">{{ e.subtitle }}</p>
       <p class="hand fx d2">당신의 감상이 별이 됩니다</p>
       <div class="cta fx d3">
-        {% if e.can_apply %}<a class="btn gold" href="{{ url_for('event_apply', slug=e.slug) }}">작가와의 대화 신청 <span class="ar">→</span></a>{% endif %}
+        {% if e.can_apply %}<a class="btn gold" href="{{ url_for('event_apply', slug=e.slug) }}">참가 신청 <span class="ar">→</span></a>{% endif %}
         <a class="btn" href="{{ url_for('apply_check') }}">신청 확인</a>
       </div>
     </div>
     <div class="card fx d3">
-      <div class="top">{% if days >= 0 %}<b>{{ 'D-DAY' if days == 0 else 'D-' ~ days }}</b>{% endif %}<span>특별 프로그램 <em>{{ e.capacity }}</em>명 한정</span></div>
+      <div class="top">{% if days >= 0 %}<b>{{ 'D-DAY' if days == 0 else 'D-' ~ days }}</b>{% endif %}<span>{{ e.program_title }} <em>{{ e.capacity }}</em>명 한정</span></div>
       <dl>
         <div><dt>일시</dt><dd>{{ e.start_date.strftime('%Y.%m.%d') }} ({{ wd }})</dd></div>
         <div><dt>장소</dt><dd>{{ e.location }} · {{ e.address }}</dd></div>
       </dl>
       <div class="split">
         <div><small>전시 관람</small><b>{{ e.hours }}</b><span>신청·참가비 없이<br>자유 관람</span></div>
-        <div class="pg"><small>특별 프로그램</small><b>{{ e.program_time }}</b><span>{{ e.program_title }}<br>사전 신청 {{ e.capacity }}명 · 참가비 {{ fee }}</span></div>
+        <div class="pg"><small>{{ e.program_title }}</small><b>{{ e.program_time }}</b><span>사전 신청 {{ e.capacity }}명<br>참가비 {{ fee }}</span></div>
       </div>
     </div>
   </div>
@@ -45,7 +45,7 @@
 <section class="ev-sec ev-gifts">
   <div class="wrap">
     <div class="ev-intro" data-r>
-      <div class="eyebrow">Special Program · {{ e.program_time }} · 참가비 {{ fee }}</div>
+      <div class="eyebrow">{{ e.program_title }} · {{ e.program_time }} · 참가비 {{ fee }}</div>
       <h2>작품을 천천히 감상한 뒤, <span>떠오르는 감정을 한 문장으로.</span></h2>
       <p>당신의 감상이 하나의 별이 되어, 오늘 특별한 별자리를 만듭니다. 사전 신청자에게는 네 가지 선물을 드립니다.</p>
     </div>
@@ -90,7 +90,7 @@
         <div><dt>문의</dt><dd>{{ e.phone }}</dd></div>
       </dl>
       <div class="cta">
-        {% if e.can_apply %}<a class="btn gold" href="{{ url_for('event_apply', slug=e.slug) }}">작가와의 대화 신청 <span class="ar">→</span></a>{% endif %}
+        {% if e.can_apply %}<a class="btn gold" href="{{ url_for('event_apply', slug=e.slug) }}">참가 신청 <span class="ar">→</span></a>{% endif %}
         <a class="btn line" target="_blank" rel="noopener" href="https://map.naver.com/p/search/{{ e.address|urlencode }}">네이버 지도</a>
         <a class="btn line" target="_blank" rel="noopener" href="https://map.kakao.com/?q={{ e.address|urlencode }}">카카오맵</a>
         <a class="btn line" href="{{ url_for('event_ics', slug=e.slug) }}">캘린더 추가</a>
@@ -107,7 +107,7 @@
 {% if e.can_apply %}
 <a class="ev-dock" href="{{ url_for('event_apply', slug=e.slug) }}">
   <span><b>{{ e.start_date.strftime('%m.%d') }} {{ wd }} {{ e.program_time }}</b> {{ e.program_title }}</span>
-  <span class="r">{{ e.capacity }}명 한정 · {{ fee }} <i>신청하기 →</i></span>
+  <span class="r">{{ e.capacity }}명 한정 · {{ fee }} <i>참가 신청 →</i></span>
 </a>
 {% endif %}
 </div>

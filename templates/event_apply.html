@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ '신청 완료' if done else '작가와의 대화 신청' }} · {{ e.title_ko }}{% endblock %}
+{% block title %}{{ '신청 완료' if done else e.program_title ~ ' 참가 신청' }} · {{ e.title_ko }}{% endblock %}
 {% block body %}
 {% set wd = '월화수목금토일'[e.start_date.weekday()] %}
 <div class="ev">
@@ -34,11 +34,11 @@
       </div>
     </div>
     {% elif not e.can_apply %}
-    <div class="ticket" data-r><h2>신청이 마감되었습니다</h2><p>작가와의 대화에 참여하지 않으셔도 {{ e.hours }} 동안 자유롭게 관람하실 수 있습니다.</p>
+    <div class="ticket" data-r><h2>신청이 마감되었습니다</h2><p>{{ e.program_title }}에 참여하지 않으셔도 {{ e.hours }} 동안 자유롭게 관람하실 수 있습니다.</p>
       <div class="cta"><a class="btn line" href="{{ url_for('exhibition', slug=e.slug) }}">행사 안내로</a></div></div>
     {% else %}
     <form class="form ev-f" method="post" data-r>
-      <div class="seats">{{ e.program_time }} 특별 프로그램 · 사전 신청 <b>{{ e.capacity }}</b>명 · 참가비 1인 {{ '{:,}'.format(e.fee) }}원</div>
+      <div class="seats">{{ e.program_title }} {{ e.program_time }} · 사전 신청 <b>{{ e.capacity }}</b>명 · 참가비 1인 {{ '{:,}'.format(e.fee) }}원</div>
       {% if err %}<div class="flash">{{ err }}</div>{% endif %}
       <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off">
       <div class="row"><label>이름 *<input name="name" required value="{{ form.get('name','') }}"></label>
