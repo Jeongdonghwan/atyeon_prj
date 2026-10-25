@@ -640,3 +640,10 @@ body.menu{overflow:hidden}
 .ev-strip a{flex:none;display:block;height:clamp(180px,20vw,260px);overflow:hidden;border-radius:4px}
 .ev-strip img{height:100%;width:auto;display:block;transition:transform .8s var(--ease)}
 .ev-strip a:hover img{transform:scale(1.05)}
+
+.lp .card .split{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.lp .card .split>div{padding:14px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04)}
+.lp .card .split .pg{border-color:rgba(231,201,135,.5);background:rgba(231,201,135,.08)}
+.lp .card .split small{display:block;font-size:11px;letter-spacing:.08em;color:var(--goldl)}
+.lp .card .split b{display:block;margin-top:4px;font-family:var(--serif);font-size:22px;font-weight:500;color:#fff}
+.lp .card .split span{display:block;margin-top:4px;font-size:12.5px;line-height:1.55;color:#cdd6ea}
