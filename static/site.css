@@ -632,3 +632,11 @@ body.menu{overflow:hidden}
 .lp .card .free b{font-size:15px}
 .lp .ev-hero .const{top:14%}
 .ev.lp section.ev-sec{padding:clamp(44px,4.5vw,64px) 0}
+
+.lp .ev-art .names{margin-bottom:0}
+.ev-strip{margin-top:32px;overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.ev-strip .track{gap:14px;animation-duration:50s}
+.ev-strip:hover .track{animation-play-state:paused}
+.ev-strip a{flex:none;display:block;height:clamp(180px,20vw,260px);overflow:hidden;border-radius:4px}
+.ev-strip img{height:100%;width:auto;display:block;transition:transform .8s var(--ease)}
+.ev-strip a:hover img{transform:scale(1.05)}

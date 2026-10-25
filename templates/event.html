@@ -28,7 +28,7 @@
       </div>
     </div>
     <div class="card fx d3">
-      <div class="top">{% if days >= 0 %}<b>{{ 'D-DAY' if days == 0 else 'D-' ~ days }}</b>{% endif %}<span>남은 자리 <em>{{ e.remaining }}</em> / {{ e.capacity }}</span></div>
+      <div class="top">{% if days >= 0 %}<b>{{ 'D-DAY' if days == 0 else 'D-' ~ days }}</b>{% endif %}<span>사전 신청 <em>{{ e.capacity }}</em>명 한정</span></div>
       <dl>
         <div><dt>일시</dt><dd>{{ e.start_date.strftime('%Y.%m.%d') }} ({{ wd }}) {{ e.hours }}</dd></div>
         <div><dt>장소</dt><dd>{{ e.location }} · {{ e.address }}</dd></div>
@@ -65,14 +65,14 @@
     <ul class="names" data-r>
       {% for n in e.names %}<li>{% if reg[n] %}<a href="{{ url_for('artist', slug=reg[n].slug) }}">{{ n }}</a>{% else %}<span>{{ n }}</span>{% endif %}</li>{% endfor %}
     </ul>
-    {% if works %}
-    <div class="wgrid stag">
-      {% for w in works %}
-      <a href="{{ url_for('artwork', slug=w.slug) }}" title="{{ w.title_ko }}"><figure><img src="{{ img(w.image, 500) }}" alt="{{ w.title_ko }}" loading="lazy"></figure><b>{{ w.title_ko }}</b><small>{{ w.artist.name_ko if w.artist else '작가 미표기' }}</small></a>
-      {% endfor %}
-    </div>
-    {% endif %}
   </div>
+  {% if works %}
+  <div class="ev-strip" data-r>
+    <div class="track" id="track">
+      {% for w in works %}<a href="{{ url_for('artwork', slug=w.slug) }}" aria-label="{{ w.title_ko }}"><img src="{{ img(w.image, 600) }}" alt="{{ w.title_ko }}" loading="lazy"></a>{% endfor %}
+    </div>
+  </div>
+  {% endif %}
 </section>
 
 <!-- 4. 오시는 길 + 포스터 + 마지막 CTA -->
@@ -105,7 +105,7 @@
 {% if e.can_apply %}
 <a class="ev-dock" href="{{ url_for('event_apply', slug=e.slug) }}">
   <span><b>{{ e.start_date.strftime('%m.%d') }} {{ wd }} {{ e.program_time }}</b> {{ e.program_title }}</span>
-  <span class="r">남은 자리 <em>{{ e.remaining }}</em>명 · {{ fee }} <i>신청하기 →</i></span>
+  <span class="r">{{ e.capacity }}명 한정 · {{ fee }} <i>신청하기 →</i></span>
 </a>
 {% endif %}
 </div>

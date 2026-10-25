@@ -168,7 +168,7 @@ def event_apply(slug):
             return redirect(url_for("event_apply", slug=slug))
         if not e.can_apply: err = "신청이 마감되었습니다."
         elif not (f.get("name", "").strip() and len(phone) >= 9 and f.get("consent")): err = "이름, 연락처, 동의 항목을 확인해 주세요."
-        elif people > e.remaining: err = f"남은 자리는 {e.remaining}명입니다."
+        elif people > e.remaining: err = "선택하신 인원만큼 자리가 남아 있지 않습니다. 인원을 줄이거나 문의해 주세요."
         elif Registration.query.filter(Registration.exhibition_id == e.id, Registration.phone == phone, Registration.status != "cancelled").first():
             err = "이미 신청된 연락처입니다. 신청 확인에서 내역을 확인해 주세요."
         else:

@@ -22,7 +22,7 @@
 <header class="hdr" id="hdr">
   {% set evb = event_banner() %}
   {% if evb and request.view_args.get('slug') != evb.slug %}
-  <a class="evbar" href="{{ url_for('exhibition', slug=evb.slug) }}"><span>✦ {{ evb.start_date.strftime('%m.%d') }} {{ '월화수목금토일'[evb.start_date.weekday()] }}</span><b>{{ evb.title_ko }}</b><span class="hide-m">{{ evb.program_title }} 사전 신청 · 남은 자리 {{ evb.remaining }}명</span><em>자세히 보기 →</em></a>
+  <a class="evbar" href="{{ url_for('exhibition', slug=evb.slug) }}"><span>✦ {{ evb.start_date.strftime('%m.%d') }} {{ '월화수목금토일'[evb.start_date.weekday()] }}</span><b>{{ evb.title_ko }}</b><span class="hide-m">{{ evb.program_title }} 사전 신청 {{ evb.capacity }}명 한정</span><em>자세히 보기 →</em></a>
   {% endif %}
   <div class="wrap">
     <a class="logo" href="{{ url_for('home') }}">{{ cfg('site_name','ARTEYEON') }}</a>

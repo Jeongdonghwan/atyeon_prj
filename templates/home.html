@@ -28,7 +28,7 @@
       <h2>Christmas <small>with</small><br><b>ARTEYEON</b> 2026</h2>
       <p>{{ evb.subtitle }}</p>
       <p class="hand">당신의 감상이 별이 됩니다</p>
-      <ul><li>{{ evb.hours }} 자유 관람</li><li>{{ evb.program_time }} {{ evb.program_title }}</li><li>사전 신청 {{ evb.capacity }}명 한정 · 남은 자리 {{ evb.remaining }}명</li></ul>
+      <ul><li>{{ evb.hours }} 자유 관람</li><li>{{ evb.program_time }} {{ evb.program_title }}</li><li>사전 신청 {{ evb.capacity }}명 한정</li></ul>
       <div class="cta">
         <a class="btn gold" href="{{ url_for('exhibition', slug=evb.slug) }}">행사 자세히 보기 <span class="ar">→</span></a>
         {% if evb.can_apply %}<a class="btn" href="{{ url_for('event_apply', slug=evb.slug) }}">바로 신청</a>{% endif %}

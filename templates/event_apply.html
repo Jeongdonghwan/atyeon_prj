@@ -38,7 +38,7 @@
       <div class="cta"><a class="btn line" href="{{ url_for('exhibition', slug=e.slug) }}">행사 안내로</a></div></div>
     {% else %}
     <form class="form ev-f" method="post" data-r>
-      <div class="seats">남은 자리 <b>{{ e.remaining }}</b> / {{ e.capacity }}명 · 참가비 1인 {{ '{:,}'.format(e.fee) }}원</div>
+      <div class="seats">사전 신청 <b>{{ e.capacity }}</b>명 한정 · 참가비 1인 {{ '{:,}'.format(e.fee) }}원</div>
       {% if err %}<div class="flash">{{ err }}</div>{% endif %}
       <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off">
       <div class="row"><label>이름 *<input name="name" required value="{{ form.get('name','') }}"></label>
