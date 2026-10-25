@@ -1,5 +1,6 @@
 {% extends "base.html" %}{% import "_macros.html" as m with context %}
-{% block title %}Art Beyond Borders{% endblock %}
+{% block jsonld %}<script type="application/ld+json">{{ seo.org_ld()|tojson }}</script>
+<script type="application/ld+json">{{ seo.website_ld()|tojson }}</script>{% endblock %}
 {% block body %}
 <section class="hero" id="hero">
   {% set hero_imgs = (works[:3] if works|length >= 3 else works) %}

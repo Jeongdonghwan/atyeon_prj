@@ -1,5 +1,4 @@
 {% extends "base.html" %}{% import "_macros.html" as m with context %}
-{% block title %}Mirini Project{% endblock %}
 {% block body %}
 {% call m.phero('처음 만나는 미술,<br>새로운 취향의 시작.', '<a href="'~url_for('academy')~'">Academy</a><span>/</span>Mirini', pic('mentor'), '미린이는 미술을 어렵게 느끼는 사람을 위해 배우고, 작가를 만나고, 자신만의 관점을 나누는 예술 입문 프로젝트입니다. 미술은 아는 만큼 가까워집니다.', 'Mirini Project') %}
 <div class="cta"><a class="btn solid" href="{{ url_for('contact', kind='academy') }}">참여 문의</a></div>

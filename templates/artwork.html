@@ -1,5 +1,9 @@
 {% extends "base.html" %}{% import "_macros.html" as m with context %}
-{% block title %}{{ w.title_ko }}{% if w.artist %} | {{ w.artist.name_ko }}{% endif %}{% endblock %}
+{% block title %}{{ w.title_ko }}{% if w.artist %} — {{ w.artist.name_ko }}{% endif %} | 그림 판매·작품 | 아르테연{% endblock %}
+{% block desc %}{{ w.title_ko }}{% if w.artist %} ({{ w.artist.name_ko }} 작가){% endif %}{% if w.medium_ko %} · {{ w.medium_ko }}{% endif %}{% if w.dimensions %} · {{ w.dimensions }}cm{% endif %}. {{ (w.note_ko or '')[:80] }} 작품 구매 상담은 아르테연.{% endblock %}
+{% block keywords %}{{ w.title_ko }}, {% if w.artist %}{{ w.artist.name_ko }}, {{ w.artist.name_ko }} 작품, {% endif %}{{ w.category or '회화' }} 그림 판매, {{ M.keywords }}{% endblock %}
+{% block jsonld %}<script type="application/ld+json">{{ seo.artwork_ld(w, img)|tojson }}</script>
+<script type="application/ld+json">{{ seo.crumb_ld([('홈', url_for('home')), ('작품', url_for('artworks')), (w.title_ko, url_for('artwork', slug=w.slug))])|tojson }}</script>{% endblock %}
 {% block og %}{{ img(w.image, 1200) }}{% endblock %}
 {% block body %}
 <section class="sec one" style="padding-top:130px">
@@ -23,7 +27,7 @@
         {% if w.note_ko %}<div class="sub-h">Work Note</div><p class="prose" style="font-size:15px">{{ w.note_ko }}</p>{% endif %}
         <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:32px">
           {% if w.artist %}<a class="btn p" href="{{ url_for('artist', slug=w.artist.slug) }}">작가 소개</a>{% endif %}
-          <a class="btn p" href="{{ url_for('contact', kind='artist') }}">작품 문의</a>
+          <a class="btn p" href="{{ url_for('contact', kind='artist', work=w.title_ko) }}">작품 구매 문의</a>
         </div>
       </div>
     </div>

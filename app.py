@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import re
 from models import db, Artist, Artwork, Exhibition, Program, Journal, Media, Inquiry, SiteConfig, Registration
 import admin
+import seo
 
 load_dotenv()
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -46,21 +47,28 @@ def pull_lang(endpoint, values):
     if g.lang not in LANGS: abort(404)
 
 
+def img(v, w=1200):
+    if not v: return ""
+    if v.startswith("/"): return v
+    if v.startswith("http"):
+        return v + ("&" if "?" in v else "?") + f"width={w}" if "wikimedia.org" in v else v
+    return url_for("static", filename="uploads/" + v)
+
+
+app.jinja_env.globals["_img"] = img
+app.register_blueprint(seo.bp)
+
+
 @app.context_processor
 def ctx():
-    def img(v, w=1200):
-        if not v: return ""
-        if v.startswith("/"): return v
-        if v.startswith("http"):
-            return v + ("&" if "?" in v else "?") + f"width={w}" if "wikimedia.org" in v else v
-        return url_for("static", filename="uploads/" + v)
     def t(obj, field):  # 언어별 필드: en 없으면 ko 폴백
         return getattr(obj, f"{field}_{g.lang}", None) or getattr(obj, f"{field}_ko", "")
     def pic(key): return SiteConfig.get("img_" + key) or PICS[key]
     def event_banner():  # 신청 중인 가장 가까운 행사 (상단 띠·홈)
         if request.endpoint and request.endpoint.startswith("admin"): return None
         return Exhibition.live().filter(Exhibition.apply_open.is_(True), Exhibition.start_date >= date.today()).order_by(None).order_by(Exhibition.start_date).first()
-    return dict(img=img, t=t, pic=pic, cfg=SiteConfig.get, lang=g.get("lang", "ko"), today=date.today(), event_banner=event_banner)
+    return dict(img=img, t=t, pic=pic, cfg=SiteConfig.get, lang=g.get("lang", "ko"), today=date.today(), event_banner=event_banner,
+                seo=seo, M=seo.page_meta(request.endpoint), canonical=seo.canonical, abs_img=lambda v: seo.abs_img(v, img))
 
 
 @app.route("/")
@@ -258,22 +266,6 @@ def contact():
 
 
 # ---------- SEO ----------
-@app.route("/sitemap.xml")
-def sitemap():
-    urls = [url_for(e, lang="ko", _external=True) for e in
-            ("home", "about", "global_", "partnership", "artists", "artworks", "exhibitions", "academy", "mirini", "journal", "media", "contact")]
-    for M, ep in ((Artist, "artist"), (Artwork, "artwork"), (Exhibition, "exhibition"), (Journal, "journal_post")):
-        urls += [url_for(ep, lang="ko", slug=r.slug, _external=True) for r in M.live()]
-    xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + \
-          "".join(f"<url><loc>{u}</loc></url>" for u in urls) + "</urlset>"
-    return Response(xml, mimetype="application/xml")
-
-
-@app.route("/robots.txt")
-def robots():
-    return Response(f"User-agent: *\nDisallow: /admin\nSitemap: {url_for('sitemap', _external=True)}\n", mimetype="text/plain")
-
-
 @app.errorhandler(404)
 def nf(e):
     g.lang = g.get("lang") or "ko"

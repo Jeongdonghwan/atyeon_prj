@@ -1,6 +1,9 @@
 {% extends "base.html" %}
-{% block title %}{{ e.title_ko }}{% endblock %}
-{% block desc %}{{ e.subtitle }} · {{ e.start_date.strftime('%Y.%m.%d') }} {{ e.hours }} · {{ e.location }}{% endblock %}
+{% block title %}{{ e.title_ko }} — 12월 종로 전시·작가와의 대화 | 아르테연{% endblock %}
+{% block desc %}{{ e.start_date.strftime('%Y년 %m월 %d일') }} {{ e.hours }} 서울 종로 {{ e.location }}. {{ e.names|length }}인 작가 크리스마스 전시 자유 관람, {{ e.program_time }} {{ e.program_title }}(사전 신청 {{ e.capacity }}명). 작품 감상과 그림 구매 상담.{% endblock %}
+{% block keywords %}크리스마스 전시, 12월 전시, 서울 크리스마스 데이트, 종로 전시회, 인사동 전시, 작가와의 대화, 연말 전시, {{ e.names|join(', ') }}, {{ M.keywords }}{% endblock %}
+{% block jsonld %}<script type="application/ld+json">{{ seo.event_ld(e, img)|tojson }}</script>
+<script type="application/ld+json">{{ seo.crumb_ld([('홈', url_for('home')), ('전시', url_for('exhibitions')), (e.title_ko, url_for('exhibition', slug=e.slug))])|tojson }}</script>{% endblock %}
 {% block og %}{{ img(e.poster or e.cover, 1200) }}{% endblock %}
 {% block body %}
 {% set days = (e.start_date - today).days %}

@@ -228,7 +228,8 @@ CONFIG_KEYS = [("site_name", "사이트명"), ("tagline", "슬로건"), ("email"
                ("og_image", "기본 OG 이미지 URL"),
                ("img_gallery", "상황 이미지 · 갤러리 공간 (About/Partnership/3대 사업)"), ("img_museum", "상황 이미지 · 전시 관람 (Global)"),
                ("img_studio", "상황 이미지 · 작가 작업실 (작가·작품/Contact)"), ("img_class", "상황 이미지 · 수업 (Academy)"),
-               ("img_mentor", "상황 이미지 · 작가와의 만남 (Mirini)")]
+               ("img_mentor", "상황 이미지 · 작가와의 만남 (Mirini)"),
+               ("naver_verify", "네이버 서치어드바이저 인증코드 (content 값만)"), ("google_verify", "구글 서치콘솔 인증코드 (content 값만)")]
 
 
 @bp.route("/config", methods=["GET", "POST"])

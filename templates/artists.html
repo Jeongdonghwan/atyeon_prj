@@ -1,5 +1,6 @@
 {% extends "base.html" %}{% import "_macros.html" as m with context %}
-{% block title %}Artists{% endblock %}
+{% block jsonld %}<script type="application/ld+json">{{ seo.itemlist_ld(artists, "artist", img)|tojson }}</script>
+<script type="application/ld+json">{{ seo.crumb_ld([("홈", url_for("home")), ("작가", url_for("artists"))])|tojson }}</script>{% endblock %}
 {% block body %}
 {{ m.phero('작가의 시선이<br>세계를 넓힙니다.', 'Artists', artists[0].cover if artists else '', '소개하는 작가들의 작업 세계를 만나보세요. 각 작가의 고유한 언어와 활동 이력, 대표 작품과 전시 기록을 함께 살펴볼 수 있습니다.', 'Artists') }}
 

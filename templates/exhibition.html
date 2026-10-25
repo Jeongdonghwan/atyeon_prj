@@ -1,5 +1,7 @@
 {% extends "base.html" %}{% import "_macros.html" as m with context %}
-{% block title %}{{ t(e,'title') }}{% endblock %}
+{% block title %}{{ e.title_ko }} — 전시 | 아르테연{% endblock %}
+{% block desc %}{{ e.title_ko }} · {{ e.start_date }}~{{ e.end_date }} · {{ e.location }}. {{ (e.body_ko or '')[:90] }}{% endblock %}
+{% block jsonld %}<script type="application/ld+json">{{ seo.event_ld(e, img)|tojson }}</script>{% endblock %}
 {% block og %}{{ img(e.cover, 1200) }}{% endblock %}
 {% block body %}
 {% call m.phero(t(e,'title'), '<a href="'~url_for('exhibitions')~'">Exhibitions</a><span>/</span>'~e.title_ko, e.cover, '', {'current':'Current Exhibition','upcoming':'Upcoming','past':'Archive'}[e.phase]) %}

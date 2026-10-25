@@ -1,5 +1,5 @@
 {% extends "base.html" %}{% import "_macros.html" as m with context %}
-{% block title %}{{ t(p,'title') }}{% endblock %}
+{% block title %}{{ p.title_ko }} | 아르테연 저널{% endblock %}
 {% block desc %}{{ p.summary_ko }}{% endblock %}
 {% block og %}{{ img(p.cover, 1200) }}{% endblock %}
 {% block body %}

@@ -1,5 +1,4 @@
 {% extends "base.html" %}{% import "_macros.html" as m with context %}
-{% block title %}Global Exchange{% endblock %}
 {% block body %}
 {% call m.phero('K-Art Outbound.<br>Global Art Inbound.', 'Global', pic('museum'), '한국 작가의 해외 진출과 해외 작가의 국내 소개가 양방향으로 이루어지는 국제 교류를 지향합니다. 해외 갤러리·큐레이터·기관과 공동 전시, 프리뷰, 콘텐츠, 작가 교류 프로젝트를 제안합니다.', 'Global Exchange') %}
 <div class="cta"><a class="btn solid" href="{{ url_for('partnership') }}">국제 협업 제안하기</a><a class="btn" href="{{ url_for('academy') }}">프로그램 보기</a></div>

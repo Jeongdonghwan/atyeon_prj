@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ '신청 완료' if done else e.program_title ~ ' 참가 신청' }} · {{ e.title_ko }}{% endblock %}
+{% block title %}{{ '신청 완료' if done else e.program_title ~ ' 참가 신청' }} | {{ e.title_ko }} | 아르테연{% endblock %}
 {% block body %}
 {% set wd = '월화수목금토일'[e.start_date.weekday()] %}
 <div class="ev">

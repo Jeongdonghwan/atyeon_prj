@@ -1,5 +1,5 @@
 {% extends "base.html" %}{% import "_macros.html" as m with context %}
-{% block title %}Exhibitions{% endblock %}
+{% block jsonld %}{% set allx = groups.current + groups.upcoming + groups.past %}{% if allx %}<script type="application/ld+json">{{ seo.itemlist_ld(allx, "exhibition", img)|tojson }}</script>{% endif %}{% endblock %}
 {% block body %}
 {% set first = (groups.current or groups.upcoming or groups.past) %}
 {{ m.phero('예술은 공간에서<br>새로운 대화를 시작합니다.', 'Exhibitions', first[0].cover if first else '', '전시·기획 프로젝트를 소개합니다. 진행 중인 전시, 예정 프로젝트, 지난 기록을 통해 작가와 관객이 만나는 현장을 전합니다.', 'Exhibitions') }}
