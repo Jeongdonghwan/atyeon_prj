@@ -14,7 +14,7 @@
     <form class="form ev-f" method="get" data-r>
       <div class="row"><label>이름<input name="name" required value="{{ name }}"></label>
         <label>휴대폰 뒤 4자리<input name="last4" required inputmode="numeric" maxlength="4" pattern="\d{4}" value="{{ last4 }}"></label></div>
-      <div><button class="btn gold" type="submit">조회하기 <span class="ar">→</span></button></div>
+      <div><button class="btn gold" type="submit">조회하기</button></div>
     </form>
 
     {% with msgs = get_flashed_messages() %}{% for mm in msgs %}<div class="flash" style="max-width:680px;margin-top:24px">{{ mm }}</div>{% endfor %}{% endwith %}

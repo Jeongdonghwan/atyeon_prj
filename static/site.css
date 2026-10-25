@@ -730,3 +730,31 @@ body.menu{overflow:hidden}
   .ap-note{text-align:left}
 }
 .hp{position:absolute!important;left:-9999px;width:1px;height:1px;opacity:0}
+
+/* ===== 버튼 시스템 v2: 직사각형·단색·화살표 없음 ===== */
+:root{--cream:#F3E9D2}
+.btn{border-radius:0;min-height:48px;padding:0 26px;gap:0;font-size:14px;font-weight:500;letter-spacing:.08em;border:1px solid currentColor;transition:background .25s,color .25s,border-color .25s}
+.btn::before{display:none}
+.btn .ar{display:none}
+.btn:hover{background:#fff;color:var(--p);border-color:#fff}
+.btn.solid{background:#fff;color:var(--p);border-color:#fff}
+.btn.solid:hover{background:transparent;color:#fff;border-color:#fff}
+.btn.p,.label .btn,.feat .btn,.manifesto .copy .btn,.ev .btn.line{color:var(--p);border-color:var(--p);background:transparent}
+.btn.p:hover,.label .btn:hover,.feat .btn:hover,.manifesto .copy .btn:hover,.ev .btn.line:hover{background:var(--p);color:#fff;border-color:var(--p)}
+.ev .btn.line.danger{color:#b42318;border-color:#e5b4ae}.ev .btn.line.danger:hover{background:#b42318;color:#fff;border-color:#b42318}
+.ev .btn.gold,.ev-home .btn.gold{background:var(--cream);color:#0A1630;border-color:var(--cream);font-weight:600;box-shadow:none}
+.ev .btn.gold:hover,.ev-home .btn.gold:hover{background:transparent;color:var(--cream);border-color:var(--cream)}
+.ap-form .btn.gold:hover,.ev-f .btn.gold:hover,.ticket .btn.gold:hover{background:#0A1630;color:var(--cream);border-color:#0A1630}
+.lp .ev-end .btn.line{color:#fff;border-color:rgba(255,255,255,.4)}.lp .ev-end .btn.line:hover{background:#fff;color:#0A1630;border-color:#fff}
+.close .btn:hover{background:#fff;color:var(--p);border-color:#fff}
+.ev-dock{border-radius:0}
+.ev-dock i{margin-left:12px;padding:10px 20px;border-radius:0;background:var(--cream);color:#0A1630;box-shadow:none;letter-spacing:.06em}
+.evpop .box{border-radius:2px}
+.evpop .pbtn a{border-radius:0}
+.evpop .pbtn a.go{background:var(--cream);color:#0A1630}
+.evpop .pbtn a.go:hover{background:#fff}
+.evbar em{border-bottom:1px solid currentColor}
+.lp .card,.ap-sum,.ap-form,.ap-agree,.ap-gifts,.ap-f input,.ap-f textarea,.ticket,.lp .gifts>div,.program,.lp .names a,.lp .names span,.social a,.chips a{border-radius:2px}
+.ap-qty button{border-radius:0}
+@media (max-width:900px){.ev-dock{border-radius:0}.ev-dock i{padding:14px 22px;box-shadow:none}}
+.lp .card .split>div,.ev-f,.ev-f .seats,.free,.ticket.sm,.evpop .x{border-radius:2px}

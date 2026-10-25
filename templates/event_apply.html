@@ -29,7 +29,7 @@
         <div><dt>상태</dt><dd><span class="pill {{ done.status }}">{{ done.status_ko }}</span></dd></div>
       </dl>
       <div class="cta">
-        <a class="btn gold" href="{{ url_for('apply_check', name=done.name, last4=done.phone[-4:]) }}">신청 확인 바로가기 <span class="ar">→</span></a>
+        <a class="btn gold" href="{{ url_for('apply_check', name=done.name, last4=done.phone[-4:]) }}">신청 확인 바로가기</a>
         <a class="btn line" href="{{ url_for('event_ics', slug=e.slug) }}">캘린더에 추가</a>
       </div>
     </div>
@@ -86,7 +86,7 @@
 
         <div class="ap-total">
           <div><span>결제 예정 금액</span><b><output id="tot">{{ '{:,}'.format(e.fee * q) }}</output>원</b></div>
-          <button class="btn gold" type="submit">참가 신청하기 <span class="ar">→</span></button>
+          <button class="btn gold" type="submit">참가 신청하기</button>
         </div>
         <p class="ap-note">신청 후 안내되는 계좌로 입금하시면 참가가 확정됩니다 · 취소는 행사 전날까지 <a href="{{ url_for('apply_check') }}">신청 확인</a>에서</p>
       </form>

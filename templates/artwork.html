@@ -22,7 +22,7 @@
         </dl>
         {% if w.note_ko %}<div class="sub-h">Work Note</div><p class="prose" style="font-size:15px">{{ w.note_ko }}</p>{% endif %}
         <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:32px">
-          {% if w.artist %}<a class="btn p" href="{{ url_for('artist', slug=w.artist.slug) }}">작가 소개 <span class="ar">→</span></a>{% endif %}
+          {% if w.artist %}<a class="btn p" href="{{ url_for('artist', slug=w.artist.slug) }}">작가 소개</a>{% endif %}
           <a class="btn p" href="{{ url_for('contact', kind='artist') }}">작품 문의</a>
         </div>
       </div>

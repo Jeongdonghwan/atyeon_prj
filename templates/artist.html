@@ -5,7 +5,7 @@
 {% block body %}
 {% call m.phero(a.name_ko ~ (' <span class="serif" style="font-style:italic;font-weight:400;opacity:.8">' ~ a.name_en ~ '</span>' if a.name_en else ''), '<a href="'~url_for('artists')~'">Artists</a><span>/</span>'~a.name_ko, a.cover or a.portrait, a.tagline_ko, 'Artist') %}
 <div class="meta"><span>{{ a.medium }}</span>{% if a.artworks %}<span>작품 {{ a.artworks|length }}점</span>{% endif %}{% if a.exhibitions %}<span>전시 {{ a.exhibitions|length }}건</span>{% endif %}</div>
-<div class="cta"><a class="btn solid" href="#works">대표 작품 보기 <span class="ar">→</span></a><a class="btn" href="{{ url_for('contact', kind='artist') }}">작가 관련 문의</a></div>
+<div class="cta"><a class="btn solid" href="#works">대표 작품 보기</a><a class="btn" href="{{ url_for('contact', kind='artist') }}">작가 관련 문의</a></div>
 {% endcall %}
 
 <section class="sec">

@@ -23,7 +23,7 @@
       <p class="sub fx d2">{{ e.subtitle }}</p>
       <p class="hand fx d2">당신의 감상이 별이 됩니다</p>
       <div class="cta fx d3">
-        {% if e.can_apply %}<a class="btn gold" href="{{ url_for('event_apply', slug=e.slug) }}">참가 신청 <span class="ar">→</span></a>{% endif %}
+        {% if e.can_apply %}<a class="btn gold" href="{{ url_for('event_apply', slug=e.slug) }}">참가 신청</a>{% endif %}
         <a class="btn" href="{{ url_for('apply_check') }}">신청 확인</a>
       </div>
     </div>
@@ -90,7 +90,7 @@
         <div><dt>문의</dt><dd>{{ e.phone }}</dd></div>
       </dl>
       <div class="cta">
-        {% if e.can_apply %}<a class="btn gold" href="{{ url_for('event_apply', slug=e.slug) }}">참가 신청 <span class="ar">→</span></a>{% endif %}
+        {% if e.can_apply %}<a class="btn gold" href="{{ url_for('event_apply', slug=e.slug) }}">참가 신청</a>{% endif %}
         <a class="btn line" target="_blank" rel="noopener" href="https://map.naver.com/p/search/{{ e.address|urlencode }}">네이버 지도</a>
         <a class="btn line" target="_blank" rel="noopener" href="https://map.kakao.com/?q={{ e.address|urlencode }}">카카오맵</a>
         <a class="btn line" href="{{ url_for('event_ics', slug=e.slug) }}">캘린더 추가</a>
@@ -107,7 +107,7 @@
 {% if e.can_apply %}
 <a class="ev-dock" href="{{ url_for('event_apply', slug=e.slug) }}">
   <span><b>{{ e.start_date.strftime('%m.%d') }} {{ wd }} {{ e.program_time }}</b> {{ e.program_title }} · {{ e.capacity }}명 · {{ fee }}</span>
-  <span class="r"><span class="fee">{{ e.capacity }}명 한정 · {{ fee }}</span><i>참가 신청 →</i></span>
+  <span class="r"><span class="fee">{{ e.capacity }}명 한정 · {{ fee }}</span><i>참가 신청</i></span>
 </a>
 {% endif %}
 </div>
@@ -118,8 +118,8 @@
 (()=>{const c=document.getElementById('sky');if(!c)return;const x=c.getContext('2d');let W,H,S=[],F=[];
 const rm=matchMedia('(prefers-reduced-motion:reduce)').matches,dp=devicePixelRatio;
 function rs(){W=c.width=c.offsetWidth*dp;H=c.height=c.offsetHeight*dp;
- S=Array.from({length:140},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.4+.3,p:Math.random()*6}));
- F=Array.from({length:60},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*2+1,v:Math.random()*.6+.3,s:Math.random()*.6-.3}));}
+ S=Array.from({length:70},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.4+.3,p:Math.random()*6}));
+ F=Array.from({length:24},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*2+1,v:Math.random()*.6+.3,s:Math.random()*.6-.3}));}
 function draw(t){x.clearRect(0,0,W,H);
  for(const s of S){x.globalAlpha=.35+.65*Math.abs(Math.sin(t/900+s.p));x.fillStyle='#F3E2B8';x.beginPath();x.arc(s.x,s.y,s.r*dp,0,7);x.fill();}
  x.fillStyle='#fff';for(const f of F){x.globalAlpha=.5;x.beginPath();x.arc(f.x,f.y,f.r*dp,0,7);x.fill();f.y+=f.v*dp;f.x+=f.s;if(f.y>H){f.y=-5;f.x=Math.random()*W;}}

@@ -22,7 +22,7 @@
 <header class="hdr" id="hdr">
   {% set evb = event_banner() %}
   {% if evb and request.view_args.get('slug') != evb.slug %}
-  <a class="evbar" href="{{ url_for('exhibition', slug=evb.slug) }}"><span>✦ {{ evb.start_date.strftime('%m.%d') }} {{ '월화수목금토일'[evb.start_date.weekday()] }}</span><b>{{ evb.title_ko }}</b><span class="hide-m">{{ evb.program_title }} 사전 신청 {{ evb.capacity }}명 한정</span><em>자세히 보기 →</em></a>
+  <a class="evbar" href="{{ url_for('exhibition', slug=evb.slug) }}"><span>✦ {{ evb.start_date.strftime('%m.%d') }} {{ '월화수목금토일'[evb.start_date.weekday()] }}</span><b>{{ evb.title_ko }}</b><span class="hide-m">{{ evb.program_title }} 사전 신청 {{ evb.capacity }}명 한정</span><em>자세히 보기</em></a>
   {% endif %}
   <div class="wrap">
     <a class="logo" href="{{ url_for('home') }}">{{ cfg('site_name','ARTEYEON') }}</a>
@@ -53,7 +53,7 @@
   <div class="wrap" data-r>
     <div class="serif">Let's start a conversation.</div>
     <h2>새로운 예술적 연결은<br>한 번의 대화에서 시작됩니다.</h2>
-    <a class="btn" href="{{ url_for('contact') }}">문의하기 <span class="ar">→</span></a>
+    <a class="btn" href="{{ url_for('contact') }}">문의하기</a>
   </div>
 </section>
 {% endblock %}
@@ -89,7 +89,7 @@
       <b>{{ pe.program_title }}</b>
       <span>{{ pe.program_time }} · 사전 신청 {{ pe.capacity }}명 · 참가비 {{ "{:,}".format(pe.fee) }}원</span>
       <div class="pbtn">
-        {% if pe.can_apply %}<a class="go" href="{{ url_for('event_apply', slug=pe.slug) }}">참가 신청 →</a>{% endif %}
+        {% if pe.can_apply %}<a class="go" href="{{ url_for('event_apply', slug=pe.slug) }}">참가 신청</a>{% endif %}
         <a href="{{ url_for('exhibition', slug=pe.slug) }}">자세히 보기</a>
       </div>
     </div>

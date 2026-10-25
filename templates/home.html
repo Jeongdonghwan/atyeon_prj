@@ -10,7 +10,7 @@
     <h1><span class="ln"><span>예술의 가능성을</span></span><span class="ln"><span>세계와 연결하다</span></span></h1>
     <p class="fx d2">작가와 작품, 교육과 국제 협업을 잇는 새로운 미술 생태계.</p>
     <div class="cta fx d3">
-      <a class="btn solid" href="{{ url_for('about') }}">비전 보기 <span class="ar">→</span></a>
+      <a class="btn solid" href="{{ url_for('about') }}">비전 보기</a>
       <a class="btn" href="{{ url_for('exhibitions') }}">현재 전시 보기</a>
     </div>
   </div>
@@ -32,7 +32,7 @@
         <li><b>III</b><span>큐레이터 대화 · 콘텐츠 공동 제작</span><i>→</i></li>
         <li><b>IV</b><span>교육 프로그램 · 아카데미 협력</span><i>→</i></li>
       </ul>
-      <a class="btn" href="{{ url_for('global_') }}" data-r>국제 교류 알아보기 <span class="ar">→</span></a>
+      <a class="btn" href="{{ url_for('global_') }}" data-r>국제 교류 알아보기</a>
     </div>
     {% set cw = works|selectattr('artist')|list %}
     <div class="collage stag">
@@ -68,7 +68,7 @@
           <h3>{{ featured.name_ko }}{% if featured.tagline_ko %} — {{ featured.tagline_ko }}{% endif %}</h3>
           {% if featured.note_ko %}<blockquote>“{{ featured.note_ko[:90] }}{% if featured.note_ko|length>90 %}…{% endif %}”</blockquote>{% endif %}
           <div class="meta">{{ featured.medium }} &nbsp;|&nbsp; 작품 {{ featured.artworks|length }}점 · 전시 {{ featured.exhibitions|length }}건</div>
-          <span class="btn">작가 보기 <span class="ar">→</span></span>
+          <span class="btn">작가 보기</span>
         </div>
       </a>
       {% endif %}
@@ -108,7 +108,7 @@
       <p class="hand">당신의 감상이 별이 됩니다</p>
       <ul><li>{{ evb.hours }} 전시 자유 관람 · 신청 없이 입장</li><li>{{ evb.program_time }} {{ evb.program_title }} · 사전 신청 {{ evb.capacity }}명 · 참가비 {{ "{:,}".format(evb.fee) }}원</li></ul>
       <div class="cta">
-        <a class="btn gold" href="{{ url_for('exhibition', slug=evb.slug) }}">프로그램 자세히 보기 <span class="ar">→</span></a>
+        <a class="btn gold" href="{{ url_for('exhibition', slug=evb.slug) }}">프로그램 자세히 보기</a>
         {% if evb.can_apply %}<a class="btn" href="{{ url_for('event_apply', slug=evb.slug) }}">참가 신청</a>{% endif %}
       </div>
     </div>
