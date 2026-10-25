@@ -669,3 +669,14 @@ body.menu{overflow:hidden}
 .evpop .pfoot button+button{border-left:1px solid rgba(255,255,255,.12)}
 .evpop .pfoot button:hover{color:#fff}
 .evpop[hidden]{display:none}
+@media (max-width:900px){
+  .ev-dock{left:0;right:0;bottom:0;width:auto;transform:none;border-radius:16px 16px 0 0;border:0;border-top:1px solid rgba(231,201,135,.5);
+    padding:12px 16px calc(12px + env(safe-area-inset-bottom));gap:12px;background:#0A1630;box-shadow:0 -12px 30px -8px rgba(0,0,0,.45);font-size:13px}
+  .ev-dock.on{transform:none}
+  .ev-dock>span:first-child{display:flex;flex-direction:column;line-height:1.35;min-width:0}
+  .ev-dock>span:first-child b{font-size:15px;color:#E7C987}
+  .ev-dock .r{display:flex;align-items:center;flex:none}
+  .ev-dock .r .fee{display:none}
+  .ev-dock i{margin:0;padding:14px 22px;font-size:15px;box-shadow:0 6px 18px -6px rgba(231,201,135,.6)}
+  .lp{padding-bottom:84px}
+}

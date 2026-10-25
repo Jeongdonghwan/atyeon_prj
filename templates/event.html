@@ -106,8 +106,8 @@
 
 {% if e.can_apply %}
 <a class="ev-dock" href="{{ url_for('event_apply', slug=e.slug) }}">
-  <span><b>{{ e.start_date.strftime('%m.%d') }} {{ wd }} {{ e.program_time }}</b> {{ e.program_title }}</span>
-  <span class="r">{{ e.capacity }}명 한정 · {{ fee }} <i>참가 신청 →</i></span>
+  <span><b>{{ e.start_date.strftime('%m.%d') }} {{ wd }} {{ e.program_time }}</b> {{ e.program_title }} · {{ e.capacity }}명 · {{ fee }}</span>
+  <span class="r"><span class="fee">{{ e.capacity }}명 한정 · {{ fee }}</span><i>참가 신청 →</i></span>
 </a>
 {% endif %}
 </div>
@@ -126,6 +126,6 @@ function draw(t){x.clearRect(0,0,W,H);
  x.globalAlpha=1;if(!rm)requestAnimationFrame(draw);}
 addEventListener('resize',rs);rs();requestAnimationFrame(draw);
 const dock=document.querySelector('.ev-dock'),hero=document.querySelector('.ev-hero');
-if(dock)addEventListener('scroll',()=>dock.classList.toggle('on',hero.getBoundingClientRect().bottom<0),{passive:true});})();
+if(dock)addEventListener('scroll',()=>dock.classList.toggle('on',innerWidth<=900||hero.getBoundingClientRect().bottom<0),{passive:true});if(dock)dispatchEvent(new Event('scroll'));})();
 </script>
 {% endblock %}
