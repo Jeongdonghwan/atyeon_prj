@@ -37,23 +37,64 @@
     <div class="ticket" data-r><h2>신청이 마감되었습니다</h2><p>{{ e.program_title }}에 참여하지 않으셔도 {{ e.hours }} 동안 자유롭게 관람하실 수 있습니다.</p>
       <div class="cta"><a class="btn line" href="{{ url_for('exhibition', slug=e.slug) }}">행사 안내로</a></div></div>
     {% else %}
-    <form class="form ev-f" method="post" data-r>
-      <div class="seats">{{ e.program_title }} {{ e.program_time }} · 사전 신청 <b>{{ e.capacity }}</b>명 · 참가비 1인 {{ '{:,}'.format(e.fee) }}원</div>
-      {% if err %}<div class="flash">{{ err }}</div>{% endif %}
-      <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off">
-      <div class="row"><label>이름 *<input name="name" required value="{{ form.get('name','') }}"></label>
-        <label>휴대폰 *<input name="phone" type="tel" inputmode="numeric" required placeholder="010-0000-0000" value="{{ form.get('phone','') }}"></label></div>
-      <div class="row"><label>이메일 (선택)<input name="email" type="email" value="{{ form.get('email','') }}"></label>
-        <label>인원 *<select name="people">{% for n in range(1, [4, e.remaining]|min + 1) %}<option value="{{ n }}" {{ 'selected' if form.get('people')|string == n|string }}>{{ n }}명</option>{% endfor %}</select></label></div>
-      <label>미리 남기는 감상 한 문장 (선택)<input name="message" maxlength="120" placeholder="예) 겨울 숲의 빛이 오래 마음에 남았습니다." value="{{ form.get('message','') }}"></label>
-      <p class="note">당일 작품 감상 후에도 한 문장을 남기실 수 있습니다. 남겨주신 문장은 별자리 이미지 제작에 쓰입니다.</p>
-      <label class="chk"><input type="checkbox" name="consent" required> 개인정보(이름·연락처·이메일) 수집·이용에 동의합니다. 행사 안내 목적으로만 쓰며 행사 종료 3개월 후 파기합니다.</label>
-      {% if e.fee %}<p class="note">신청 후 안내되는 계좌로 참가비를 입금하시면 참가가 확정됩니다. 취소는 행사 전날까지 신청 확인 페이지에서 가능합니다.</p>{% endif %}
-      <div><button class="btn gold" type="submit">신청하기 <span class="ar">→</span></button></div>
-    </form>
+    {% set maxp = [4, e.remaining]|min %}
+    {% set q = (form.get('people') or 1)|int %}
+    <div class="ap">
+      <aside class="ap-sum" data-r>
+        {% if e.poster %}<img class="ap-poster" src="{{ img(e.poster, 700) }}" alt="{{ e.title_ko }} 포스터">{% endif %}
+        <div class="ap-body">
+          <small>{{ e.title_ko }}</small>
+          <h2>{{ e.program_title }}</h2>
+          <ul class="ap-meta">
+            <li><span>일시</span>{{ e.start_date.strftime('%Y.%m.%d') }} ({{ wd }}) {{ e.program_time }}</li>
+            <li><span>장소</span><div>{{ e.location }}<em>{{ e.address }}</em></div></li>
+            <li><span>정원</span>사전 신청 {{ e.capacity }}명</li>
+          </ul>
+          <div class="ap-gifts">
+            <b>참가자 혜택</b>
+            <p>✦ 크리스마스 선물 &nbsp;✦ 별자리 이벤트<br>✦ 맞춤 별자리 이미지 &nbsp;✦ 액자 증정</p>
+          </div>
+          <p class="ap-free">프로그램 외 {{ e.hours }}는 신청 없이 자유 관람</p>
+        </div>
+      </aside>
+
+      <form class="ap-form" method="post" data-r>
+        {% if err %}<div class="flash">{{ err }}</div>{% endif %}
+        <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off">
+
+        <div class="ap-step"><i>1</i>신청자 정보</div>
+        <div class="ap-row">
+          <label class="ap-f"><span>이름 <b>*</b></span><input name="name" required autocomplete="name" value="{{ form.get('name','') }}"></label>
+          <label class="ap-f"><span>휴대폰 <b>*</b></span><input name="phone" type="tel" inputmode="numeric" required autocomplete="tel" placeholder="010-0000-0000" value="{{ form.get('phone','') }}"></label>
+        </div>
+        <label class="ap-f"><span>이메일 <em>선택 · 안내 메일 수신</em></span><input name="email" type="email" autocomplete="email" value="{{ form.get('email','') }}"></label>
+
+        <div class="ap-step"><i>2</i>인원</div>
+        <div class="ap-qty">
+          <button type="button" data-q="-1" aria-label="인원 줄이기">−</button>
+          <output id="qv">{{ q }}</output><span>명</span>
+          <button type="button" data-q="1" aria-label="인원 늘리기">+</button>
+          <input type="hidden" name="people" id="qi" value="{{ q }}" data-max="{{ maxp }}" data-fee="{{ e.fee }}">
+          <small>1인 {{ '{:,}'.format(e.fee) }}원 · 최대 {{ maxp }}명</small>
+        </div>
+
+        <div class="ap-step"><i>3</i>감상 한 문장 <em>선택</em></div>
+        <label class="ap-f"><textarea name="message" maxlength="120" rows="2" placeholder="예) 겨울 숲의 빛이 오래 마음에 남았습니다.">{{ form.get('message','') }}</textarea>
+          <span class="hint">당일 현장에서도 남길 수 있어요. 별자리 이미지 제작에 쓰입니다.</span></label>
+
+        <label class="ap-agree"><input type="checkbox" name="consent" required><span>개인정보(이름·연락처·이메일) 수집·이용에 동의합니다.<em>행사 안내 목적으로만 쓰며 행사 종료 3개월 후 파기합니다.</em></span></label>
+
+        <div class="ap-total">
+          <div><span>결제 예정 금액</span><b><output id="tot">{{ '{:,}'.format(e.fee * q) }}</output>원</b></div>
+          <button class="btn gold" type="submit">참가 신청하기 <span class="ar">→</span></button>
+        </div>
+        <p class="ap-note">신청 후 안내되는 계좌로 입금하시면 참가가 확정됩니다 · 취소는 행사 전날까지 <a href="{{ url_for('apply_check') }}">신청 확인</a>에서</p>
+      </form>
+    </div>
     {% endif %}
   </div>
 </section>
 </div>
 {% endblock %}
 {% block cta %}{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='apply.js') }}"></script>{% endblock %}

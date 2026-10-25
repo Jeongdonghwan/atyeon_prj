@@ -680,3 +680,53 @@ body.menu{overflow:hidden}
   .ev-dock i{margin:0;padding:14px 22px;font-size:15px;box-shadow:0 6px 18px -6px rgba(231,201,135,.6)}
   .lp{padding-bottom:84px}
 }
+
+/* 신청 페이지 */
+.ev-hero.sm{padding:120px 0 40px}
+.ap{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:28px;max-width:1080px;margin:0 auto;align-items:start}
+.ap-sum{position:sticky;top:90px;background:var(--navy);color:#fff;border-radius:16px;overflow:hidden;border:1px solid rgba(231,201,135,.35)}
+.ap-poster{width:100%;aspect-ratio:4/3;object-fit:cover;object-position:top;display:block}
+.ap-body{padding:22px 24px 24px}
+.ap-body small{font-size:12px;letter-spacing:.06em;color:var(--goldl)}
+.ap-body h2{font-size:22px;margin-top:4px;font-weight:600}
+.ap-meta{list-style:none;margin-top:16px;border-top:1px solid rgba(255,255,255,.12)}
+.ap-meta li{display:grid;grid-template-columns:52px 1fr;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:14px;color:#eef2fa}
+.ap-meta span{color:var(--goldl);font-size:12px;padding-top:2px}.ap-meta em{display:block;font-style:normal;font-size:12px;color:#9fb0cf}
+.ap-gifts{margin-top:16px;padding:14px 16px;border-radius:10px;background:rgba(231,201,135,.1);border:1px solid rgba(231,201,135,.3)}
+.ap-gifts b{font-size:13px;color:var(--goldl)}.ap-gifts p{margin-top:6px;font-size:13px;line-height:1.8;color:#dfe6f5}
+.ap-free{margin-top:14px;font-size:12px;color:#9fb0cf;text-align:center}
+.ap-form{background:#fff;border-radius:16px;padding:clamp(22px,3.5vw,40px);box-shadow:0 24px 60px -36px rgba(10,22,48,.35);border:1px solid var(--line)}
+.ap-step{display:flex;align-items:center;gap:10px;margin:28px 0 12px;font-size:15px;font-weight:700;color:var(--navy)}
+.ap-form .flash+.hp+.ap-step,.ap-form .hp+.ap-step{margin-top:0}
+.ap-step i{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--navy);color:var(--goldl);font-style:normal;font-size:12px}
+.ap-step em,.ap-f em{font-style:normal;font-weight:400;font-size:12px;color:var(--muted)}
+.ap-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ap-f{display:block;margin-bottom:12px}
+.ap-f>span{display:block;font-size:13px;color:#4a5262;margin-bottom:6px}.ap-f>span b{color:#c2410c}
+.ap-f input,.ap-f textarea{width:100%;font:inherit;font-size:16px;padding:14px 16px;border:1px solid #d6dae3;border-radius:10px;background:#fafbfc;transition:border-color .2s,background .2s,box-shadow .2s}
+.ap-f textarea{resize:vertical;min-height:72px}
+.ap-f input:focus,.ap-f textarea:focus{outline:0;border-color:var(--navy);background:#fff;box-shadow:0 0 0 4px rgba(18,48,90,.08)}
+.ap-f .hint{display:block;margin-top:6px;font-size:12px;color:var(--muted)}
+.ap-qty{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ap-qty button{width:44px;height:44px;border-radius:50%;border:1px solid #d6dae3;background:#fff;font-size:20px;color:var(--navy);cursor:pointer;transition:.2s}
+.ap-qty button:hover:not(:disabled){border-color:var(--navy);background:var(--navy);color:#fff}
+.ap-qty button:disabled{opacity:.35;cursor:default}
+.ap-qty output{min-width:28px;text-align:center;font-size:24px;font-weight:700;color:var(--navy)}
+.ap-qty>span{margin-left:-6px;color:var(--navy)}
+.ap-qty small{margin-left:auto;font-size:13px;color:var(--muted)}
+.ap-agree{display:flex;gap:10px;align-items:flex-start;margin-top:24px;padding:14px 16px;border-radius:10px;background:#f6f7f9;font-size:14px;cursor:pointer}
+.ap-agree input{width:20px;height:20px;margin-top:1px;accent-color:var(--navy);flex:none}
+.ap-agree em{display:block;font-style:normal;font-size:12px;color:var(--muted);margin-top:2px}
+.ap-total{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:20px;padding-top:20px;border-top:1px dashed #d6dae3}
+.ap-total span{display:block;font-size:12px;color:var(--muted)}
+.ap-total b{font-size:26px;color:var(--navy)}
+.ap-total .btn{min-height:54px;padding:0 30px;font-size:15px}
+.ap-note{margin-top:12px;font-size:12px;color:var(--muted);text-align:right}.ap-note a{text-decoration:underline}
+@media (max-width:900px){
+  .ap{grid-template-columns:1fr}
+  .ap-sum{position:static}.ap-poster{display:none}
+  .ap-row{grid-template-columns:1fr}
+  .ap-total{flex-direction:column;align-items:stretch}.ap-total .btn{justify-content:center}
+  .ap-note{text-align:left}
+}
+.hp{position:absolute!important;left:-9999px;width:1px;height:1px;opacity:0}
