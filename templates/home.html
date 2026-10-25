@@ -19,6 +19,25 @@
 </section>
 
 <div class="mq"><div class="t" id="mq"><span>Art Beyond Borders <i>·</i></span><span>예술의 가능성을 세계와 연결하다 <i>·</i></span><span>Global Exchange <i>·</i></span><span>Curated Art <i>·</i></span><span>Art Academy <i>·</i></span></div></div>
+{% set evb = event_banner() %}
+{% if evb %}
+<section class="ev-home">
+  <div class="wrap">
+    <div data-r>
+      <div class="eyebrow">Event · {{ evb.start_date.strftime('%Y. %m. %d') }} {{ '월화수목금토일'[evb.start_date.weekday()] }}</div>
+      <h2>Christmas <small>with</small><br><b>ARTEYEON</b> 2026</h2>
+      <p>{{ evb.subtitle }}</p>
+      <p class="hand">당신의 감상이 별이 됩니다</p>
+      <ul><li>{{ evb.hours }} 자유 관람</li><li>{{ evb.program_time }} {{ evb.program_title }}</li><li>사전 신청 {{ evb.capacity }}명 한정 · 남은 자리 {{ evb.remaining }}명</li></ul>
+      <div class="cta">
+        <a class="btn gold" href="{{ url_for('exhibition', slug=evb.slug) }}">행사 자세히 보기 <span class="ar">→</span></a>
+        {% if evb.can_apply %}<a class="btn" href="{{ url_for('event_apply', slug=evb.slug) }}">바로 신청</a>{% endif %}
+      </div>
+    </div>
+    {% if evb.poster %}<a class="poster" href="{{ url_for('exhibition', slug=evb.slug) }}" data-r><img src="{{ img(evb.poster, 900) }}" alt="{{ evb.title_ko }} 포스터"></a>{% endif %}
+  </div>
+</section>
+{% endif %}
 
 <section class="sec manifesto" id="global">
   <div class="wrap">

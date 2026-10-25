@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{% block title %}{% endblock %} — {{ cfg('site_name','CHEONGYEON') }}</title>
+<title>{% block title %}{% endblock %} — {{ cfg('site_name','ARTEYEON') }}</title>
 <meta name="description" content="{% block desc %}{{ cfg('tagline','예술의 가능성을 세계와 연결하다') }}{% endblock %}">
-<meta property="og:title" content="{{ self.title() }} — {{ cfg('site_name','CHEONGYEON') }}">
+<meta property="og:title" content="{{ self.title() }} — {{ cfg('site_name','ARTEYEON') }}">
 <meta property="og:image" content="{% block og %}{{ cfg('og_image') }}{% endblock %}">
 {% if request.endpoint and request.endpoint != 'nf' %}
 <link rel="alternate" hreflang="ko" href="{{ url_for(request.endpoint, lang='ko', **request.view_args) }}">
@@ -16,12 +16,16 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}">
 </head>
 <body>
-{% if request.endpoint == 'home' %}<div class="intro"><b>{{ cfg('site_name','CHEONGYEON') }}</b></div>{% endif %}
+{% if request.endpoint == 'home' %}<div class="intro"><b>{{ cfg('site_name','ARTEYEON') }}</b></div>{% endif %}
 <div class="cursor"></div>
 
 <header class="hdr" id="hdr">
+  {% set evb = event_banner() %}
+  {% if evb and request.view_args.get('slug') != evb.slug %}
+  <a class="evbar" href="{{ url_for('exhibition', slug=evb.slug) }}"><span>✦ {{ evb.start_date.strftime('%m.%d') }} {{ '월화수목금토일'[evb.start_date.weekday()] }}</span><b>{{ evb.title_ko }}</b><span class="hide-m">{{ evb.program_title }} 사전 신청 · 남은 자리 {{ evb.remaining }}명</span><em>자세히 보기 →</em></a>
+  {% endif %}
   <div class="wrap">
-    <a class="logo" href="{{ url_for('home') }}">{{ cfg('site_name','CHEONGYEON') }}</a>
+    <a class="logo" href="{{ url_for('home') }}">{{ cfg('site_name','ARTEYEON') }}</a>
     <nav class="nav">
       <a href="{{ url_for('about') }}">About</a><a href="{{ url_for('global_') }}">Global</a><a href="{{ url_for('artists') }}">Artists</a>
       <a href="{{ url_for('exhibitions') }}">Exhibitions</a><a href="{{ url_for('academy') }}">Academy</a>
@@ -56,7 +60,7 @@
 
 <footer class="ftr">
   <div class="wrap">
-    <div><div class="logo">{{ cfg('site_name','CHEONGYEON') }}</div><p>{{ cfg('tagline','한국의 예술적 자산을 세계와 잇고, 세계의 다양한 예술적 시선을 한국에 소개하는 아트·교류·교육 플랫폼.') }}</p></div>
+    <div><div class="logo">{{ cfg('site_name','ARTEYEON') }}</div><p>{{ cfg('tagline','한국의 예술적 자산을 세계와 잇고, 세계의 다양한 예술적 시선을 한국에 소개하는 아트·교류·교육 플랫폼.') }}</p></div>
     <div><h4>Explore</h4><ul>
       <li><a href="{{ url_for('about') }}">About</a></li><li><a href="{{ url_for('global_') }}">Global</a></li><li><a href="{{ url_for('artists') }}">Artists</a></li>
       <li><a href="{{ url_for('artworks') }}">Artworks</a></li><li><a href="{{ url_for('exhibitions') }}">Exhibitions</a></li></ul></div>
@@ -69,7 +73,7 @@
         {% if cfg('youtube') %}<a href="{{ cfg('youtube') }}" target="_blank" rel="noopener">YouTube</a>{% else %}YouTube{% endif %} ·
         {% if cfg('instagram') %}<a href="{{ cfg('instagram') }}" target="_blank" rel="noopener">Instagram</a>{% else %}Instagram{% endif %}
       </li></ul></div>
-    <div class="bot"><span>© {{ today.year }} {{ cfg('site_name','CHEONGYEON') }}. All rights reserved.</span><span>개인정보처리방침 · 이용약관 · KR / EN</span>
+    <div class="bot"><span>© {{ today.year }} {{ cfg('site_name','ARTEYEON') }}. All rights reserved.</span><span>개인정보처리방침 · 이용약관 · KR / EN</span>
       {% if not cfg('img_gallery') %}<span style="flex-basis:100%;font-size:11px;opacity:.6">공간·수업 사진은 임시 자료입니다 (Wikimedia Commons, CC BY / Public Domain).</span>{% endif %}</div>
   </div>
 </footer>

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}신청 확인{% endblock %}
+{% block body %}
+<div class="ev">
+<section class="ev-hero sm">
+  <div class="wrap">
+    <div class="crumb"><a href="{{ url_for('home') }}">Home</a><span>/</span>신청 확인</div>
+    <h1 style="font-size:clamp(30px,4vw,52px)"><span class="ln"><span>신청 확인</span></span></h1>
+    <p class="sub">신청하신 이름과 휴대폰 번호 뒤 4자리로 내역을 확인하세요.</p>
+  </div>
+</section>
+<section class="ev-form">
+  <div class="wrap">
+    <form class="form ev-f" method="get" data-r>
+      <div class="row"><label>이름<input name="name" required value="{{ name }}"></label>
+        <label>휴대폰 뒤 4자리<input name="last4" required inputmode="numeric" maxlength="4" pattern="\d{4}" value="{{ last4 }}"></label></div>
+      <div><button class="btn gold" type="submit">조회하기 <span class="ar">→</span></button></div>
+    </form>
+
+    {% with msgs = get_flashed_messages() %}{% for mm in msgs %}<div class="flash" style="max-width:680px;margin-top:24px">{{ mm }}</div>{% endfor %}{% endwith %}
+
+    {% if asked %}
+    <div class="results">
+      {% for r in rows %}
+      <div class="ticket sm" data-r>
+        <div class="top"><span class="code">{{ r.code }}</span><span class="pill {{ r.status }}">{{ r.status_ko }}</span></div>
+        <h3>{{ r.exhibition.title_ko }}</h3>
+        <dl class="facts one">
+          <div><dt>일시</dt><dd>{{ r.exhibition.start_date.strftime('%Y.%m.%d') }} {{ r.exhibition.program_time }}</dd></div>
+          <div><dt>인원</dt><dd>{{ r.people }}명{% if r.exhibition.fee %} · {{ '{:,}'.format(r.amount) }}원{% endif %}</dd></div>
+          {% if r.status == 'received' and r.exhibition.fee %}<div><dt>입금 안내</dt><dd>{{ r.exhibition.pay_info }}</dd></div>{% endif %}
+          {% if r.message %}<div><dt>한 문장</dt><dd>“{{ r.message }}”</dd></div>{% endif %}
+        </dl>
+        <div class="cta">
+          <a class="btn line" href="{{ url_for('exhibition', slug=r.exhibition.slug) }}">행사 안내</a>
+          {% if r.status != 'cancelled' and r.exhibition.start_date > today %}
+          <form method="post" onsubmit="return confirm('신청을 취소할까요?')"><input type="hidden" name="name" value="{{ name }}"><input type="hidden" name="last4" value="{{ last4 }}">
+            <button class="btn line danger" name="cancel" value="{{ r.id }}">신청 취소</button></form>
+          {% endif %}
+        </div>
+      </div>
+      {% else %}
+      <p class="empty" style="max-width:680px">일치하는 신청 내역이 없습니다. 이름과 번호를 다시 확인하시거나 문의해 주세요.</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+</div>
+{% endblock %}
+{% block cta %}{% endblock %}

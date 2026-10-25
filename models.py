@@ -75,8 +75,41 @@ class Exhibition(Base):
     cover = db.Column(db.String(400))
     body_ko = db.Column(db.Text)
     body_en = db.Column(db.Text)
+    # --- 행사(신청 받는 전시) 필드: capacity > 0 이면 행사 페이지·신청이 열림 ---
+    subtitle = db.Column(db.String(200))
+    hours = db.Column(db.String(80))             # 11:00~18:00
+    address = db.Column(db.String(200))
+    phone = db.Column(db.String(120))
+    subway = db.Column(db.String(300))           # 줄바꿈 구분
+    artist_names = db.Column(db.Text)            # 참여 작가 전체 명단(쉼표). 미등록 작가 포함
+    program_title = db.Column(db.String(160))
+    program_time = db.Column(db.String(80))
+    capacity = db.Column(db.Integer, default=0)  # 사전 신청 정원(명)
+    fee = db.Column(db.Integer, default=0)       # 1인 참가비(원)
+    pay_info = db.Column(db.String(300))         # 입금 계좌 안내
+    apply_open = db.Column(db.Boolean, default=False)
+    poster = db.Column(db.String(400))
+    poster_2 = db.Column(db.String(400))
     artists = db.relationship("Artist", secondary=exhibition_artists, backref="exhibitions")
     media = db.relationship("Media", backref="exhibition", lazy=True)
+    registrations = db.relationship("Registration", backref="exhibition", lazy=True)
+
+    @property
+    def is_event(self): return (self.capacity or 0) > 0
+
+    @property
+    def booked(self):
+        return sum(r.people for r in self.registrations if r.status != "cancelled")
+
+    @property
+    def remaining(self): return max(0, (self.capacity or 0) - self.booked)
+
+    @property
+    def can_apply(self):
+        return self.apply_open and self.remaining > 0 and (not self.start_date or self.start_date >= date.today())
+
+    @property
+    def names(self): return [n.strip() for n in (self.artist_names or "").split(",") if n.strip()]
 
     @property
     def phase(self):
@@ -142,6 +175,31 @@ class Inquiry(db.Model):
     read = db.Column(db.Boolean, default=False)
 
     def __str__(self): return f"{self.name} ({self.kind})"
+
+
+class Registration(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    exhibition_id = db.Column(db.ForeignKey("exhibition.id"), nullable=False)
+    name = db.Column(db.String(80), nullable=False)
+    phone = db.Column(db.String(30), nullable=False)
+    email = db.Column(db.String(160))
+    people = db.Column(db.Integer, default=1)
+    message = db.Column(db.String(300))          # 미리 남기는 감상 한 문장
+    consent = db.Column(db.Boolean, default=False)
+    status = db.Column(db.Enum("received", "confirmed", "cancelled"), default="received")  # 입금대기/확정/취소
+    memo = db.Column(db.String(300))
+    created_at = db.Column(db.DateTime, default=datetime.now)  # 서버 현지시각(KST)
+
+    STATUS_KO = {"received": "입금 대기", "confirmed": "참가 확정", "cancelled": "취소"}
+
+    @property
+    def code(self): return f"AY{self.created_at:%y}-{self.id:04d}"
+
+    @property
+    def status_ko(self): return self.STATUS_KO[self.status]
+
+    @property
+    def amount(self): return (self.exhibition.fee or 0) * self.people
 
 
 class SiteConfig(db.Model):

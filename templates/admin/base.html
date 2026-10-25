@@ -17,6 +17,7 @@
   <a class="n {{ 'on' if request.view_args.get('name')==k }}" href="{{ url_for('admin.list_', name=k) }}">{{ label }}</a>
   {% endfor %}
   <hr>
+  <a class="n {{ 'on' if request.endpoint=='admin.registrations' }}" href="{{ url_for('admin.registrations') }}">행사 신청 {% if pending %}<span class="badge">{{ pending }}</span>{% endif %}</a>
   <a class="n {{ 'on' if request.endpoint=='admin.inquiries' }}" href="{{ url_for('admin.inquiries') }}">문의 {% if unread %}<span class="badge">{{ unread }}</span>{% endif %}</a>
   <a class="n {{ 'on' if request.endpoint=='admin.config' }}" href="{{ url_for('admin.config') }}">사이트 설정</a>
   <hr>

@@ -1,0 +1,35 @@
+{% extends "admin/base.html" %}
+{% block title %}행사 신청{% endblock %}
+{% block main %}
+<div class="top">
+  <h1>행사 신청 {% if e %}<small style="color:var(--muted);font-weight:400">{{ e.title_ko }} · {{ e.start_date }}</small>{% endif %}</h1>
+  {% if e %}<div><a class="btn ghost" href="{{ url_for('admin.edit', name='exhibition', id=e.id) }}">행사 설정</a> <a class="btn" href="{{ url_for('admin.registrations', e=e.id, status=st or '', csv=1) }}">CSV 다운로드</a></div>{% endif %}
+</div>
+{% if not e %}<p style="color:var(--muted)">정원(capacity)이 있는 전시가 없습니다. 전시 메뉴에서 정원을 입력하면 행사로 바뀝니다.</p>{% else %}
+{% if events|length > 1 %}<p style="margin-bottom:12px">{% for x in events %}<a class="st {{ 'published' if x.id == e.id }}" style="margin-right:6px" href="{{ url_for('admin.registrations', e=x.id) }}">{{ x.title_ko }}</a>{% endfor %}</p>{% endif %}
+<div class="cards">
+  <a href="{{ url_for('admin.registrations', e=e.id) }}"><b>{{ e.booked }} / {{ e.capacity }}</b><span>신청 인원 / 정원 · {{ '신청 중' if e.apply_open else '신청 닫힘' }}</span></a>
+  {% for k,l in labels.items() %}<a href="{{ url_for('admin.registrations', e=e.id, status=k) }}" style="{{ 'outline:2px solid var(--p)' if st == k }}"><b>{{ counts[k] }}</b><span>{{ l }} (명)</span></a>{% endfor %}
+</div>
+<table>
+  <tr><th>신청번호</th><th>신청일시</th><th>이름</th><th>연락처</th><th>인원 · 금액</th><th>감상 한 문장</th><th>상태 · 메모</th></tr>
+  {% for r in rows %}
+  <tr style="{{ 'opacity:.5' if r.status == 'cancelled' }}">
+    <td><b>{{ r.code }}</b></td>
+    <td style="white-space:nowrap">{{ r.created_at.strftime('%m-%d %H:%M') }}</td>
+    <td>{{ r.name }}{% if r.email %}<br><small style="color:var(--muted)">{{ r.email }}</small>{% endif %}</td>
+    <td style="white-space:nowrap">{{ r.phone[:3] }}-{{ r.phone[3:-4] }}-{{ r.phone[-4:] }}</td>
+    <td>{{ r.people }}명<br><small style="color:var(--muted)">{{ '{:,}'.format(r.amount) }}원</small></td>
+    <td class="msg" style="max-width:240px">{{ r.message or '' }}</td>
+    <td>
+      <form method="post" action="{{ url_for('admin.registration_update', id=r.id) }}" style="display:flex;gap:6px;align-items:center">
+        <select name="status" style="padding:6px;border:1px solid #d1d5db;border-radius:6px">{% for k,l in labels.items() %}<option value="{{ k }}" {{ 'selected' if r.status == k }}>{{ l }}</option>{% endfor %}</select>
+        <input name="memo" value="{{ r.memo or '' }}" placeholder="메모" style="padding:6px;border:1px solid #d1d5db;border-radius:6px;width:120px">
+        <button class="btn ghost" style="padding:6px 10px;font-size:12px">저장</button>
+      </form>
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="7" style="color:var(--muted)">신청이 없습니다.</td></tr>{% endfor %}
+</table>
+{% endif %}
+{% endblock %}

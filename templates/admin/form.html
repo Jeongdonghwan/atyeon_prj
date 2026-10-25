@@ -8,10 +8,10 @@
   {% if kind == 'image' %}
   <label>{{ lab }}
     <div class="img">
-      <img src="{{ (v ~ '?width=200') if v and v.startswith('http') else (url_for('static', filename='uploads/' ~ v) if v else '') }}" alt="">
+      <img src="{{ (v ~ '?width=200') if v and v.startswith('http') else (v if v and v.startswith('/') else (url_for('static', filename='uploads/' ~ v) if v else '')) }}" alt="">
       <div>
         <input type="file" name="{{ f }}" accept="image/*">
-        <input type="text" name="{{ f }}_url" value="{{ v if v and v.startswith('http') else '' }}" placeholder="또는 이미지 URL" style="margin-top:6px">
+        <input type="text" name="{{ f }}_url" value="{{ v if v and (v.startswith('http') or v.startswith('/')) else '' }}" placeholder="또는 이미지 URL (비우면 기존 유지)" style="margin-top:6px">
         <small>업로드 시 WebP로 변환·2000px 이내로 축소됩니다. {% if v and not v.startswith('http') %}현재: {{ v }}{% endif %}</small>
       </div>
     </div>

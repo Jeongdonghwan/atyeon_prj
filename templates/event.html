@@ -1,0 +1,161 @@
+{% extends "base.html" %}{% import "_macros.html" as m with context %}
+{% block title %}{{ e.title_ko }}{% endblock %}
+{% block desc %}{{ e.subtitle }} · {{ e.start_date.strftime('%Y.%m.%d') }} {{ e.hours }} · {{ e.location }}{% endblock %}
+{% block og %}{{ img(e.poster or e.cover, 1200) }}{% endblock %}
+{% block body %}
+{% set days = (e.start_date - today).days %}
+{% set wd = '월화수목금토일'[e.start_date.weekday()] %}
+<div class="ev">
+
+<section class="ev-hero">
+  <canvas class="sky" id="sky"></canvas>
+  <svg class="const" viewBox="0 0 600 420" aria-hidden="true">
+    {% set pts = [(70,120,'희망'),(150,60,'기억'),(270,30,'감동'),(330,140,'빛'),(420,95,'색'),(520,170,'우리'),(440,290,'예술'),(250,240,'')] %}
+    <polyline class="ln" points="70,120 150,60 270,30 330,140 420,95 520,170 440,290 250,240 330,140"/>
+    {% for x,y,w in pts %}<circle class="st" cx="{{ x }}" cy="{{ y }}" r="4" style="--d:{{ loop.index0 * 0.25 }}s"/>{% if w %}<text x="{{ x+10 }}" y="{{ y-10 }}">{{ w }}</text>{% endif %}{% endfor %}
+  </svg>
+  <div class="wrap">
+    <div class="crumb"><a href="{{ url_for('home') }}">Home</a><span>/</span><a href="{{ url_for('exhibitions') }}">Exhibitions</a><span>/</span>Christmas 2026</div>
+    <div class="by fx d1">{{ cfg('site_name','ARTEYEON') }} × ILJOWON GALLERY</div>
+    <h1><span class="ln"><span>Christmas <small>with</small></span></span><span class="ln"><span><b>ARTEYEON</b> 2026</span></span></h1>
+    <p class="sub fx d2">{{ e.subtitle }}</p>
+    <div class="when fx d2">{{ e.start_date.strftime('%Y. %m. %d') }} ({{ wd }}) · {{ e.hours }} · {{ e.location }}</div>
+    <div class="cta fx d3">
+      {% if e.can_apply %}<a class="btn gold" href="{{ url_for('event_apply', slug=e.slug) }}">작가와의 대화 신청 <span class="ar">→</span></a>{% endif %}
+      <a class="btn" href="{{ url_for('apply_check') }}">신청 확인</a>
+    </div>
+    {% if days >= 0 %}<div class="dday fx d4"><b>{{ 'D-DAY' if days == 0 else 'D-' ~ days }}</b><span>남은 자리 {{ e.remaining }} / {{ e.capacity }}</span></div>{% endif %}
+  </div>
+  <div class="snowline"></div>
+</section>
+
+<section class="ev-concept">
+  <div class="wrap">
+    <div data-r>
+      <div class="eyebrow">Art Constellation</div>
+      <h2 class="hand">당신의 감상이 별이 됩니다</h2>
+      <p>작품을 천천히 감상한 뒤,<br>떠오르는 감정을 자신의 말로 한 문장 남겨주세요.<br>당신의 감상이 하나의 별이 되어,<br>오늘, 특별한 별자리를 만듭니다.</p>
+    </div>
+    <ol class="flow stag">
+      <li><i>01</i><b>감상</b><span>13인의 작품을 천천히</span></li>
+      <li><i>02</i><b>한 문장</b><span>떠오른 감정을 나의 말로</span></li>
+      <li><i>03</i><b>별</b><span>한 문장이 하나의 별로</span></li>
+      <li><i>04</i><b>별자리</b><span>100개의 시선, 하나의 크리스마스</span></li>
+    </ol>
+  </div>
+</section>
+
+<section class="ev-info">
+  <div class="wrap">
+    <dl class="facts stag">
+      <div><dt>일시</dt><dd>{{ e.start_date.strftime('%Y년 %m월 %d일') }} ({{ wd }}) {{ e.hours }}</dd></div>
+      <div><dt>장소</dt><dd>{{ e.location }}</dd></div>
+      <div><dt>주소</dt><dd>{{ e.address }}</dd></div>
+      <div><dt>특별 프로그램</dt><dd>{{ e.program_title }} · {{ e.program_time }}</dd></div>
+      <div><dt>사전 신청</dt><dd>{{ e.capacity }}명 한정</dd></div>
+      <div><dt>참가비</dt><dd>{{ '{:,}'.format(e.fee) }}원</dd></div>
+    </dl>
+    <div class="free" data-r>
+      작가와의 대화 및 이벤트에 참여하지 않으셔도<br>
+      <b>{{ e.hours }}</b> 동안 자유롭게 작가들의 작품을 감상하실 수 있습니다.
+    </div>
+  </div>
+</section>
+
+<section class="ev-gifts">
+  <div class="wrap">
+    <div class="head" data-r><div class="eyebrow">For Participants</div><h2>사전 신청자를 위한 네 가지 선물</h2></div>
+    <div class="gifts stag">
+      <div><svg viewBox="0 0 24 24"><path d="M20 12v9H4v-9M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7zm0 0h4.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7z"/></svg><b>멋진 선물 증정</b><p>특별한 크리스마스 선물을 드립니다.</p></div>
+      <div><svg viewBox="0 0 24 24"><path d="M4 18l5-9 6 4 5-9"/><circle cx="4" cy="18" r="1.6"/><circle cx="9" cy="9" r="1.6"/><circle cx="15" cy="13" r="1.6"/><circle cx="20" cy="4" r="1.6"/></svg><b>미술 감상을 통한<br>별자리 이벤트</b><p>당신의 감상이 모여 하나의 별자리가 됩니다.</p></div>
+      <div><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 16l5-5 4 4 3-3 6 6"/><circle cx="16" cy="9" r="1.5"/></svg><b>참가자 맞춤<br>별자리 이미지 제작</b><p>당신만의 감상이 담긴 특별한 별자리 이미지를 만들어 드립니다.</p></div>
+      <div><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18"/><rect x="7" y="7" width="10" height="10"/><path d="M9 14l2-3 2 2 2-2"/></svg><b>별자리 이미지를<br>액자에 담아 증정</b><p>완성된 별자리 이미지를 액자에 담아 선물로 드립니다.</p></div>
+    </div>
+    <div class="program" data-r>
+      <div class="pt"><small>{{ e.program_time }}</small><b>{{ e.program_title }}</b></div>
+      <ul><li>사전 신청 {{ e.capacity }}명 한정</li><li>참가비 {{ '{:,}'.format(e.fee // 10000) if e.fee % 10000 == 0 else '{:,}'.format(e.fee) }}{{ '만원' if e.fee % 10000 == 0 else '원' }}</li><li>남은 자리 <em>{{ e.remaining }}</em>명</li></ul>
+      {% if e.can_apply %}<a class="btn gold" href="{{ url_for('event_apply', slug=e.slug) }}">신청하기 <span class="ar">→</span></a>{% else %}<span class="closed">신청 마감</span>{% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="ev-artists">
+  <div class="wrap">
+    <div class="head" data-r><div class="eyebrow">Participating Artists</div><h2>참여 작가 {{ e.names|length }}인</h2></div>
+    {% set reg = {} %}{% for a in e.artists %}{% if reg.update({a.name_ko: a}) %}{% endif %}{% endfor %}
+    <ul class="names stag">
+      {% for n in e.names %}<li>{% if reg[n] %}<a href="{{ url_for('artist', slug=reg[n].slug) }}">{{ n }}</a>{% else %}<span>{{ n }}</span>{% endif %}</li>{% endfor %}
+    </ul>
+  </div>
+</section>
+
+{% if works %}
+<section class="ev-works">
+  <div class="wrap">
+    <div class="head" data-r><div class="eyebrow">Preview</div><h2>대표 작품 미리보기</h2><a href="{{ url_for('artworks') }}">작품 아카이브 →</a></div>
+    <div class="wgrid stag">
+      {% for w in works %}
+      <a href="{{ url_for('artwork', slug=w.slug) }}"><figure><img src="{{ img(w.image, 700) }}" alt="{{ w.title_ko }}" loading="lazy"></figure><b>{{ w.title_ko }}</b><small>{{ w.artist.name_ko if w.artist else '작가 미표기' }}</small></a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="ev-visit">
+  <div class="wrap">
+    <div data-r>
+      <div class="eyebrow">Information</div><h2>전시 안내</h2>
+      <dl class="facts one">
+        <div><dt>일시</dt><dd>{{ e.start_date.strftime('%Y년 %m월 %d일') }} ({{ wd }}) {{ e.hours }}</dd></div>
+        <div><dt>장소</dt><dd>{{ e.location }}</dd></div>
+        <div><dt>주소</dt><dd>{{ e.address }}</dd></div>
+        <div><dt>문의</dt><dd>{{ e.phone }}</dd></div>
+      </dl>
+      <a class="btn line" href="{{ url_for('event_ics', slug=e.slug) }}">캘린더에 추가</a>
+    </div>
+    <div data-r>
+      <div class="eyebrow">Directions</div><h2>오시는 길</h2>
+      <ul class="subway">{% for s in (e.subway or '').split('\n') if s.strip() %}<li>{{ s }}</li>{% endfor %}</ul>
+      <div class="maps">
+        <a class="btn line" target="_blank" rel="noopener" href="https://map.naver.com/p/search/{{ e.address|urlencode }}">네이버 지도</a>
+        <a class="btn line" target="_blank" rel="noopener" href="https://map.kakao.com/?q={{ e.address|urlencode }}">카카오맵</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ev-close">
+  <div class="wrap">
+    <div data-r>
+      <h2 class="hand">크리스마스 시즌, 예술과 함께<br>특별한 추억을 만나보세요</h2>
+      <div class="cta">
+        {% if e.can_apply %}<a class="btn gold" href="{{ url_for('event_apply', slug=e.slug) }}">작가와의 대화 신청 <span class="ar">→</span></a>{% endif %}
+        <a class="btn" href="{{ url_for('apply_check') }}">신청 확인</a>
+      </div>
+    </div>
+    {% if e.poster %}
+    <div class="posters stag">
+      {% for p in [e.poster, e.poster_2] if p %}<a href="{{ img(p, 1600) }}" target="_blank"><img src="{{ img(p, 600) }}" alt="행사 포스터 {{ loop.index }}" loading="lazy"><span>포스터 보기 ↗</span></a>{% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+</div>
+{% endblock %}
+{% block cta %}{% endblock %}
+{% block scripts %}
+<script>
+(()=>{const c=document.getElementById('sky');if(!c)return;const x=c.getContext('2d');let W,H,S=[],F=[];
+const rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+function rs(){W=c.width=c.offsetWidth*devicePixelRatio;H=c.height=c.offsetHeight*devicePixelRatio;
+ S=Array.from({length:160},()=>({x:Math.random()*W,y:Math.random()*H*.85,r:Math.random()*1.4+.3,p:Math.random()*6}));
+ F=Array.from({length:70},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*2+1,v:Math.random()*.6+.3,s:Math.random()*.6-.3}));}
+function draw(t){x.clearRect(0,0,W,H);
+ for(const s of S){x.globalAlpha=.35+.65*Math.abs(Math.sin(t/900+s.p));x.fillStyle='#F3E2B8';x.beginPath();x.arc(s.x,s.y,s.r*devicePixelRatio,0,7);x.fill();}
+ x.fillStyle='#fff';for(const f of F){x.globalAlpha=.55;x.beginPath();x.arc(f.x,f.y,f.r*devicePixelRatio,0,7);x.fill();f.y+=f.v*devicePixelRatio;f.x+=f.s;if(f.y>H){f.y=-5;f.x=Math.random()*W;}}
+ x.globalAlpha=1;if(!rm)requestAnimationFrame(draw);}
+addEventListener('resize',rs);rs();requestAnimationFrame(draw);})();
+</script>
+{% endblock %}

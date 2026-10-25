@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{{ '신청 완료' if done else '작가와의 대화 신청' }} · {{ e.title_ko }}{% endblock %}
+{% block body %}
+{% set wd = '월화수목금토일'[e.start_date.weekday()] %}
+<div class="ev">
+<section class="ev-hero sm">
+  <div class="wrap">
+    <div class="crumb"><a href="{{ url_for('exhibition', slug=e.slug) }}">Christmas 2026</a><span>/</span>{{ '신청 완료' if done else '신청' }}</div>
+    <h1 style="font-size:clamp(30px,4vw,52px)"><span class="ln"><span>{{ e.program_title }}</span></span></h1>
+    <p class="sub">{{ e.start_date.strftime('%Y. %m. %d') }} ({{ wd }}) {{ e.program_time }} · {{ e.location }} · {{ e.capacity }}명 한정</p>
+  </div>
+</section>
+
+<section class="ev-form">
+  <div class="wrap">
+    {% if done %}
+    <div class="ticket" data-r>
+      <div class="ok">✦</div>
+      <h2>신청이 접수되었습니다</h2>
+      <p class="code">신청번호 <b>{{ done.code }}</b></p>
+      <dl class="facts one">
+        <div><dt>신청자</dt><dd>{{ done.name }} · {{ done.people }}명</dd></div>
+        <div><dt>일시</dt><dd>{{ e.start_date.strftime('%Y년 %m월 %d일') }} ({{ wd }}) {{ e.program_time }}</dd></div>
+        <div><dt>장소</dt><dd>{{ e.location }} · {{ e.address }}</dd></div>
+        {% if e.fee %}
+        <div><dt>참가비</dt><dd><b>{{ '{:,}'.format(done.amount) }}원</b></dd></div>
+        <div><dt>입금 안내</dt><dd>{{ e.pay_info }}<br><small>입금자명은 신청자 이름({{ done.name }})으로 해주세요. 입금 확인 후 '참가 확정'으로 바뀝니다.</small></dd></div>
+        {% endif %}
+        <div><dt>상태</dt><dd><span class="pill {{ done.status }}">{{ done.status_ko }}</span></dd></div>
+      </dl>
+      <div class="cta">
+        <a class="btn gold" href="{{ url_for('apply_check', name=done.name, last4=done.phone[-4:]) }}">신청 확인 바로가기 <span class="ar">→</span></a>
+        <a class="btn line" href="{{ url_for('event_ics', slug=e.slug) }}">캘린더에 추가</a>
+      </div>
+    </div>
+    {% elif not e.can_apply %}
+    <div class="ticket" data-r><h2>신청이 마감되었습니다</h2><p>작가와의 대화에 참여하지 않으셔도 {{ e.hours }} 동안 자유롭게 관람하실 수 있습니다.</p>
+      <div class="cta"><a class="btn line" href="{{ url_for('exhibition', slug=e.slug) }}">행사 안내로</a></div></div>
+    {% else %}
+    <form class="form ev-f" method="post" data-r>
+      <div class="seats">남은 자리 <b>{{ e.remaining }}</b> / {{ e.capacity }}명 · 참가비 1인 {{ '{:,}'.format(e.fee) }}원</div>
+      {% if err %}<div class="flash">{{ err }}</div>{% endif %}
+      <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off">
+      <div class="row"><label>이름 *<input name="name" required value="{{ form.get('name','') }}"></label>
+        <label>휴대폰 *<input name="phone" type="tel" inputmode="numeric" required placeholder="010-0000-0000" value="{{ form.get('phone','') }}"></label></div>
+      <div class="row"><label>이메일 (선택)<input name="email" type="email" value="{{ form.get('email','') }}"></label>
+        <label>인원 *<select name="people">{% for n in range(1, [4, e.remaining]|min + 1) %}<option value="{{ n }}" {{ 'selected' if form.get('people')|string == n|string }}>{{ n }}명</option>{% endfor %}</select></label></div>
+      <label>미리 남기는 감상 한 문장 (선택)<input name="message" maxlength="120" placeholder="예) 겨울 숲의 빛이 오래 마음에 남았습니다." value="{{ form.get('message','') }}"></label>
+      <p class="note">당일 작품 감상 후에도 한 문장을 남기실 수 있습니다. 남겨주신 문장은 별자리 이미지 제작에 쓰입니다.</p>
+      <label class="chk"><input type="checkbox" name="consent" required> 개인정보(이름·연락처·이메일) 수집·이용에 동의합니다. 행사 안내 목적으로만 쓰며 행사 종료 3개월 후 파기합니다.</label>
+      {% if e.fee %}<p class="note">신청 후 안내되는 계좌로 참가비를 입금하시면 참가가 확정됩니다. 취소는 행사 전날까지 신청 확인 페이지에서 가능합니다.</p>{% endif %}
+      <div><button class="btn gold" type="submit">신청하기 <span class="ar">→</span></button></div>
+    </form>
+    {% endif %}
+  </div>
+</section>
+</div>
+{% endblock %}
+{% block cta %}{% endblock %}

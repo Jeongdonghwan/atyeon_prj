@@ -2,7 +2,8 @@ import os
 from datetime import date
 from flask import Flask, render_template, redirect, url_for, g, request, abort, flash, Response
 from dotenv import load_dotenv
-from models import db, Artist, Artwork, Exhibition, Program, Journal, Media, Inquiry, SiteConfig
+import re
+from models import db, Artist, Artwork, Exhibition, Program, Journal, Media, Inquiry, SiteConfig, Registration
 import admin
 
 load_dotenv()
@@ -49,13 +50,17 @@ def pull_lang(endpoint, values):
 def ctx():
     def img(v, w=1200):
         if not v: return ""
+        if v.startswith("/"): return v
         if v.startswith("http"):
             return v + ("&" if "?" in v else "?") + f"width={w}" if "wikimedia.org" in v else v
         return url_for("static", filename="uploads/" + v)
     def t(obj, field):  # 언어별 필드: en 없으면 ko 폴백
         return getattr(obj, f"{field}_{g.lang}", None) or getattr(obj, f"{field}_ko", "")
     def pic(key): return SiteConfig.get("img_" + key) or PICS[key]
-    return dict(img=img, t=t, pic=pic, cfg=SiteConfig.get, lang=g.get("lang", "ko"), today=date.today())
+    def event_banner():  # 신청 중인 가장 가까운 행사 (상단 띠·홈)
+        if request.endpoint and request.endpoint.startswith("admin"): return None
+        return Exhibition.live().filter(Exhibition.apply_open.is_(True), Exhibition.start_date >= date.today()).order_by(None).order_by(Exhibition.start_date).first()
+    return dict(img=img, t=t, pic=pic, cfg=SiteConfig.get, lang=g.get("lang", "ko"), today=date.today(), event_banner=event_banner)
 
 
 @app.route("/")
@@ -134,7 +139,71 @@ def exhibitions():
 @app.route("/<lang>/exhibitions/<slug>")
 def exhibition(slug):
     e = Exhibition.query.filter_by(slug=slug, status="published").first_or_404()
+    if e.is_event:
+        return render_template("event.html", e=e, works=event_works(e))
     return render_template("exhibition.html", e=e, videos=[m for m in e.media if m.status == "published"])
+
+
+def event_works(e):
+    """행사 대표 작품: 참여 작가 작품 + 작가 미확인 작품(신규 작가 소속 가능)"""
+    ids = [a.id for a in e.artists]
+    return Artwork.live().filter(db.or_(Artwork.artist_id.in_(ids), Artwork.artist_id.is_(None))).limit(12).all()
+
+
+def norm_phone(p): return re.sub(r"\D", "", p or "")
+
+
+@app.route("/<lang>/exhibitions/<slug>/apply", methods=["GET", "POST"])
+def event_apply(slug):
+    e = Exhibition.query.filter_by(slug=slug, status="published").first_or_404()
+    if not e.is_event: abort(404)
+    done = db.session.get(Registration, request.args.get("done", type=int) or 0)
+    if done and done.exhibition_id != e.id: done = None
+    err = None
+    if request.method == "POST":
+        f = request.form
+        phone = norm_phone(f.get("phone"))
+        people = max(1, min(4, f.get("people", type=int) or 1))
+        if f.get("website"):
+            return redirect(url_for("event_apply", slug=slug))
+        if not e.can_apply: err = "신청이 마감되었습니다."
+        elif not (f.get("name", "").strip() and len(phone) >= 9 and f.get("consent")): err = "이름, 연락처, 동의 항목을 확인해 주세요."
+        elif people > e.remaining: err = f"남은 자리는 {e.remaining}명입니다."
+        elif Registration.query.filter(Registration.exhibition_id == e.id, Registration.phone == phone, Registration.status != "cancelled").first():
+            err = "이미 신청된 연락처입니다. 신청 확인에서 내역을 확인해 주세요."
+        else:
+            r = Registration(exhibition=e, name=f["name"].strip(), phone=phone, email=f.get("email") or None,
+                             people=people, message=(f.get("message") or "").strip()[:300] or None, consent=True,
+                             status="received" if e.fee else "confirmed")
+            db.session.add(r); db.session.commit()
+            return redirect(url_for("event_apply", slug=slug, done=r.id))
+    return render_template("event_apply.html", e=e, done=done, err=err, form=request.form)
+
+
+@app.route("/<lang>/apply/check", methods=["GET", "POST"])
+def apply_check():
+    rows, asked = [], False
+    name, last4 = request.values.get("name", "").strip(), norm_phone(request.values.get("last4"))[-4:]
+    if name and len(last4) == 4:
+        asked = True
+        rows = [r for r in Registration.query.filter_by(name=name).order_by(Registration.id.desc()) if r.phone.endswith(last4)]
+    if request.method == "POST" and request.form.get("cancel"):
+        r = db.session.get(Registration, request.form.get("cancel", type=int))
+        if r in rows and r.status != "cancelled" and r.exhibition.start_date > date.today():
+            r.status = "cancelled"; db.session.commit(); flash("신청을 취소했습니다.")
+        return redirect(url_for("apply_check", name=name, last4=last4))
+    return render_template("apply_check.html", rows=rows, asked=asked, name=name, last4=last4)
+
+
+@app.route("/<lang>/exhibitions/<slug>/event.ics")
+def event_ics(slug):
+    e = Exhibition.query.filter_by(slug=slug, status="published").first_or_404()
+    t0, t1 = (e.program_time or "11:00~18:00").replace(" ", "").replace("-", "~").split("~")[:2]
+    d = e.start_date.strftime("%Y%m%d")
+    ics = "\r\n".join(["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//ARTEYEON//KO", "BEGIN:VEVENT",
+        f"UID:{e.slug}@arteyeon", f"DTSTART;TZID=Asia/Seoul:{d}T{t0.replace(':','')}00", f"DTEND;TZID=Asia/Seoul:{d}T{t1.replace(':','')}00",
+        f"SUMMARY:{e.title_ko}", f"LOCATION:{e.location or ''} {e.address or ''}", "END:VEVENT", "END:VCALENDAR"])
+    return Response(ics, mimetype="text/calendar", headers={"Content-Disposition": f"attachment; filename={e.slug}.ics"})
 
 
 @app.route("/<lang>/academy")

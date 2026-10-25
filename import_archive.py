@@ -59,6 +59,8 @@ with app.app_context():
     rows = json.load(open(os.path.join(SRC, "artworks.json"), encoding="utf-8"))
 
     if REPLACE:
+        from models import Registration
+        if Registration.query.count(): sys.exit("신청 데이터가 있어 --replace 중단 (운영 데이터 보호)")
         for m in Media.query.all(): m.artist_id = m.exhibition_id = None
         for j in Journal.query.all(): j.artist_id = None
         db.session.execute(exhibition_artists.delete())
@@ -108,16 +110,27 @@ with app.app_context():
         if a and not a.cover: a.cover = w.image
     db.session.flush()
 
-    # 3) 전시 (가제)
-    ex = Exhibition.query.filter_by(slug="art-holds-time-2026").first() or Exhibition(slug="art-holds-time-2026")
-    ex.title_ko = "예술, 시간을 담다 (가제)"; ex.title_en = "Art Holds Time"
-    ex.start_date = date(2026, 12, 1); ex.end_date = date(2026, 12, 31); ex.location = "일조원갤러리"
+    # 3) 행사: Christmas with ARTEYEON 2026
+    NAMES = "권대하, 김나라, 김은지, 김진현, 김훈섭, 박종석, 신영진, 박정렬, 이영희, 이정박, 정해광, 차영규, 설경철"
+    Exhibition.query.filter(Exhibition.slug.in_(["art-holds-time-2026"])).delete()
+    ex = Exhibition.query.filter_by(slug="christmas-2026").first() or Exhibition(slug="christmas-2026")
+    ex.title_ko = "Christmas with ARTEYEON 2026"; ex.title_en = "Christmas with ARTEYEON 2026"
+    ex.subtitle = "ART CONSTELLATION · 100개의 시선, 하나의 크리스마스"
+    ex.start_date = ex.end_date = date(2026, 12, 19); ex.hours = "11:00~18:00"
+    ex.location = "일조원갤러리"; ex.address = "서울시 종로구 우정국로 38 B1"; ex.phone = "02-725-3588 / 010-3894-8987"
+    ex.subway = "안국역 6번 출구\n종각역 3-1번 출구\n종로3가역 5번 출구"
+    ex.artist_names = NAMES
+    ex.program_title = "작가와의 대화 및 이벤트"; ex.program_time = "15:00~16:00"
+    ex.capacity = 30; ex.fee = 30000; ex.apply_open = True
+    ex.pay_info = ex.pay_info or "[입금 계좌 확정 후 어드민에서 입력] · 예금주 아르테연"
+    ex.poster = "/static/event/poster-program.webp"; ex.poster_2 = "/static/event/poster-artists.webp"
     ex.cover = Artwork.query.filter_by(sort=8).first().image
-    ex.status = STATUS; ex.artists = list(artists.values())
-    ex.body_ko = ("초록의 숲과 흐르는 물, 눈 덮인 대지와 산의 능선. 도시의 빛, 인간의 모습, 추상의 언어와 공예의 섬세한 결까지. "
-                  "각기 다른 작품들은 저마다의 시간과 이야기를 품고 있습니다.\n\n"
-                  "서로 다른 시선이 하나의 전시가 되는 순간. 작품을 천천히 바라보고, 서로 다른 표현이 만들어 내는 울림과 연결을 발견하는 시간이 되기를 바랍니다.\n\n"
-                  "[검수 필요: 공식 전시명, 개막·폐막일, 전시장 주소, 관람 시간]")
+    ex.status = STATUS
+    ex.artists = [a for a in artists.values() if a.name_ko in NAMES]
+    ex.body_ko = ("작품을 천천히 감상한 뒤, 떠오르는 감정을 자신의 말로 한 문장 남겨주세요. "
+                  "당신의 감상이 하나의 별이 되어, 오늘 특별한 별자리를 만듭니다.\n\n"
+                  "크리스마스 시즌, 일조원갤러리에서 13인의 작가가 선보이는 다채로운 작품 세계를 만나보세요. "
+                  "따뜻한 연말의 분위기 속에서 각기 다른 시선과 감성이 어우러지는 특별한 전시를 감상하실 수 있습니다.")
     db.session.add(ex)
     db.session.commit()
-    print(f"imported: artists {len(artists)}, artworks {count} (from {len(rows)} images), exhibition 1 - status=" + STATUS)
+    print(f"imported: artists {len(artists)}, artworks {count} (from {len(rows)} images), event christmas-2026 - status=" + STATUS)

@@ -102,8 +102,8 @@ with app.app_context():
         Media(slug="reel-3", platform="instagram", series="Reels", title_ko="미린이 101 현장", url="#", thumb=PIC["class"], date=T - timedelta(days=9), status=P),
         Media(slug="reel-4", platform="instagram", series="Reels", title_ko="오프닝 스케치", url="#", thumb=PIC["studio"], date=T - timedelta(days=14), status=P),
     ])
-    for k, v in {"site_name": "CHEONGYEON", "tagline": "한국의 예술적 자산을 세계와 잇고, 세계의 다양한 예술적 시선을 한국에 소개하는 아트·교류·교육 플랫폼.",
-                 "email": "", "phone": "", "address": "", "youtube": "", "instagram": ""}.items():
+    for k, v in {"site_name": "ARTEYEON", "tagline": "아르테연 — 한국의 예술적 자산을 세계와 잇고, 세계의 다양한 예술적 시선을 한국에 소개하는 아트·교류·교육 플랫폼.",
+                 "email": "", "phone": "02-725-3588", "address": "서울시 종로구 우정국로 38 B1 일조원갤러리", "youtube": "", "instagram": ""}.items():
         db.session.add(SiteConfig(key=k, value=v))
     db.session.commit()
     print("seeded:", Artist.query.count(), "artists,", Artwork.query.count(), "artworks,", Exhibition.query.count(), "exhibitions")

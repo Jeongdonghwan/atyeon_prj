@@ -5,7 +5,9 @@ from functools import wraps
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, current_app, abort
 from sqlalchemy import inspect, String, Text, Boolean, Integer, Date, Enum
 from PIL import Image
-from models import db, Artist, Artwork, Exhibition, Program, Journal, Media, Inquiry, SiteConfig
+import csv, io
+from flask import Response
+from models import db, Artist, Artwork, Exhibition, Program, Journal, Media, Inquiry, SiteConfig, Registration
 
 bp = Blueprint("admin", __name__, url_prefix="/admin")
 
@@ -18,7 +20,7 @@ MODELS = {
     "journal":    (Journal,    "저널",     ["title_ko", "category", "date", "status"]),
     "media":      (Media,      "미디어",   ["title_ko", "platform", "series", "date", "status"]),
 }
-IMAGE_COLS = {"portrait", "cover", "image", "image_2", "image_3", "thumb"}
+IMAGE_COLS = {"portrait", "cover", "image", "image_2", "image_3", "thumb", "poster", "poster_2"}
 HIDDEN = {"id", "created_at"}
 LABELS = {  # 폼 라벨 (없으면 컬럼명)
     "name_ko": "이름(국문)", "name_en": "이름(영문)", "title_ko": "제목(국문)", "title_en": "제목(영문)",
@@ -30,12 +32,18 @@ LABELS = {  # 폼 라벨 (없으면 컬럼명)
     "body_en": "본문(영문)", "category": "분류", "audience": "대상", "summary_ko": "요약", "schedule": "일정",
     "inquiry_link": "신청 링크", "date": "날짜", "platform": "플랫폼", "series": "시리즈", "url": "원본 URL",
     "video_id": "YouTube 영상 ID",
+    "subtitle": "부제", "hours": "운영 시간", "address": "주소", "phone": "문의 전화", "subway": "오시는 길 (줄바꿈 구분)",
+    "artist_names": "참여 작가 전체 명단 (쉼표, 미등록 작가 포함)", "program_title": "특별 프로그램명", "program_time": "프로그램 시간 (15:00~16:00)",
+    "capacity": "사전 신청 정원 (0이면 일반 전시)", "fee": "1인 참가비 (원)", "pay_info": "입금 계좌 안내", "apply_open": "신청 받기",
+    "poster": "포스터 1", "poster_2": "포스터 2",
 }
 
 
 @bp.context_processor
 def _side():
-    return dict(models=MODELS, unread=Inquiry.query.filter_by(read=False).count() if session.get("admin") else 0)
+    on = session.get("admin")
+    return dict(models=MODELS, unread=Inquiry.query.filter_by(read=False).count() if on else 0,
+                pending=Registration.query.filter_by(status="received").count() if on else 0)
 
 
 def login_required(f):
@@ -67,9 +75,10 @@ def logout():
 @login_required
 def dashboard():
     counts = {k: (v[1], v[0].query.count()) for k, v in MODELS.items()}
+    events = [e for e in Exhibition.query.filter(Exhibition.capacity > 0).order_by(Exhibition.start_date.desc())]
     inquiries = Inquiry.query.order_by(Inquiry.created_at.desc()).limit(8).all()
     unread = Inquiry.query.filter_by(read=False).count()
-    return render_template("admin/dashboard.html", counts=counts, inquiries=inquiries, unread=unread)
+    return render_template("admin/dashboard.html", counts=counts, inquiries=inquiries, unread=unread, events=events)
 
 
 # ---------- 범용 CRUD ----------
@@ -117,7 +126,7 @@ def _apply(obj, Model):
         if kind == "image":
             f = request.files.get(name)
             if f and f.filename: setattr(obj, name, _save_image(f))
-            elif request.form.get(name + "_url") is not None: setattr(obj, name, request.form.get(name + "_url") or None)
+            elif request.form.get(name + "_url"): setattr(obj, name, request.form[name + "_url"].strip())  # 비우면 기존 유지
             continue
         v = request.form.get(name)
         if kind == "bool": v = name in request.form
@@ -167,6 +176,35 @@ def delete(name, id):
     db.session.delete(obj); db.session.commit()
     flash("삭제했습니다.")
     return redirect(url_for("admin.list_", name=name))
+
+
+# ---------- 행사 신청 ----------
+@bp.route("/registrations")
+@login_required
+def registrations():
+    events = Exhibition.query.filter(Exhibition.capacity > 0).order_by(Exhibition.start_date.desc()).all()
+    e = db.session.get(Exhibition, request.args.get("e", type=int) or 0) or (events[0] if events else None)
+    st = request.args.get("status")
+    rows = [r for r in (e.registrations if e else []) if not st or r.status == st]
+    rows.sort(key=lambda r: r.id, reverse=True)
+    if request.args.get("csv"):
+        buf = io.StringIO(); buf.write("\ufeff"); w = csv.writer(buf)
+        w.writerow(["신청번호", "상태", "이름", "연락처", "이메일", "인원", "금액", "감상 한 문장", "메모", "신청일시"])
+        for r in rows:
+            w.writerow([r.code, r.status_ko, r.name, r.phone, r.email or "", r.people, r.amount, r.message or "", r.memo or "", r.created_at.strftime("%Y-%m-%d %H:%M")])
+        return Response(buf.getvalue(), mimetype="text/csv", headers={"Content-Disposition": f"attachment; filename=registrations-{e.slug if e else 'none'}.csv"})
+    counts = {k: sum(r.people for r in (e.registrations if e else []) if r.status == k) for k in Registration.STATUS_KO}
+    return render_template("admin/registrations.html", events=events, e=e, rows=rows, st=st, counts=counts, labels=Registration.STATUS_KO)
+
+
+@bp.post("/registrations/<int:id>")
+@login_required
+def registration_update(id):
+    r = db.session.get(Registration, id) or abort(404)
+    if request.form.get("status") in Registration.STATUS_KO: r.status = request.form["status"]
+    if "memo" in request.form: r.memo = request.form["memo"] or None
+    db.session.commit(); flash(f"{r.code} 저장했습니다.")
+    return redirect(request.referrer or url_for("admin.registrations"))
 
 
 # ---------- 문의 / 설정 ----------
