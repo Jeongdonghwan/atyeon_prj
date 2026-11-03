@@ -69,7 +69,7 @@ def me():
     if request.method == "POST":
         cur, new, new2 = request.form.get("cur", ""), request.form.get("new", ""), request.form.get("new2", "")
         if not g.fu.check_pw(cur): flash("현재 비밀번호가 다릅니다.")
-        elif len(new) < 8: flash("새 비밀번호는 8자 이상으로 해주세요.")
+        elif len(new) < 4: flash("새 비밀번호는 4자 이상으로 해주세요.")
         elif new != new2: flash("새 비밀번호 확인이 일치하지 않습니다.")
         else:
             g.fu.set_pw(new); g.fu.must_change_pw = False
@@ -414,7 +414,7 @@ def users_admin():
                 flash("이미 있는 아이디입니다.")
             else:
                 temp = f.get("pw", "").strip() or secrets.token_urlsafe(6)
-                if len(temp) < 8 and f.get("pw"): flash("비밀번호는 8자 이상으로 해주세요."); return redirect(url_for("flow.users_admin"))
+                if len(temp) < 4 and f.get("pw"): flash("비밀번호는 4자 이상으로 해주세요."); return redirect(url_for("flow.users_admin"))
                 u = FlowUser(login_id=f["login_id"].strip(), name=f["name"].strip(), phone=f.get("phone"),
                              role=f.get("role") if f.get("role") in ROLES else "member",
                              color=COLORS[FlowUser.query.count() % len(COLORS)])
@@ -460,7 +460,7 @@ def user_edit(id):
                 db.session.commit(); flash("저장했습니다.")
         elif act == "password":
             pw = f.get("pw", "")
-            if len(pw) < 8: flash("비밀번호는 8자 이상으로 해주세요.")
+            if len(pw) < 4: flash("비밀번호는 4자 이상으로 해주세요.")
             else:
                 u.set_pw(pw); u.must_change_pw = "force_change" in f; u.fail_count = 0; u.locked_until = None
                 log(f"{g.fu.name}님이 {u.name}님 비밀번호를 지정했습니다")

@@ -30,7 +30,7 @@
     <label>이름 *<input name="name" required></label>
     <label>아이디 * <small class="muted">영문·숫자</small><input name="login_id" required pattern="[A-Za-z0-9_.-]{3,30}"></label>
     <label>연락처<input name="phone"></label>
-    <label>비밀번호 <small class="muted">비우면 임시 비밀번호 자동 발급</small><input name="pw" type="text" minlength="8" autocomplete="off"></label>
+    <label>비밀번호 <small class="muted">비우면 임시 비밀번호 자동 발급</small><input name="pw" type="text" minlength="4" autocomplete="off"></label>
     <label>역할<select name="role">{% for k,l in ROLES.items() %}<option value="{{ k }}" {{ 'selected' if k=='member' }}>{{ l }}</option>{% endfor %}</select></label>
     <button class="b pri">계정 만들기</button>
     <p class="muted">만든 직후 화면 위에 비밀번호가 한 번 표시됩니다. 첫 로그인 때 본인이 새 비밀번호로 바꿉니다. 이름을 누르면 수정·비밀번호 지정·삭제를 할 수 있습니다.</p>

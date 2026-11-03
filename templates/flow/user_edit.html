@@ -22,7 +22,7 @@
     <form class="panel form" method="post">
       <h2>비밀번호 지정</h2>
       <input type="hidden" name="action" value="password">
-      <label>새 비밀번호 (8자 이상)<input name="pw" type="text" required minlength="8" autocomplete="off" placeholder="직접 정해서 전달"></label>
+      <label>새 비밀번호 (4자 이상)<input name="pw" type="text" required minlength="4" autocomplete="off" placeholder="직접 정해서 전달"></label>
       <label class="chip"><input type="checkbox" name="force_change" checked> 첫 로그인 때 본인이 다시 바꾸게 하기</label>
       <button class="b pri">비밀번호 저장</button>
       {% if locked %}<button class="b" name="action" value="unlock" formnovalidate>로그인 잠금 풀기</button>{% endif %}
