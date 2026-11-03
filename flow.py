@@ -357,13 +357,14 @@ def users_admin():
             if FlowUser.query.filter_by(login_id=f["login_id"].strip()).first():
                 flash("이미 있는 아이디입니다.")
             else:
-                temp = secrets.token_urlsafe(6)
+                temp = f.get("pw", "").strip() or secrets.token_urlsafe(6)
+                if len(temp) < 8 and f.get("pw"): flash("비밀번호는 8자 이상으로 해주세요."); return redirect(url_for("flow.users_admin"))
                 u = FlowUser(login_id=f["login_id"].strip(), name=f["name"].strip(), phone=f.get("phone"),
                              role=f.get("role") if f.get("role") in ROLES else "member",
                              color=COLORS[FlowUser.query.count() % len(COLORS)])
                 u.set_pw(temp); db.session.add(u)
                 log(f"{g.fu.name}님이 사용자를 추가했습니다: {u.name}")
-                db.session.commit(); flash(f"{u.name}님을 추가했습니다. 임시 비밀번호: {temp}")
+                db.session.commit(); flash(f"{u.name}님 계정을 만들었습니다. 아이디 {u.login_id} · 비밀번호: {temp}")
         else:
             u = db.session.get(FlowUser, f.get("uid", type=int)) or abort(404)
             if f.get("action") == "reset":
@@ -378,6 +379,58 @@ def users_admin():
             db.session.commit()
         return redirect(url_for("flow.users_admin"))
     return render_template("flow/users.html", rows=FlowUser.query.order_by(FlowUser.id).all())
+
+
+@bp.route("/users/<int:id>", methods=["GET", "POST"])
+@admin_only
+def user_edit(id):
+    """총관리자: 계정 정보 수정 · 비밀번호 직접 지정 · 삭제"""
+    u = db.session.get(FlowUser, id) or abort(404)
+    if request.method == "POST":
+        f = request.form
+        act = f.get("action")
+        if act == "save":
+            lid = f.get("login_id", "").strip()
+            if not lid or not lid.replace("_", "").replace(".", "").replace("-", "").isalnum():
+                flash("아이디는 영문·숫자로 입력하세요.")
+            elif FlowUser.query.filter(FlowUser.login_id == lid, FlowUser.id != u.id).first():
+                flash("이미 있는 아이디입니다.")
+            else:
+                u.login_id = lid; u.name = f.get("name", "").strip() or u.name
+                u.phone = f.get("phone") or None; u.color = f.get("color") or u.color
+                if u.id != g.fu.id and f.get("role") in ROLES: u.role = f["role"]
+                if u.id != g.fu.id: u.active = "active" in f
+                log(f"{g.fu.name}님이 {u.name}님 계정 정보를 수정했습니다")
+                db.session.commit(); flash("저장했습니다.")
+        elif act == "password":
+            pw = f.get("pw", "")
+            if len(pw) < 8: flash("비밀번호는 8자 이상으로 해주세요.")
+            else:
+                u.set_pw(pw); u.must_change_pw = "force_change" in f; u.fail_count = 0; u.locked_until = None
+                log(f"{g.fu.name}님이 {u.name}님 비밀번호를 지정했습니다")
+                db.session.commit(); flash(f"{u.name}님 비밀번호를 바꿨습니다." + (" 첫 로그인 때 본인이 다시 바꾸게 됩니다." if u.must_change_pw else ""))
+        elif act == "unlock":
+            u.fail_count = 0; u.locked_until = None; db.session.commit(); flash("잠금을 풀었습니다.")
+        elif act == "delete":
+            if u.id == g.fu.id: flash("본인 계정은 삭제할 수 없습니다.")
+            elif u.is_admin and FlowUser.query.filter_by(role="admin", active=True).count() <= 1: flash("마지막 총관리자는 삭제할 수 없습니다.")
+            else:
+                name = u.name
+                # 기록은 남기고 연결만 끊는다: 담당 해제, 요청자·작성자 비움, 알림 삭제
+                for t in Task.query.filter(Task.assignees.any(id=u.id)).all(): t.assignees = [x for x in t.assignees if x.id != u.id]
+                for e in FlowEvent.query.filter(FlowEvent.attendees.any(id=u.id)).all(): e.attendees = [x for x in e.attendees if x.id != u.id]
+                Task.query.filter_by(requester_id=u.id).update({"requester_id": None})
+                FlowEvent.query.filter_by(created_by=u.id).update({"created_by": None})
+                Comment.query.filter_by(user_id=u.id).update({"user_id": None})
+                Activity.query.filter_by(user_id=u.id).update({"user_id": None})
+                Notice.query.filter_by(user_id=u.id).delete()
+                db.session.delete(u)
+                log(f"{g.fu.name}님이 {name}님 계정을 삭제했습니다")
+                db.session.commit(); flash(f"{name}님 계정을 삭제했습니다. 맡았던 업무는 담당자 없음으로 남습니다.")
+                return redirect(url_for("flow.users_admin"))
+        return redirect(url_for("flow.user_edit", id=u.id))
+    open_tasks = Task.query.filter(Task.assignees.any(id=u.id), Task.status != "done").count()
+    return render_template("flow/user_edit.html", u=u, open_tasks=open_tasks, locked=bool(u.locked_until and u.locked_until > datetime.now()))
 
 
 @bp.route("/log")

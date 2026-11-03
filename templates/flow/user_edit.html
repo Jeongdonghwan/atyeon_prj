@@ -1,0 +1,39 @@
+{% extends "flow/base.html" %}
+{% block title %}{{ u.name }} 계정{% endblock %}
+{% block main %}
+<div class="crumbs"><a href="{{ url_for('flow.users_admin') }}">사용자 관리</a></div>
+<h1><span class="who1"><s style="--c:{{ u.color }}">{{ u.name[-2:] }}</s>{{ u.name }}</span> <small class="muted" style="font-size:14px">{{ u.role_ko }}{{ ' · 비활성' if not u.active }}{{ ' · 잠김' if locked }}</small></h1>
+<div class="grid2">
+  <form class="panel form" method="post">
+    <h2>계정 정보</h2>
+    <input type="hidden" name="action" value="save">
+    <label>이름<input name="name" required value="{{ u.name }}"></label>
+    <label>아이디 <small class="muted">로그인할 때 쓰는 영문·숫자</small><input name="login_id" required pattern="[A-Za-z0-9_.-]{3,30}" value="{{ u.login_id }}"></label>
+    <label>연락처<input name="phone" value="{{ u.phone or '' }}"></label>
+    <div class="row3">
+      <label>역할{% if u.id == me.id %}<input value="{{ u.role_ko }}" disabled>{% else %}<select name="role">{% for k,l in ROLES.items() %}<option value="{{ k }}" {{ 'selected' if u.role==k }}>{{ l }}</option>{% endfor %}</select>{% endif %}</label>
+      <label>표시 색<input type="color" name="color" value="{{ u.color }}" style="height:42px;width:100%"></label>
+    </div>
+    {% if u.id != me.id %}<label class="chip"><input type="checkbox" name="active" {{ 'checked' if u.active }}> 사용 중 (끄면 로그인 불가)</label>{% endif %}
+    <button class="b pri">저장</button>
+    <p class="muted">최근 로그인 {{ u.last_login.strftime('%Y-%m-%d %H:%M') if u.last_login else '없음' }} · 진행 중 업무 {{ open_tasks }}개</p>
+  </form>
+  <div>
+    <form class="panel form" method="post">
+      <h2>비밀번호 지정</h2>
+      <input type="hidden" name="action" value="password">
+      <label>새 비밀번호 (8자 이상)<input name="pw" type="text" required minlength="8" autocomplete="off" placeholder="직접 정해서 전달"></label>
+      <label class="chip"><input type="checkbox" name="force_change" checked> 첫 로그인 때 본인이 다시 바꾸게 하기</label>
+      <button class="b pri">비밀번호 저장</button>
+      {% if locked %}<button class="b" name="action" value="unlock" formnovalidate>로그인 잠금 풀기</button>{% endif %}
+    </form>
+    {% if u.id != me.id %}
+    <form class="panel form" method="post" onsubmit="return confirm('{{ u.name }}님 계정을 삭제할까요? 맡은 업무는 담당자 없음으로 남고, 댓글·기록은 보존됩니다.')">
+      <h2 class="red">계정 삭제</h2>
+      <p class="muted">퇴사·외부 인원 정리 때 사용합니다. 잠시 막기만 하려면 왼쪽에서 "사용 중"을 끄세요.</p>
+      <button class="b" name="action" value="delete" style="color:var(--red);border-color:var(--red)">삭제</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
