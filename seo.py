@@ -171,7 +171,7 @@ def sitemap():
 
 @bp.route("/robots.txt")
 def robots():
-    return Response("User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /en\nDisallow: /ko/apply/\nDisallow: /*/apply$\n"
+    return Response("User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /flow\nDisallow: /en\nDisallow: /ko/apply/\nDisallow: /*/apply$\n"
                     f"\nSitemap: {SITE_URL}/sitemap.xml\n", mimetype="text/plain")
 
 
