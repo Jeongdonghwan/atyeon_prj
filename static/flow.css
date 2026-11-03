@@ -281,3 +281,4 @@ details .panel{border:0;padding:0;margin:0}
 .fc .fc-highlight{background:color-mix(in srgb,var(--p) 14%,transparent)}
 .fc .fc-timegrid-slot{height:2.6em}
 @media(max-width:700px){.fc .fc-daygrid-day-frame{min-height:70px}}
+.form>*,.row2>*,.row3>*{min-width:0}.form input,.form select,.form textarea{min-width:0;box-sizing:border-box}

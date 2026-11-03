@@ -1,11 +1,11 @@
 <form class="panel form" method="post" action="{{ url_for('flow.task', id=t.id) if t.id else url_for('flow.task_new') }}">
   <label>업무명 *<input name="title" required value="{{ t.title if t.id else '' }}" placeholder="예) 포스터 인쇄 업체 견적 받기"></label>
-  <div class="row3">
-    <label>프로젝트<select name="project_id"><option value="">없음</option>{% for p in projects %}<option value="{{ p.id }}" {{ 'selected' if t.project_id==p.id }}>{{ p.name }}</option>{% endfor %}</select></label>
+  <label>프로젝트<select name="project_id"><option value="">없음</option>{% for p in projects %}<option value="{{ p.id }}" {{ 'selected' if t.project_id==p.id }}>{{ p.name }}</option>{% endfor %}</select></label>
+  <div class="row2">
     <label>시작일<input type="date" name="start" value="{{ t.start or '' }}"></label>
     <label>마감일<input type="date" name="due" value="{{ t.due or '' }}"></label>
   </div>
-  <div class="row3">
+  <div class="row2">
     <label>우선순위<select name="priority">{% for k,l in PRIORITY.items() %}<option value="{{ k }}" {{ 'selected' if (t.priority or 'normal')==k }}>{{ l }}</option>{% endfor %}</select></label>
     <label>상태<select name="status">{% for k,l in STATUS.items() %}<option value="{{ k }}" {{ 'selected' if (t.status or 'todo')==k }}>{{ l }}</option>{% endfor %}</select></label>
   </div>

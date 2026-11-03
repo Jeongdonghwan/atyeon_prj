@@ -51,6 +51,13 @@ with app.app_context():
         db.session.commit()
         print("project: Christmas with ARTEYEON 2026 + 12 tasks + 2 events")
 
+    # 시작일 칸이 생기기 전에 만든 프로젝트 업무 → 시작일 채우기(마감 2~4일 전, 타임라인용)
+    from datetime import timedelta
+    from flow_models import Task
+    fill = Task.query.filter(Task.start.is_(None), Task.due.isnot(None), Task.project_id.isnot(None)).all()
+    for t in fill: t.start = t.due - timedelta(days=4 if t.priority == "high" else 2)
+    if fill: db.session.commit(); print(f"시작일 채움: 업무 {len(fill)}개")
+
     if created:
         print("\n=== 계정 (임시 비밀번호는 지금 한 번만 표시됩니다) ===")
         for name, lid, pw, role in created:
