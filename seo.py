@@ -69,7 +69,7 @@ def page_meta(endpoint):
 # ---------- JSON-LD ----------
 def org_ld():
     return {"@context": "https://schema.org", "@type": "ArtGallery", "name": BRAND_FULL, "alternateName": [BRAND, BRAND_EN, "일조원갤러리"],
-            "url": SITE_URL + "/ko", "telephone": "02-725-3588",
+            "url": SITE_URL + "/ko", "telephone": SiteConfig.get("phone", "010-4678-0507"), "email": SiteConfig.get("email", "forzajung@gmail.com"),
             "address": {"@type": "PostalAddress", "streetAddress": "우정국로 38 B1", "addressLocality": "종로구", "addressRegion": "서울특별시", "addressCountry": "KR"},
             "openingHours": "Sa 11:00-18:00",
             "sameAs": [u for u in (SiteConfig.get("youtube"), SiteConfig.get("instagram")) if u]}
@@ -191,7 +191,7 @@ def rss():
         who = w.artist.name_ko if w.artist else ""
         spec = " · ".join(x for x in (who, w.year, w.medium_ko, (w.dimensions + " cm") if w.dimensions else "") if x)
         items.append((w.created_at, f"{w.title_ko}{' — ' + who if who else ''} | 그림 판매·작품 아카이브", url_for("artwork", lang="ko", slug=w.slug),
-                      f"{spec}<br>{w.note_ko or ''}<br>작품 구매 상담: 아르테연 02-725-3588", w.image))
+                      f"{spec}<br>{w.note_ko or ''}<br>작품 구매 상담: 아르테연 {SiteConfig.get('phone', '010-4678-0507')}", w.image))
     items.sort(key=lambda x: x[0] or datetime.min, reverse=True)
     xs = []
     for dt_, title, path, body, im in items[:50]:

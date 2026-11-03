@@ -122,7 +122,7 @@ with app.app_context():
     ex.artist_names = NAMES
     ex.program_title = "작가와의 대화 및 이벤트"; ex.program_time = "15:00~16:00"
     ex.capacity = 30; ex.fee = 30000; ex.apply_open = True
-    ex.pay_info = ex.pay_info or "[입금 계좌 확정 후 어드민에서 입력] · 예금주 아르테연"
+    ex.pay_info = "301-8889-9999-91 · 예금주 강선자(일조원갤러리)"
     ex.poster = "/static/event/poster-program.webp"; ex.poster_2 = "/static/event/poster-artists.webp"
     ex.cover = Artwork.query.filter_by(sort=8).first().image
     ex.status = STATUS
