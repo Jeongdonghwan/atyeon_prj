@@ -1,12 +1,22 @@
-{% macro card(t, show_project=true) -%}
-<a class="tc {{ 'od' if t.overdue }} pr-{{ t.priority }}" href="{{ url_for('flow.task', id=t.id) }}" draggable="true" data-id="{{ t.id }}">
-  {% if show_project and t.project %}<span class="tp" style="--c:{{ t.project.color }}">{{ t.project.name }}</span>{% endif %}
+{% macro avs(us, n=3) -%}
+<span class="avs">{% for u in us[:n] %}<s class="av" style="--c:{{ u.color }}" title="{{ u.name }}">{{ u.name[-2:] }}</s>{% endfor %}{% if us|length > n %}<s class="av more">+{{ us|length - n }}</s>{% endif %}</span>
+{%- endmacro %}
+
+{% macro status(s) -%}<span class="stt s-{{ s }}">{{ STATUS[s] }}</span>{%- endmacro %}
+
+{% macro card(t, show_project=true, from_user=None) -%}
+<a class="tc pr-{{ t.priority }}{{ ' od' if t.overdue }}" href="{{ url_for('flow.task', id=t.id) }}" draggable="true" data-id="{{ t.id }}"{% if from_user %} data-from="{{ from_user }}"{% endif %}>
+  <span class="tc-top">
+    {% if show_project and t.project %}<span class="tp" style="--c:{{ t.project.color }}">{{ t.project.name }}</span>{% endif %}
+    {% if t.priority == 'high' %}<span class="hi">높음</span>{% endif %}
+  </span>
   <b>{{ t.title }}</b>
+  {% if t.check_pct is not none %}<span class="bar"><i style="width:{{ t.check_pct }}%"></i></span>{% endif %}
   <span class="tm">
-    {% if t.due %}<em>{{ '지남 · ' if t.overdue }}{{ t.due.strftime('%m/%d') }}</em>{% endif %}
-    {% if t.checks %}<i>☑ {{ t.checks|selectattr(0)|list|length }}/{{ t.checks|length }}</i>{% endif %}
-    {% if t.comments %}<i>💬 {{ t.comments|length }}</i>{% endif %}
-    <span class="av">{% for u in t.assignees %}<s style="--c:{{ u.color }}" title="{{ u.name }}">{{ u.name[-2:] }}</s>{% endfor %}</span>
+    {% if t.due %}<em class="due">{{ '지남 ' if t.overdue }}{{ t.due.strftime('%m.%d') }}</em>{% endif %}
+    {% if t.checks %}<span>{{ t.checks|selectattr(0)|list|length }}/{{ t.checks|length }}</span>{% endif %}
+    {% if t.comments %}<span>댓글 {{ t.comments|length }}</span>{% endif %}
+    {{ avs(t.assignees) }}
   </span>
 </a>
 {%- endmacro %}

@@ -1,43 +1,81 @@
-{% extends "flow/base.html" %}{% from "flow/_card.html" import card with context %}
+{% extends "flow/base.html" %}{% from "flow/_card.html" import card, avs, status with context %}
 {% block title %}대시보드{% endblock %}
+{% block crumb %}대시보드{% endblock %}
 {% block main %}
-<div class="head"><h1>{{ me.name }}님, 오늘 {{ today.strftime('%m월 %d일') }}</h1>
-  <div><a class="b" href="{{ url_for('flow.event') }}">+ 일정</a> <a class="b pri" href="{{ url_for('flow.task_new') }}">+ 업무</a></div></div>
-
-{% if projects %}
-<div class="projs">
-  {% for p in projects %}
-  <a class="pc" href="{{ url_for('flow.project', id=p.id) }}" style="--c:{{ p.color }}">
-    <b>{{ p.name }}</b>
-    <span>{% if p.start %}{{ p.start.strftime('%m/%d') }}{% if p.start >= today %} · D-{{ (p.start - today).days }}{% endif %}{% endif %} · 업무 {{ p.tasks|length }}개</span>
-    <i><s style="width:{{ p.progress }}%"></s></i><em>{{ p.progress }}%</em>
-  </a>
-  {% endfor %}
+<div class="hello">
+  <div><small>{{ today.strftime('%Y년 %m월 %d일') }} {{ '월화수목금토일'[today.weekday()] }}요일</small><h1>{{ me.name }}님, 오늘 할 일을 확인하세요</h1></div>
+  <div class="acts"><a class="btn ghost" href="{{ url_for('flow.event') }}">일정 추가</a><a class="btn" href="{{ url_for('flow.task_new') }}">업무 만들기</a></div>
 </div>
-{% endif %}
 
-<div class="grid2">
-  <section class="panel">
-    <h2>내 업무 <small>{{ mine|length }}</small></h2>
-    {% for t in mine %}{{ card(t) }}{% else %}<p class="empty">맡은 업무가 없습니다.</p>{% endfor %}
-  </section>
+<div class="kpis">
+  <a href="{{ url_for('flow.tasks', u=me.id) }}"><small>내 업무</small><b>{{ stats.mine }}</b><span>진행 전·진행 중</span></a>
+  <a href="{{ url_for('flow.tasks', u=me.id) }}"><small>오늘 마감</small><b>{{ stats.today }}</b><span>{{ today.strftime('%m.%d') }}</span></a>
+  <a class="{{ 'warn' if stats.review }}" href="#review"><small>확인 요청받음</small><b>{{ stats.review }}</b><span>내가 요청한 업무</span></a>
+  <a class="{{ 'bad' if stats.overdue }}" href="#overdue"><small>마감 지남</small><b>{{ stats.overdue }}</b><span>팀 전체</span></a>
+</div>
+
+<div class="cols-dash">
   <div>
-    {% if review %}<section class="panel warn"><h2>확인 요청받은 업무 <small>{{ review|length }}</small></h2>{% for t in review %}{{ card(t) }}{% endfor %}</section>{% endif %}
-    {% if overdue %}<section class="panel danger"><h2>마감 지난 업무 <small>{{ overdue|length }}</small></h2>{% for t in overdue %}{{ card(t) }}{% endfor %}</section>{% endif %}
+    {% for p in projects %}
+    <a class="proj-hero" href="{{ url_for('flow.project', id=p.id) }}" style="--c:{{ p.color }}">
+      <div><small>프로젝트</small><b>{{ p.name }}</b>
+        <span>{% if p.start %}{{ p.start.strftime('%Y.%m.%d') }}{% if p.start >= today %} · <em>D-{{ (p.start - today).days }}</em>{% endif %}{% endif %} · 업무 {{ p.tasks|length }}개 · 완료 {{ p.tasks|selectattr('status','equalto','done')|list|length }}개</span></div>
+      <div class="ring" style="--p:{{ p.progress }}"><b>{{ p.progress }}%</b></div>
+    </a>
+    {% endfor %}
+
     <section class="panel">
-      <h2>이번 주 일정</h2>
+      <div class="ph"><h2>팀 업무 분담</h2><a class="lnk" href="{{ url_for('flow.team') }}">분담 보드 열기</a></div>
+      <table class="load">
+        <tr><th>담당자</th><th>진행 현황</th><th class="n">할 일</th><th class="n">진행</th><th class="n">확인</th><th class="n">지연</th></tr>
+        {% for u, c, od, n in load %}
+        <tr>
+          <td><span class="who"><s class="av" style="--c:{{ u.color }}">{{ u.name[-2:] }}</s>{{ u.name }}</span></td>
+          <td><div class="stack" title="열린 업무 {{ n }}개">{% for k in ('doing','review','todo') %}{% if c[k] %}<i class="s-{{ k }}" style="width:{{ (c[k] / mx * 100)|round(1) }}%"></i>{% endif %}{% endfor %}</div></td>
+          <td class="n">{{ c.todo }}</td><td class="n">{{ c.doing }}</td><td class="n">{{ c.review }}</td><td class="n {{ 'red' if od }}">{{ od }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      <p class="legend-s"><i class="s-doing"></i>진행 중 <i class="s-review"></i>확인 요청 <i class="s-todo"></i>할 일 {% if unassigned %}· <a class="lnk" href="{{ url_for('flow.team') }}">담당자 없는 업무 {{ unassigned }}개</a>{% endif %}</p>
+    </section>
+
+    <section class="panel">
+      <div class="ph"><h2>내 업무 <small>{{ mine|length }}</small></h2><a class="lnk" href="{{ url_for('flow.tasks', u=me.id) }}">보드에서 보기</a></div>
+      <table class="list">
+        {% for t in mine %}
+        <tr class="{{ 'od' if t.overdue }}" onclick="location.href='{{ url_for('flow.task', id=t.id) }}'">
+          <td class="pri pr-{{ t.priority }}"></td>
+          <td><b>{{ t.title }}</b>{% if t.project %}<small style="--c:{{ t.project.color }}" class="pj">{{ t.project.name }}</small>{% endif %}</td>
+          <td>{{ status(t.status) }}</td>
+          <td class="due">{{ t.due.strftime('%m.%d') ~ ' ' ~ '월화수목금토일'[t.due.weekday()] if t.due else '-' }}</td>
+          <td>{{ avs(t.assignees) }}</td>
+        </tr>
+        {% else %}<tr><td class="empty">맡은 업무가 없습니다.</td></tr>{% endfor %}
+      </table>
+    </section>
+  </div>
+
+  <div>
+    {% if review %}<section class="panel" id="review"><div class="ph"><h2>확인 요청받은 업무</h2></div>{% for t in review %}{{ card(t) }}{% endfor %}</section>{% endif %}
+    {% if overdue %}<section class="panel" id="overdue"><div class="ph"><h2 class="red">마감 지난 업무</h2></div>{% for t in overdue %}{{ card(t) }}{% endfor %}</section>{% endif %}
+    <section class="panel">
+      <div class="ph"><h2>이번 주 일정</h2><a class="lnk" href="{{ url_for('flow.calendar') }}">캘린더</a></div>
       {% for e in events %}
-      <a class="ev" href="{{ url_for('flow.event', id=e.id) }}"><time>{{ e.start.strftime('%m/%d') }} {{ '월화수목금토일'[e.start.weekday()] }}{% if not e.all_day %} {{ e.start.strftime('%H:%M') }}{% endif %}</time><b>{{ e.title }}</b><span>{{ e.attendees|map(attribute='name')|join(', ') }}</span></a>
+      <a class="agenda" href="{{ url_for('flow.event', id=e.id) }}" style="--c:{{ e.project.color if e.project else '#4C6FB5' }}">
+        <time><b>{{ e.start.strftime('%d') }}</b>{{ '월화수목금토일'[e.start.weekday()] }}</time>
+        <div><b>{{ e.title }}</b><span>{{ '종일' if e.all_day else e.start.strftime('%H:%M') ~ (' – ' ~ e.end.strftime('%H:%M') if e.end else '') }}{{ ' · ' ~ e.place if e.place }}</span></div>
+        {{ avs(e.attendees, 4) }}
+      </a>
       {% else %}<p class="empty">이번 주 일정이 없습니다.</p>{% endfor %}
     </section>
     <section class="panel" id="notices">
-      <h2>알림 {% if unread %}<form method="post" action="{{ url_for('flow.notices_read') }}" class="inline"><button class="lnk">모두 읽음</button></form>{% endif %}</h2>
-      {% for n in notices %}<a class="nt {{ 'new' if not n.read }}" href="{{ url_for('flow.task', id=n.task_id) if n.task_id else '#' }}"><span>{{ n.text }}</span><time>{{ n.created_at.strftime('%m/%d %H:%M') }}</time></a>
-      {% else %}<p class="empty">알림이 없습니다.</p>{% endfor %}
+      <div class="ph"><h2>알림 {% if unread %}<small class="cnt">{{ unread }}</small>{% endif %}</h2>{% if unread %}<form method="post" action="{{ url_for('flow.notices_read') }}"><button class="lnk">모두 읽음</button></form>{% endif %}</div>
+      {% for n in notices %}<a class="feed {{ 'new' if not n.read }}" href="{{ url_for('flow.task', id=n.task_id) if n.task_id else '#' }}"><span>{{ n.text }}</span><time>{{ n.created_at.strftime('%m.%d %H:%M') }}</time></a>
+      {% else %}<p class="empty">새 알림이 없습니다.</p>{% endfor %}
     </section>
     <section class="panel">
-      <h2>최근 활동 <a class="lnk" href="{{ url_for('flow.activity_log') }}">전체</a></h2>
-      {% for a in acts %}<div class="act"><span>{{ a.text }}</span><time>{{ a.created_at.strftime('%m/%d %H:%M') }}</time></div>{% endfor %}
+      <div class="ph"><h2>최근 활동</h2><a class="lnk" href="{{ url_for('flow.activity_log') }}">전체</a></div>
+      {% for a in acts[:8] %}<div class="feed"><span>{{ a.text }}</span><time>{{ a.created_at.strftime('%m.%d %H:%M') }}</time></div>{% endfor %}
     </section>
   </div>
 </div>

@@ -33,7 +33,8 @@ def admin_only(f):
 @bp.context_processor
 def ctx():
     unread = Notice.query.filter_by(user_id=g.fu.id, read=False).count() if getattr(g, "fu", None) else 0
-    return dict(me=getattr(g, "fu", None), unread=unread, STATUS=STATUS, PRIORITY=PRIORITY, ROLES=ROLES, today=date.today())
+    side_projects = lambda: Project.query.filter_by(archived=False).order_by(Project.start).limit(6).all()
+    return dict(me=getattr(g, "fu", None), unread=unread, STATUS=STATUS, PRIORITY=PRIORITY, ROLES=ROLES, today=date.today(), side_projects=side_projects)
 
 
 @bp.route("/login", methods=["GET", "POST"])
@@ -121,8 +122,16 @@ def dashboard():
     acts = Activity.query.order_by(Activity.id.desc()).limit(15).all()
     notices = Notice.query.filter_by(user_id=g.fu.id).order_by(Notice.id.desc()).limit(10).all()
     projects = Project.query.filter_by(archived=False).order_by(Project.start).all()
+    open_all = Task.query.filter(Task.status != "done").all()
+    load = []
+    for u in users():
+        ts = [t for t in open_all if u in t.assignees]
+        load.append((u, {k: sum(t.status == k for t in ts) for k in ("todo", "doing", "review")}, sum(bool(t.overdue) for t in ts), len(ts)))
+    mx = max([n for *_, n in load] + [1])
+    stats = {"mine": len(mine), "today": sum(t.due == date.today() for t in mine), "overdue": len(overdue), "review": len(review)}
     return render_template("flow/dashboard.html", mine=mine, events=events, overdue=overdue, review=review,
-                           acts=acts, notices=notices, projects=projects)
+                           acts=acts, notices=notices, projects=projects, load=load, mx=mx, stats=stats,
+                           unassigned=sum(not t.assignees for t in open_all))
 
 
 @bp.post("/notices/read")
@@ -154,6 +163,7 @@ def _apply_task(t):
     t.project_id = f.get("project_id", type=int) or None
     t.priority = f.get("priority") if f.get("priority") in PRIORITY else "normal"
     t.due = date.fromisoformat(f["due"]) if f.get("due") else None
+    t.start = date.fromisoformat(f["start"]) if f.get("start") else None
     if f.get("status") in STATUS: t.status = f["status"]
     t.checklist = f.get("checklist") or None
     ids = [int(x) for x in f.getlist("assignees") if x.isdigit()]
@@ -243,6 +253,32 @@ def task_delete(id):
     return redirect(url_for("flow.tasks"))
 
 
+# ---------- 팀 업무 분담 ----------
+@bp.route("/team")
+def team():
+    us = users()
+    open_ = Task.query.filter(Task.status != "done").order_by(Task.due.is_(None), Task.due).all()
+    pid = request.args.get("p", type=int)
+    if pid: open_ = [t for t in open_ if t.project_id == pid]
+    cols = [(u, [t for t in open_ if u in t.assignees]) for u in us]
+    none = [t for t in open_ if not t.assignees]
+    return render_template("flow/team.html", cols=cols, unassigned=none, projects=Project.query.filter_by(archived=False).all(), pid=pid)
+
+
+@bp.post("/team/move")
+def team_move():
+    d = request.get_json(force=True)
+    t = db.session.get(Task, int(d["task"])) or abort(404)
+    to = db.session.get(FlowUser, int(d["to"])) if d.get("to") else None
+    frm = int(d["from"]) if d.get("from") else None
+    names = [u for u in t.assignees if u.id != frm]
+    if to and to not in names: names.append(to)
+    t.assignees = names
+    log(f"{g.fu.name}님이 '{t.title}' 담당을 {(to.name if to else '미지정')}(으)로 옮겼습니다", t, notify=[to] if to else [])
+    db.session.commit()
+    return jsonify(ok=True)
+
+
 # ---------- 캘린더 ----------
 @bp.route("/calendar")
 def calendar():
@@ -327,7 +363,8 @@ def projects():
 def apply_template(p, owner=None):
     d0 = p.end or p.start
     for off, title, pr in EVENT_TEMPLATE:
-        t = Task(project=p, title=title, priority=pr, due=d0 + timedelta(days=off), requester=owner)
+        due = d0 + timedelta(days=off)
+        t = Task(project=p, title=title, priority=pr, due=due, start=due - timedelta(days=0 if off >= 0 else (4 if pr == "high" else 2)), requester=owner)
         if owner: t.assignees = [owner]
         db.session.add(t)
     return len(EVENT_TEMPLATE)
@@ -342,7 +379,16 @@ def project(id):
     ex = db.session.get(Exhibition, p.exhibition_id) if p.exhibition_id else None
     cols = {k: [t for t in sorted(p.tasks, key=lambda t: (t.due or date.max, t.id)) if t.status == k] for k in STATUS}
     evs = FlowEvent.query.filter_by(project_id=p.id).order_by(FlowEvent.start).all()
-    return render_template("flow/project.html", p=p, ex=ex, cols=cols, evs=evs)
+    view = request.args.get("view", "timeline")
+    gantt = None
+    spans = [t.span for t in p.tasks if t.span]
+    if spans:
+        g0 = min(s for s, _ in spans + ([(p.start, p.start)] if p.start else [])) - timedelta(days=2)
+        g1 = max(e for _, e in spans + ([(p.end or p.start, p.end or p.start)] if p.start else [])) + timedelta(days=2)
+        days = [g0 + timedelta(days=i) for i in range((g1 - g0).days + 1)]
+        rows = sorted([t for t in p.tasks if t.span], key=lambda t: (t.span[0], t.span[1], t.id))
+        gantt = {"days": days, "rows": rows, "g0": g0}
+    return render_template("flow/project.html", p=p, ex=ex, cols=cols, evs=evs, view=view, gantt=gantt)
 
 
 # ---------- 사용자 관리 (총관리자) ----------

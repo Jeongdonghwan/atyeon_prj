@@ -1,32 +1,85 @@
-{% extends "flow/base.html" %}{% from "flow/_card.html" import card with context %}
+{% extends "flow/base.html" %}{% from "flow/_card.html" import card, avs, status with context %}
 {% block title %}{{ p.name }}{% endblock %}
-{% block mainclass %}wide{% endblock %}
+{% block crumb %}<a href="{{ url_for('flow.projects') }}">프로젝트</a> / {{ p.name }}{% endblock %}
+{% block mainclass %}pad wide{% endblock %}
 {% block main %}
-<div class="crumbs"><a href="{{ url_for('flow.projects') }}">프로젝트</a></div>
-<div class="head">
-  <h1><span class="dot" style="--c:{{ p.color }}"></span>{{ p.name }}</h1>
-  <div><a class="b" href="{{ url_for('flow.event') }}">+ 일정</a> <a class="b pri" href="{{ url_for('flow.task_new', p=p.id) }}">+ 업무</a></div>
+<div class="hello">
+  <div><h1><i class="pdot" style="--c:{{ p.color }}"></i>{{ p.name }}</h1>
+    <p class="muted">{% if p.start %}{{ p.start.strftime('%Y.%m.%d') }}{% if p.start >= today %} · D-{{ (p.start - today).days }}{% endif %} · {% endif %}업무 {{ p.tasks|length }}개 · 지연 {{ p.tasks|selectattr('overdue')|list|length }}개</p></div>
+  <div class="acts"><a class="btn ghost" href="{{ url_for('flow.event') }}">일정 추가</a><a class="btn" href="{{ url_for('flow.task_new', p=p.id) }}">업무 만들기</a></div>
 </div>
-<div class="pstat">
-  {% if p.start %}<div><small>일정</small><b>{{ p.start.strftime('%Y.%m.%d') }}{% if p.start >= today %} · D-{{ (p.start - today).days }}{% endif %}</b></div>{% endif %}
-  <div><small>진행률</small><b>{{ p.progress }}%</b><i><s style="width:{{ p.progress }}%"></s></i></div>
-  <div><small>업무</small><b>{{ p.tasks|length }}개 · 지연 {{ p.tasks|selectattr('overdue')|list|length }}</b></div>
-  {% if ex %}<div><small>사이트 신청</small><b>{{ ex.booked }} / {{ ex.capacity }}명</b><a class="lnk" href="/admin/registrations?e={{ ex.id }}" target="_blank">명단 ↗</a></div>{% endif %}
+<div class="kpis">
+  <div><small>진행률</small><b>{{ p.progress }}%</b><span class="meter"><i style="width:{{ p.progress }}%;--c:{{ p.color }}"></i></span></div>
+  {% for k in ('todo','doing','review') %}<div><small>{{ STATUS[k] }}</small><b>{{ cols[k]|length }}</b><span>개</span></div>{% endfor %}
+  {% if ex %}<a href="/admin/registrations?e={{ ex.id }}" target="_blank"><small>사이트 사전 신청</small><b>{{ ex.booked }}<em>/{{ ex.capacity }}</em></b><span>명단 보기 ↗</span></a>{% endif %}
 </div>
+
+<div class="tabs">
+  <a class="{{ 'on' if view=='timeline' }}" href="?view=timeline">타임라인</a>
+  <a class="{{ 'on' if view=='board' }}" href="?view=board">보드</a>
+  <a class="{{ 'on' if view=='list' }}" href="?view=list">목록</a>
+</div>
+
+{% if view == 'timeline' %}
+  {% if gantt %}
+  {% set W = 34 %}
+  <div class="gantt panel np">
+    <div class="g-grid" style="--days:{{ gantt.days|length }};--w:{{ W }}px">
+      <div class="g-head g-left">업무</div>
+      <div class="g-head g-days">
+        {% for d in gantt.days %}<span class="{{ 'we' if d.weekday() >= 5 }}{{ ' td' if d == today }}{{ ' ev' if p.start and d == p.start }}">{% if d.day == 1 or loop.first %}<em>{{ d.month }}월</em>{% endif %}<b>{{ d.day }}</b><i>{{ '월화수목금토일'[d.weekday()] }}</i></span>{% endfor %}
+      </div>
+      {% for t in gantt.rows %}
+        {% set s, e = t.span %}
+        {% set x = (s - gantt.g0).days %}{% set w = (e - s).days + 1 %}
+        {% set c = t.assignees[0].color if t.assignees else '#9aa3b2' %}
+        <a class="g-left g-row" href="{{ url_for('flow.task', id=t.id) }}"><span class="pri pr-{{ t.priority }}"></span><b>{{ t.title }}</b>{{ status(t.status) }}</a>
+        <div class="g-track">
+          {% if loop.first %}{% set ti = (today - gantt.g0).days %}{% if 0 <= ti < gantt.days|length %}<span class="g-today" style="left:calc({{ ti }} * var(--w) + var(--w) / 2)"><em>오늘</em></span>{% endif %}
+          {% if p.start %}{% set pi = (p.start - gantt.g0).days %}<span class="g-event" style="left:calc({{ pi }} * var(--w))"><em>행사일</em></span>{% endif %}{% endif %}
+          <a class="g-bar s-{{ t.status }}{{ ' od' if t.overdue }}" href="{{ url_for('flow.task', id=t.id) }}" style="left:calc({{ x }} * var(--w) + 2px);width:calc({{ w }} * var(--w) - 4px);--c:{{ c }}" title="{{ t.title }} · {{ s.strftime('%m.%d') }}–{{ e.strftime('%m.%d') }}">
+            <span>{{ t.title }}</span>{{ avs(t.assignees, 2) }}
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  <p class="muted small">막대 색은 담당자 색입니다. 시작일·마감일은 업무 화면에서 바꿉니다.</p>
+  {% else %}<p class="empty panel">날짜가 있는 업무가 없습니다.</p>{% endif %}
+
+{% elif view == 'board' %}
 <div class="board">
   {% for k, l in STATUS.items() %}
-  <section class="col" data-status="{{ k }}"><h3>{{ l }} <small>{{ cols[k]|length }}</small></h3><div class="drop">{% for t in cols[k] %}{{ card(t, false) }}{% endfor %}</div></section>
+  <section class="col" data-status="{{ k }}"><h3>{{ status(k) }} <small>{{ cols[k]|length }}</small></h3><div class="drop">{% for t in cols[k] %}{{ card(t, false) }}{% endfor %}</div></section>
   {% endfor %}
 </div>
-{% if evs %}<section class="panel"><h2>프로젝트 일정</h2>{% for e in evs %}<a class="ev" href="{{ url_for('flow.event', id=e.id) }}"><time>{{ e.start.strftime('%m/%d %H:%M') }}</time><b>{{ e.title }}</b><span>{{ e.attendees|map(attribute='name')|join(', ') }}</span></a>{% endfor %}</section>{% endif %}
-<form method="post"><button class="lnk" name="archive" value="1">{{ '보관 해제' if p.archived else '프로젝트 보관 (목록에서 숨김)' }}</button></form>
+
+{% else %}
+<section class="panel np">
+  <table class="list full">
+    <tr><th></th><th>업무</th><th>상태</th><th>시작</th><th>마감</th><th>담당</th></tr>
+    {% for k in STATUS %}{% for t in cols[k] %}
+    <tr class="{{ 'od' if t.overdue }}" onclick="location.href='{{ url_for('flow.task', id=t.id) }}'">
+      <td class="pri pr-{{ t.priority }}"></td><td><b>{{ t.title }}</b></td><td>{{ status(t.status) }}</td>
+      <td class="due">{{ t.start.strftime('%m.%d') if t.start else '-' }}</td><td class="due">{{ t.due.strftime('%m.%d') if t.due else '-' }}</td><td>{{ avs(t.assignees) }}</td>
+    </tr>
+    {% endfor %}{% endfor %}
+  </table>
+</section>
+{% endif %}
+
+{% if evs %}<section class="panel"><div class="ph"><h2>프로젝트 일정</h2></div>
+  {% for e in evs %}<a class="agenda" href="{{ url_for('flow.event', id=e.id) }}" style="--c:{{ p.color }}"><time><b>{{ e.start.strftime('%d') }}</b>{{ e.start.month }}월</time><div><b>{{ e.title }}</b><span>{{ '종일' if e.all_day else e.start.strftime('%H:%M') ~ (' – ' ~ e.end.strftime('%H:%M') if e.end else '') }}{{ ' · ' ~ e.place if e.place }}</span></div>{{ avs(e.attendees, 4) }}</a>{% endfor %}
+</section>{% endif %}
+<form method="post"><button class="lnk">{{ '보관 해제' if p.archived else '프로젝트 보관 (목록에서 숨김)' }}</button><input type="hidden" name="archive" value="1"></form>
 {% endblock %}
 {% block scripts %}
 <script>
 let dragId=null;
-document.querySelectorAll('.tc').forEach(c=>{c.addEventListener('dragstart',()=>{dragId=c.dataset.id});});
-document.querySelectorAll('.col').forEach(col=>{col.addEventListener('dragover',e=>{e.preventDefault();col.classList.add('over')});col.addEventListener('dragleave',()=>col.classList.remove('over'));
+document.querySelectorAll('.board .tc').forEach(c=>{c.addEventListener('dragstart',()=>{dragId=c.dataset.id;c.classList.add('dragging')});c.addEventListener('dragend',()=>c.classList.remove('dragging'))});
+document.querySelectorAll('.board .col').forEach(col=>{col.addEventListener('dragover',e=>{e.preventDefault();col.classList.add('over')});col.addEventListener('dragleave',()=>col.classList.remove('over'));
  col.addEventListener('drop',async e=>{e.preventDefault();col.classList.remove('over');if(!dragId)return;col.querySelector('.drop').prepend(document.querySelector(`.tc[data-id="${dragId}"]`));
  await fetch(`/flow/tasks/${dragId}/status`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:col.dataset.status})});});});
+const t=document.querySelector('.g-today');if(t){const sc=document.querySelector('.gantt');sc.scrollLeft=Math.max(0,t.offsetLeft-300);}
 </script>
 {% endblock %}

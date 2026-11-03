@@ -1,13 +1,12 @@
 {% extends "flow/base.html" %}
 {% block title %}로그인{% endblock %}
-{% block mainclass %}center{% endblock %}
-{% block main %}
+{% block main_bare %}
 <form class="login" method="post">
-  <div class="brand big">ARTEYEON <small>FLOW</small></div>
+  <div class="logo"><b>A</b><span>ARTEYEON<small>FLOW</small></span></div>
   <p>아르테연 업무 공유 공간</p>
   <label>아이디<input name="id" required autofocus autocomplete="username"></label>
   <label>비밀번호<input name="pw" type="password" required autocomplete="current-password"></label>
-  <button class="b pri" type="submit">로그인</button>
+  <button class="btn" type="submit">로그인</button>
   <small class="muted">계정은 총관리자에게 요청하세요.</small>
 </form>
 {% endblock %}

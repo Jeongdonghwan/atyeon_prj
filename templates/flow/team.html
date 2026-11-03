@@ -1,0 +1,40 @@
+{% extends "flow/base.html" %}{% from "flow/_card.html" import card with context %}
+{% block title %}업무 분담{% endblock %}
+{% block crumb %}업무 분담{% endblock %}
+{% block mainclass %}pad wide{% endblock %}
+{% block main %}
+<div class="hello">
+  <div><h1>업무 분담</h1><p class="muted">사람별로 열린 업무를 봅니다. 카드를 다른 사람 칸으로 끌면 담당이 바뀌고, 받은 사람에게 알림이 갑니다.</p></div>
+  <div class="acts">
+    <form method="get"><select name="p" onchange="this.form.submit()" class="sel"><option value="">전체 프로젝트</option>{% for p in projects %}<option value="{{ p.id }}" {{ 'selected' if pid==p.id }}>{{ p.name }}</option>{% endfor %}</select></form>
+    <a class="btn" href="{{ url_for('flow.task_new', p=pid) }}">업무 만들기</a>
+  </div>
+</div>
+<div class="lanes">
+  {% if unassigned %}<section class="lane none" data-user="">
+    <header><s class="av" style="--c:#9aa3b2">?</s><div><b>담당자 없음</b><small>{{ unassigned|length }}개</small></div></header>
+    <div class="drop">{% for t in unassigned %}{{ card(t) }}{% endfor %}</div>
+  </section>{% endif %}
+  {% for u, ts in cols %}
+  <section class="lane" data-user="{{ u.id }}" style="--c:{{ u.color }}">
+    <header><s class="av" style="--c:{{ u.color }}">{{ u.name[-2:] }}</s><div><b>{{ u.name }}</b><small>{{ ts|length }}개 · 지연 {{ ts|selectattr('overdue')|list|length }}</small></div>
+      <a href="{{ url_for('flow.tasks', u=u.id) }}" class="lnk">보드</a></header>
+    <div class="drop">{% for t in ts %}{{ card(t, true, u.id) }}{% else %}<p class="empty">열린 업무 없음</p>{% endfor %}</div>
+  </section>
+  {% endfor %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+let drag=null;
+document.querySelectorAll('.tc').forEach(c=>{c.addEventListener('dragstart',e=>{drag=c;c.classList.add('dragging');e.dataTransfer.effectAllowed='move'});c.addEventListener('dragend',()=>c.classList.remove('dragging'))});
+document.querySelectorAll('.lane').forEach(l=>{
+  l.addEventListener('dragover',e=>{e.preventDefault();l.classList.add('over')});
+  l.addEventListener('dragleave',()=>l.classList.remove('over'));
+  l.addEventListener('drop',async e=>{e.preventDefault();l.classList.remove('over');if(!drag)return;
+    const to=l.dataset.user,from=drag.dataset.from||'';if(to===from)return;
+    const r=await fetch('{{ url_for("flow.team_move") }}',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({task:drag.dataset.id,to,from})});
+    if(r.ok)location.reload();});
+});
+</script>
+{% endblock %}

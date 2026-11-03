@@ -70,6 +70,7 @@ class Task(db.Model):
     body = db.Column(db.Text)
     status = db.Column(db.String(10), default="todo")
     priority = db.Column(db.String(10), default="normal")
+    start = db.Column(db.Date)               # 타임라인 시작일 (없으면 마감일 기준)
     due = db.Column(db.Date)
     requester_id = db.Column(db.ForeignKey("flow_user.id"))
     link_type = db.Column(db.String(20))     # registration / inquiry / exhibition / artwork / artist
@@ -85,6 +86,18 @@ class Task(db.Model):
     @property
     def overdue(self):
         return self.due and self.status != "done" and self.due < datetime.now().date()
+
+    @property
+    def span(self):
+        """타임라인용 (시작, 끝)"""
+        if not self.due and not self.start: return None
+        s = self.start or self.due; e = self.due or self.start
+        return (min(s, e), max(s, e))
+
+    @property
+    def check_pct(self):
+        c = self.checks
+        return round(100 * sum(d for d, _ in c) / len(c)) if c else None
 
     @property
     def checks(self):
