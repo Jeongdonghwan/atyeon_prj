@@ -6,6 +6,8 @@ import re
 from models import db, Artist, Artwork, Exhibition, Program, Journal, Media, Inquiry, SiteConfig, Registration
 import admin
 import seo
+import flow_models  # noqa: F401  (flow_ 테이블 등록)
+import flow
 
 load_dotenv()
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -57,6 +59,7 @@ def img(v, w=1200):
 
 app.jinja_env.globals["_img"] = img
 app.register_blueprint(seo.bp)
+app.register_blueprint(flow.bp)
 
 
 @app.context_processor
@@ -184,6 +187,8 @@ def event_apply(slug):
                              people=people, message=(f.get("message") or "").strip()[:300] or None, consent=True,
                              status="received" if e.fee else "confirmed")
             db.session.add(r); db.session.commit()
+            try: flow.on_registration(r)
+            except Exception: app.logger.exception('flow task 생성 실패')
             return redirect(url_for("event_apply", slug=slug, done=r.id))
     return render_template("event_apply.html", e=e, done=done, err=err, form=request.form)
 
@@ -257,10 +262,13 @@ def contact():
         if not (f.get("name") and f.get("email") and f.get("message") and f.get("consent")):
             flash("필수 항목을 확인해 주세요.")
         else:
-            db.session.add(Inquiry(kind=f.get("kind", "general"), name=f["name"], email=f["email"],
+            q = Inquiry(kind=f.get("kind", "general"), name=f["name"], email=f["email"],
                                    organization=f.get("organization"), country=f.get("country"),
-                                   message=f["message"], consent=True))
+                                   message=f["message"], consent=True)
+            db.session.add(q)
             db.session.commit()
+            try: flow.on_inquiry(q)
+            except Exception: app.logger.exception('flow task 생성 실패')
             return redirect(url_for("contact", sent=1))
     return render_template("contact.html", kind=request.args.get("kind", "general"), sent=request.args.get("sent"))
 

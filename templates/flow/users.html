@@ -1,0 +1,37 @@
+{% extends "flow/base.html" %}
+{% block title %}사용자 관리{% endblock %}
+{% block main %}
+<h1>사용자 관리</h1>
+<div class="grid2 r">
+  <section class="panel">
+    <table class="tbl">
+      <tr><th>이름</th><th>아이디</th><th>역할</th><th>최근 로그인</th><th></th></tr>
+      {% for u in rows %}
+      <tr class="{{ 'off' if not u.active }}">
+        <td><span class="who1"><s style="--c:{{ u.color }}">{{ u.name[-2:] }}</s>{{ u.name }}</span>{% if u.must_change_pw %}<small class="tag">비번 변경 전</small>{% endif %}</td>
+        <td>{{ u.login_id }}</td>
+        <td>{% if u.id == me.id %}{{ u.role_ko }}{% else %}
+          <form method="post" class="inline"><input type="hidden" name="uid" value="{{ u.id }}"><input type="hidden" name="action" value="role">
+          <select name="role" onchange="this.form.submit()">{% for k,l in ROLES.items() %}<option value="{{ k }}" {{ 'selected' if u.role==k }}>{{ l }}</option>{% endfor %}</select></form>{% endif %}</td>
+        <td>{{ u.last_login.strftime('%m/%d %H:%M') if u.last_login else '-' }}</td>
+        <td class="acts">
+          <form method="post" class="inline"><input type="hidden" name="uid" value="{{ u.id }}"><input type="hidden" name="action" value="color"><input type="color" name="color" value="{{ u.color }}" onchange="this.form.submit()" title="표시 색"></form>
+          <form method="post" class="inline" onsubmit="return confirm('{{ u.name }}님 비밀번호를 초기화할까요?')"><input type="hidden" name="uid" value="{{ u.id }}"><button class="lnk" name="action" value="reset">비번 초기화</button></form>
+          {% if u.id != me.id %}<form method="post" class="inline"><input type="hidden" name="uid" value="{{ u.id }}"><button class="lnk {{ '' if u.active else 'red' }}" name="action" value="toggle">{{ '비활성화' if u.active else '활성화' }}</button></form>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </section>
+  <form class="panel form" method="post">
+    <h2>사용자 추가</h2>
+    <input type="hidden" name="action" value="add">
+    <label>이름 *<input name="name" required></label>
+    <label>아이디 * <small class="muted">영문·숫자</small><input name="login_id" required pattern="[A-Za-z0-9_.-]{3,30}"></label>
+    <label>연락처<input name="phone"></label>
+    <label>역할<select name="role">{% for k,l in ROLES.items() %}<option value="{{ k }}" {{ 'selected' if k=='member' }}>{{ l }}</option>{% endfor %}</select></label>
+    <button class="b pri">추가 · 임시 비밀번호 발급</button>
+    <p class="muted">임시 비밀번호는 추가 직후 화면 위에 한 번만 표시됩니다. 첫 로그인 때 본인이 바꿉니다.</p>
+  </form>
+</div>
+{% endblock %}

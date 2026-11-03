@@ -1,0 +1,34 @@
+{% extends "flow/base.html" %}{% from "flow/_card.html" import card with context %}
+{% block title %}업무 보드{% endblock %}
+{% block mainclass %}wide{% endblock %}
+{% block main %}
+<div class="head"><h1>업무 보드</h1><a class="b pri" href="{{ url_for('flow.task_new', p=pid) }}">+ 업무</a></div>
+<form class="filters" method="get">
+  <select name="p" onchange="this.form.submit()"><option value="">전체 프로젝트</option>{% for p in projects %}<option value="{{ p.id }}" {{ 'selected' if pid==p.id }}>{{ p.name }}</option>{% endfor %}</select>
+  <select name="u" onchange="this.form.submit()"><option value="">전체 담당자</option>{% for u in users %}<option value="{{ u.id }}" {{ 'selected' if uid==u.id }}>{{ u.name }}</option>{% endfor %}</select>
+  <a class="lnk" href="{{ url_for('flow.tasks', u=me.id) }}">내 업무만</a>
+</form>
+<div class="board">
+  {% for k, l in STATUS.items() %}
+  <section class="col" data-status="{{ k }}">
+    <h3>{{ l }} <small>{{ cols[k]|length }}</small><a href="{{ url_for('flow.task_new', s=k, p=pid) }}" title="여기에 추가">+</a></h3>
+    <div class="drop">{% for t in cols[k] %}{{ card(t) }}{% endfor %}</div>
+  </section>
+  {% endfor %}
+</div>
+<p class="muted">카드를 다른 칸으로 끌어 놓으면 상태가 바뀝니다. 모바일에서는 카드를 열어 상태를 바꾸세요.</p>
+{% endblock %}
+{% block scripts %}
+<script>
+let dragId=null;
+document.querySelectorAll('.tc').forEach(c=>{c.addEventListener('dragstart',e=>{dragId=c.dataset.id;c.classList.add('dragging');e.dataTransfer.effectAllowed='move'});c.addEventListener('dragend',()=>c.classList.remove('dragging'))});
+document.querySelectorAll('.col').forEach(col=>{
+  col.addEventListener('dragover',e=>{e.preventDefault();col.classList.add('over')});
+  col.addEventListener('dragleave',()=>col.classList.remove('over'));
+  col.addEventListener('drop',async e=>{e.preventDefault();col.classList.remove('over');if(!dragId)return;
+    const card=document.querySelector(`.tc[data-id="${dragId}"]`);col.querySelector('.drop').prepend(card);
+    await fetch(`/flow/tasks/${dragId}/status`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:col.dataset.status})});
+    document.querySelectorAll('.col').forEach(c=>c.querySelector('h3 small').textContent=c.querySelectorAll('.tc').length);});
+});
+</script>
+{% endblock %}

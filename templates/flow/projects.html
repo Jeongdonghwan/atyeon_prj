@@ -1,0 +1,28 @@
+{% extends "flow/base.html" %}
+{% block title %}프로젝트{% endblock %}
+{% block main %}
+<h1>프로젝트</h1>
+<div class="grid2">
+  <section class="panel">
+    {% for p in rows %}
+    <a class="prow {{ 'arch' if p.archived }}" href="{{ url_for('flow.project', id=p.id) }}" style="--c:{{ p.color }}">
+      <b>{{ p.name }}</b><span>{{ p.start.strftime('%Y.%m.%d') if p.start }}{{ ' ~ ' ~ p.end.strftime('%m.%d') if p.end and p.end != p.start }} · 업무 {{ p.tasks|length }}개 · {{ p.progress }}%{{ ' · 보관됨' if p.archived }}</span>
+      <i><s style="width:{{ p.progress }}%"></s></i>
+    </a>
+    {% else %}<p class="empty">프로젝트가 없습니다.</p>{% endfor %}
+  </section>
+  <form class="panel form" method="post">
+    <h2>새 프로젝트</h2>
+    <label>이름 *<input name="name" required placeholder="예) 2027 신년 기획전"></label>
+    <div class="row3">
+      <label>종류<select name="kind"><option value="event">행사</option><option value="exhibition">전시</option><option value="sales">작품 판매</option><option value="etc">기타</option></select></label>
+      <label>시작(행사일)<input type="date" name="start"></label>
+      <label>종료<input type="date" name="end"></label>
+    </div>
+    <label>사이트 전시와 연결<select name="exhibition_id"><option value="">연결 안 함</option>{% for x in exhibitions %}<option value="{{ x.id }}">{{ x.title_ko }} ({{ x.start_date }})</option>{% endfor %}</select></label>
+    <label>색<input type="color" name="color" value="#B8935A"></label>
+    <label class="chip"><input type="checkbox" name="template" checked> 행사 템플릿 업무 자동 생성 (D-30 작가 확정 ~ D+3 정산, 12개)</label>
+    <button class="b pri">만들기</button>
+  </form>
+</div>
+{% endblock %}

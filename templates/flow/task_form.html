@@ -1,0 +1,6 @@
+{% extends "flow/base.html" %}
+{% block title %}{{ '업무 수정' if t.id else '새 업무' }}{% endblock %}
+{% block main %}
+<h1>{{ '업무 수정' if t.id else '새 업무' }}</h1>
+{% include "flow/_task_fields.html" %}
+{% endblock %}

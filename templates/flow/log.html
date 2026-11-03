@@ -1,0 +1,9 @@
+{% extends "flow/base.html" %}
+{% block title %}기록{% endblock %}
+{% block main %}
+<h1>전체 업무 기록</h1>
+<section class="panel">
+  {% for a in acts %}<div class="act"><span>{% if a.task_id %}<a href="{{ url_for('flow.task', id=a.task_id) }}">{{ a.text }}</a>{% else %}{{ a.text }}{% endif %}</span><time>{{ a.created_at.strftime('%Y-%m-%d %H:%M') }}</time></div>
+  {% else %}<p class="empty">기록이 없습니다.</p>{% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "flow/base.html" %}
+{% block title %}{{ '일정 수정' if e.id else '새 일정' }}{% endblock %}
+{% block main %}
+<h1>{{ '일정 수정' if e.id else '새 일정' }}</h1>
+<form class="panel form narrow" method="post">
+  <label>제목 *<input name="title" required value="{{ e.title or '' }}" placeholder="예) 작가 미팅 · 포스터 시안 검토"></label>
+  <div class="row3">
+    <label>날짜<input type="date" name="date" value="{{ e.start.strftime('%Y-%m-%d') if e.start else today }}"></label>
+    <label>시작<input type="time" name="t0" value="{{ e.start.strftime('%H:%M') if e.start and not e.all_day else '10:00' }}"></label>
+    <label>종료<input type="time" name="t1" value="{{ e.end.strftime('%H:%M') if e.end else '11:00' }}"></label>
+  </div>
+  <label class="chip"><input type="checkbox" name="all_day" {{ 'checked' if e.all_day }}> 종일</label>
+  <label>장소<input name="place" value="{{ e.place or '' }}"></label>
+  <label>프로젝트<select name="project_id"><option value="">없음</option>{% for p in projects %}<option value="{{ p.id }}" {{ 'selected' if e.project_id==p.id }}>{{ p.name }}</option>{% endfor %}</select></label>
+  <fieldset><legend>참석자</legend><div class="who-pick">{% set ids = e.attendees|map(attribute='id')|list %}
+    {% for u in users %}<label class="chip"><input type="checkbox" name="attendees" value="{{ u.id }}" {{ 'checked' if u.id in ids }}><s style="--c:{{ u.color }}">{{ u.name[-2:] }}</s>{{ u.name }}</label>{% endfor %}</div></fieldset>
+  <label>메모<textarea name="memo" rows="3">{{ e.memo or '' }}</textarea></label>
+  <div class="actions"><button class="b pri">저장</button><a class="b" href="{{ url_for('flow.calendar') }}">취소</a>
+    {% if e.id %}<button class="lnk red" name="delete" value="1" onclick="return confirm('일정을 삭제할까요?')">삭제</button>{% endif %}</div>
+</form>
+{% endblock %}

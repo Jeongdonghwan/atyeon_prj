@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>{% block title %}업무{% endblock %} · ARTEYEON FLOW</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='flow.css') }}">
+{% block head %}{% endblock %}
+</head>
+<body>
+{% if me %}
+<header class="top">
+  <a class="brand" href="{{ url_for('flow.dashboard') }}">ARTEYEON <small>FLOW</small></a>
+  <nav>
+    <a class="{{ 'on' if request.endpoint=='flow.dashboard' }}" href="{{ url_for('flow.dashboard') }}">대시보드</a>
+    <a class="{{ 'on' if request.endpoint in ('flow.tasks','flow.task','flow.task_new') }}" href="{{ url_for('flow.tasks') }}">업무</a>
+    <a class="{{ 'on' if request.endpoint in ('flow.calendar','flow.event') }}" href="{{ url_for('flow.calendar') }}">캘린더</a>
+    <a class="{{ 'on' if request.endpoint in ('flow.projects','flow.project') }}" href="{{ url_for('flow.projects') }}">프로젝트</a>
+    <a class="{{ 'on' if request.endpoint=='flow.activity_log' }}" href="{{ url_for('flow.activity_log') }}">기록</a>
+    {% if me.is_admin %}<a class="{{ 'on' if request.endpoint=='flow.users_admin' }}" href="{{ url_for('flow.users_admin') }}">사용자</a>
+    <a href="/admin" target="_blank">사이트 관리 ↗</a>{% endif %}
+  </nav>
+  <div class="who">
+    <a class="bell" href="{{ url_for('flow.dashboard') }}#notices" title="알림">알림{% if unread %}<b>{{ unread }}</b>{% endif %}</a>
+    <a href="{{ url_for('flow.me') }}"><s style="--c:{{ me.color }}">{{ me.name[-2:] }}</s>{{ me.name }}</a>
+    <a class="out" href="{{ url_for('flow.logout') }}">로그아웃</a>
+  </div>
+</header>
+{% endif %}
+<main class="{% block mainclass %}wrap{% endblock %}">
+  {% with msgs = get_flashed_messages() %}{% for mm in msgs %}<div class="flash">{{ mm }}</div>{% endfor %}{% endwith %}
+  {% block main %}{% endblock %}
+</main>
+{% block scripts %}{% endblock %}
+</body>
+</html>

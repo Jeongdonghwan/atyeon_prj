@@ -1,0 +1,23 @@
+{% extends "flow/base.html" %}
+{% block title %}캘린더{% endblock %}
+{% block mainclass %}wide{% endblock %}
+{% block head %}<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>{% endblock %}
+{% block main %}
+<div class="head"><h1>캘린더</h1>
+  <div class="filters"><select id="uf"><option value="">전체</option>{% for u in users %}<option value="{{ u.id }}">{{ u.name }}</option>{% endfor %}</select>
+  <a class="b pri" href="{{ url_for('flow.event') }}">+ 일정</a></div></div>
+<div class="legend">{% for u in users %}<span><s style="--c:{{ u.color }}"></s>{{ u.name }}</span>{% endfor %}{% for p in projects %}<span><s class="sq" style="--c:{{ p.color }}"></s>{{ p.name }}</span>{% endfor %}<span class="muted">· 날짜를 누르면 그날 일정 추가</span></div>
+<div class="panel"><div id="cal"></div></div>
+{% endblock %}
+{% block scripts %}
+<script>
+const cal=new FullCalendar.Calendar(document.getElementById('cal'),{
+  locale:'ko',initialView:innerWidth<700?'listMonth':'dayGridMonth',height:'auto',firstDay:0,
+  headerToolbar:{left:'prev,next today',center:'title',right:'dayGridMonth,timeGridWeek,listMonth'},
+  buttonText:{today:'오늘',month:'월',week:'주',list:'목록'},dayMaxEvents:4,
+  events:info=>fetch('{{ url_for("flow.calendar_feed") }}'+(document.getElementById('uf').value?'?u='+document.getElementById('uf').value:'')).then(r=>r.json()),
+  dateClick:i=>location.href='{{ url_for("flow.event") }}?date='+i.dateStr.slice(0,10),
+});
+cal.render();document.getElementById('uf').onchange=()=>cal.refetchEvents();
+</script>
+{% endblock %}

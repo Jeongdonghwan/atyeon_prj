@@ -1,0 +1,13 @@
+{% extends "flow/base.html" %}
+{% block title %}내 정보{% endblock %}
+{% block main %}
+<h1>내 정보</h1>
+<form class="panel form narrow" method="post">
+  <p class="muted">{{ me.name }} · {{ me.login_id }} · {{ me.role_ko }}</p>
+  <label>연락처<input name="phone" value="{{ me.phone or '' }}"></label>
+  <label>현재 비밀번호<input name="cur" type="password" required autocomplete="current-password"></label>
+  <label>새 비밀번호 (8자 이상)<input name="new" type="password" required minlength="8" autocomplete="new-password"></label>
+  <label>새 비밀번호 확인<input name="new2" type="password" required minlength="8" autocomplete="new-password"></label>
+  <button class="b pri">저장</button>
+</form>
+{% endblock %}

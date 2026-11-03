@@ -1,0 +1,32 @@
+{% extends "flow/base.html" %}{% from "flow/_card.html" import card with context %}
+{% block title %}{{ p.name }}{% endblock %}
+{% block mainclass %}wide{% endblock %}
+{% block main %}
+<div class="crumbs"><a href="{{ url_for('flow.projects') }}">프로젝트</a></div>
+<div class="head">
+  <h1><span class="dot" style="--c:{{ p.color }}"></span>{{ p.name }}</h1>
+  <div><a class="b" href="{{ url_for('flow.event') }}">+ 일정</a> <a class="b pri" href="{{ url_for('flow.task_new', p=p.id) }}">+ 업무</a></div>
+</div>
+<div class="pstat">
+  {% if p.start %}<div><small>일정</small><b>{{ p.start.strftime('%Y.%m.%d') }}{% if p.start >= today %} · D-{{ (p.start - today).days }}{% endif %}</b></div>{% endif %}
+  <div><small>진행률</small><b>{{ p.progress }}%</b><i><s style="width:{{ p.progress }}%"></s></i></div>
+  <div><small>업무</small><b>{{ p.tasks|length }}개 · 지연 {{ p.tasks|selectattr('overdue')|list|length }}</b></div>
+  {% if ex %}<div><small>사이트 신청</small><b>{{ ex.booked }} / {{ ex.capacity }}명</b><a class="lnk" href="/admin/registrations?e={{ ex.id }}" target="_blank">명단 ↗</a></div>{% endif %}
+</div>
+<div class="board">
+  {% for k, l in STATUS.items() %}
+  <section class="col" data-status="{{ k }}"><h3>{{ l }} <small>{{ cols[k]|length }}</small></h3><div class="drop">{% for t in cols[k] %}{{ card(t, false) }}{% endfor %}</div></section>
+  {% endfor %}
+</div>
+{% if evs %}<section class="panel"><h2>프로젝트 일정</h2>{% for e in evs %}<a class="ev" href="{{ url_for('flow.event', id=e.id) }}"><time>{{ e.start.strftime('%m/%d %H:%M') }}</time><b>{{ e.title }}</b><span>{{ e.attendees|map(attribute='name')|join(', ') }}</span></a>{% endfor %}</section>{% endif %}
+<form method="post"><button class="lnk" name="archive" value="1">{{ '보관 해제' if p.archived else '프로젝트 보관 (목록에서 숨김)' }}</button></form>
+{% endblock %}
+{% block scripts %}
+<script>
+let dragId=null;
+document.querySelectorAll('.tc').forEach(c=>{c.addEventListener('dragstart',()=>{dragId=c.dataset.id});});
+document.querySelectorAll('.col').forEach(col=>{col.addEventListener('dragover',e=>{e.preventDefault();col.classList.add('over')});col.addEventListener('dragleave',()=>col.classList.remove('over'));
+ col.addEventListener('drop',async e=>{e.preventDefault();col.classList.remove('over');if(!dragId)return;col.querySelector('.drop').prepend(document.querySelector(`.tc[data-id="${dragId}"]`));
+ await fetch(`/flow/tasks/${dragId}/status`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:col.dataset.status})});});});
+</script>
+{% endblock %}

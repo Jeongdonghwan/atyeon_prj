@@ -1,0 +1,12 @@
+{% macro card(t, show_project=true) -%}
+<a class="tc {{ 'od' if t.overdue }} pr-{{ t.priority }}" href="{{ url_for('flow.task', id=t.id) }}" draggable="true" data-id="{{ t.id }}">
+  {% if show_project and t.project %}<span class="tp" style="--c:{{ t.project.color }}">{{ t.project.name }}</span>{% endif %}
+  <b>{{ t.title }}</b>
+  <span class="tm">
+    {% if t.due %}<em>{{ '지남 · ' if t.overdue }}{{ t.due.strftime('%m/%d') }}</em>{% endif %}
+    {% if t.checks %}<i>☑ {{ t.checks|selectattr(0)|list|length }}/{{ t.checks|length }}</i>{% endif %}
+    {% if t.comments %}<i>💬 {{ t.comments|length }}</i>{% endif %}
+    <span class="av">{% for u in t.assignees %}<s style="--c:{{ u.color }}" title="{{ u.name }}">{{ u.name[-2:] }}</s>{% endfor %}</span>
+  </span>
+</a>
+{%- endmacro %}

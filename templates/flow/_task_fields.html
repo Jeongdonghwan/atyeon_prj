@@ -1,0 +1,18 @@
+<form class="panel form" method="post" action="{{ url_for('flow.task', id=t.id) if t.id else url_for('flow.task_new') }}">
+  <label>업무명 *<input name="title" required value="{{ t.title if t.id else '' }}" placeholder="예) 포스터 인쇄 업체 견적 받기"></label>
+  <div class="row3">
+    <label>프로젝트<select name="project_id"><option value="">없음</option>{% for p in projects %}<option value="{{ p.id }}" {{ 'selected' if t.project_id==p.id }}>{{ p.name }}</option>{% endfor %}</select></label>
+    <label>마감일<input type="date" name="due" value="{{ t.due or '' }}"></label>
+    <label>우선순위<select name="priority">{% for k,l in PRIORITY.items() %}<option value="{{ k }}" {{ 'selected' if (t.priority or 'normal')==k }}>{{ l }}</option>{% endfor %}</select></label>
+  </div>
+  <div class="row3">
+    <label>상태<select name="status">{% for k,l in STATUS.items() %}<option value="{{ k }}" {{ 'selected' if (t.status or 'todo')==k }}>{{ l }}</option>{% endfor %}</select></label>
+  </div>
+  <fieldset><legend>담당자 (여러 명 선택 가능)</legend>
+    <div class="who-pick">{% set ids = t.assignees|map(attribute='id')|list if t.id else [] %}
+    {% for u in users %}<label class="chip"><input type="checkbox" name="assignees" value="{{ u.id }}" {{ 'checked' if u.id in ids }}><s style="--c:{{ u.color }}">{{ u.name[-2:] }}</s>{{ u.name }}</label>{% endfor %}</div>
+  </fieldset>
+  <label>내용<textarea name="body" rows="5" placeholder="배경, 요청 사항, 참고 링크">{{ t.body or '' }}</textarea></label>
+  <label>체크리스트 <small class="muted">한 줄에 하나. 완료는 앞에 [x]</small><textarea name="checklist" rows="4" placeholder="[ ] 견적 3곳 받기&#10;[ ] 시안 확정">{{ t.checklist or '' }}</textarea></label>
+  <div class="actions"><button class="b pri">저장</button>{% if t.id %}<a class="b" href="{{ url_for('flow.task', id=t.id) }}">취소</a>{% endif %}</div>
+</form>
