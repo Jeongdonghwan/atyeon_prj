@@ -6,7 +6,7 @@
 <div class="head"><h1>캘린더</h1>
   <div class="filters"><select id="uf"><option value="">전체</option>{% for u in users %}<option value="{{ u.id }}">{{ u.name }}</option>{% endfor %}</select>
   <a class="b pri" href="{{ url_for('flow.event') }}">+ 일정</a></div></div>
-<div class="legend">{% for u in users %}<span><s style="--c:{{ u.color }}"></s>{{ u.name }}</span>{% endfor %}{% for p in projects %}<span><s class="sq" style="--c:{{ p.color }}"></s>{{ p.name }}</span>{% endfor %}<span class="muted">· 날짜를 누르면 그날 일정 추가</span></div>
+<div class="legend">{% for u in users %}<span><s style="--c:{{ u.color }}"></s>{{ u.name }}</span>{% endfor %}{% for p in projects %}<span><s class="sq" style="--c:{{ p.color }}"></s>{{ p.name }}</span>{% endfor %}<span class="muted">· 날짜를 누르거나 여러 날을 끌어 선택하면 일정 추가</span></div>
 <div class="panel"><div id="cal"></div></div>
 {% endblock %}
 {% block scripts %}
@@ -16,7 +16,11 @@ const cal=new FullCalendar.Calendar(document.getElementById('cal'),{
   headerToolbar:{left:'prev,next today',center:'title',right:'dayGridMonth,timeGridWeek,listMonth'},
   buttonText:{today:'오늘',month:'월',week:'주',list:'목록'},dayMaxEvents:4,
   events:info=>fetch('{{ url_for("flow.calendar_feed") }}'+(document.getElementById('uf').value?'?u='+document.getElementById('uf').value:'')).then(r=>r.json()),
-  dateClick:i=>location.href='{{ url_for("flow.event") }}?date='+i.dateStr.slice(0,10),
+  selectable:true,selectMirror:true,
+  select:i=>{const u=new URLSearchParams(),d=i.startStr.slice(0,10);u.set('date',d);
+    if(i.allDay){const e=new Date(i.end);e.setDate(e.getDate()-1);u.set('date2',e.toLocaleDateString('sv'));u.set('all_day',i.endStr.slice(0,10)>new Date(new Date(d).getTime()+864e5).toISOString().slice(0,10)?'1':'')}
+    else{u.set('date2',i.endStr.slice(0,10));u.set('t0',i.startStr.slice(11,16));u.set('t1',i.endStr.slice(11,16))}
+    location.href='{{ url_for("flow.event") }}?'+u},
 });
 cal.render();document.getElementById('uf').onchange=()=>cal.refetchEvents();
 </script>

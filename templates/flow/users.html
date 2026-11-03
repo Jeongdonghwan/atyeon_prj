@@ -8,7 +8,7 @@
       <tr><th>이름</th><th>아이디</th><th>역할</th><th>최근 로그인</th><th></th></tr>
       {% for u in rows %}
       <tr class="{{ 'off' if not u.active }}">
-        <td><a class="who1" href="{{ url_for('flow.user_edit', id=u.id) }}"><s style="--c:{{ u.color }}">{{ u.name[-2:] }}</s><u>{{ u.name }}</u></a>{% if u.must_change_pw %}<small class="tag">비번 변경 전</small>{% endif %}</td>
+        <td><a class="who1" href="{{ url_for('flow.user_edit', id=u.id) }}"><s style="--c:{{ u.color }}">{{ u.ini }}</s><u>{{ u.name }}</u></a>{% if u.must_change_pw %}<small class="tag">비번 변경 전</small>{% endif %}</td>
         <td>{{ u.login_id }}</td>
         <td>{% if u.id == me.id %}{{ u.role_ko }}{% else %}
           <form method="post" class="inline"><input type="hidden" name="uid" value="{{ u.id }}"><input type="hidden" name="action" value="role">

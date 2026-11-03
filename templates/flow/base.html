@@ -29,7 +29,7 @@
   </nav>{% endif %}
   <div class="side-foot">
     {% if me.is_admin %}<a class="ext" href="/admin" target="_blank">사이트 관리 ↗</a>{% endif %}
-    <a class="me" href="{{ url_for('flow.me') }}"><s class="av" style="--c:{{ me.color }}">{{ me.name[-2:] }}</s><span><b>{{ me.name }}</b><small>{{ me.role_ko }}</small></span></a>
+    <a class="me" href="{{ url_for('flow.me') }}"><s class="av" style="--c:{{ me.color }}">{{ me.ini }}</s><span><b>{{ me.name }}</b><small>{{ me.role_ko }}</small></span></a>
     <a class="out" href="{{ url_for('flow.logout') }}" title="로그아웃"><svg viewBox="0 0 24 24"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg></a>
   </div>
 </aside>

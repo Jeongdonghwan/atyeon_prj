@@ -2,7 +2,7 @@
 {% block title %}{{ u.name }} 계정{% endblock %}
 {% block main %}
 <div class="crumbs"><a href="{{ url_for('flow.users_admin') }}">사용자 관리</a></div>
-<h1><span class="who1"><s style="--c:{{ u.color }}">{{ u.name[-2:] }}</s>{{ u.name }}</span> <small class="muted" style="font-size:14px">{{ u.role_ko }}{{ ' · 비활성' if not u.active }}{{ ' · 잠김' if locked }}</small></h1>
+<h1><span class="who1"><s style="--c:{{ u.color }}">{{ u.ini }}</s>{{ u.name }}</span> <small class="muted" style="font-size:14px">{{ u.role_ko }}{{ ' · 비활성' if not u.active }}{{ ' · 잠김' if locked }}</small></h1>
 <div class="grid2">
   <form class="panel form" method="post">
     <h2>계정 정보</h2>

@@ -188,7 +188,7 @@ i.s-todo{background:#b7bfcc}i.s-doing{background:var(--s-doing)}i.s-review{backg
 .form label{display:grid;gap:6px;font-size:13px;font-weight:600;color:var(--sub)}
 .form input:not([type=checkbox]):not([type=color]),.form select,.form textarea,.cform textarea{font:inherit;font-size:15px;font-weight:400;padding:10px 12px;border:1px solid #cfd5e1;border-radius:var(--r);background:#fff;color:var(--ink);width:100%}
 .form input:focus,.form select:focus,.form textarea:focus,.cform textarea:focus{outline:0;border-color:var(--p);box-shadow:0 0 0 3px rgba(30,79,184,.12)}
-.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 fieldset{border:0}legend{font-size:13px;font-weight:600;color:var(--sub);margin-bottom:6px}
 .who-pick{display:flex;flex-wrap:wrap;gap:6px}
 .chip{display:inline-flex!important;grid-auto-flow:column;align-items:center;gap:8px!important;padding:6px 12px 6px 6px;border:1px solid var(--line);border-radius:var(--r);cursor:pointer;color:var(--ink)!important;font-weight:500!important;font-size:14px!important;background:#fff}
@@ -273,3 +273,11 @@ details .panel{border:0;padding:0;margin:0}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 .side{overflow-x:hidden}.nav{grid-template-columns:minmax(0,1fr)}
 @media (max-width:900px){.load th:nth-child(2),.load td:nth-child(2){display:none}}
+/* 캘린더 크게 + 기간 선택 */
+.fc .fc-daygrid-day-frame{min-height:clamp(110px,15vh,170px)}
+.fc .fc-toolbar-title{font-size:22px}
+.fc .fc-daygrid-day-number{font-size:14px}
+.fc .fc-event{font-size:13px;padding:2px 6px}
+.fc .fc-highlight{background:color-mix(in srgb,var(--p) 14%,transparent)}
+.fc .fc-timegrid-slot{height:2.6em}
+@media(max-width:700px){.fc .fc-daygrid-day-frame{min-height:70px}}

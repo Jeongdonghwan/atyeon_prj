@@ -30,7 +30,7 @@
         <tr><th>담당자</th><th>진행 현황</th><th class="n">할 일</th><th class="n">진행</th><th class="n">확인</th><th class="n">지연</th></tr>
         {% for u, c, od, n in load %}
         <tr>
-          <td><span class="who"><s class="av" style="--c:{{ u.color }}">{{ u.name[-2:] }}</s>{{ u.name }}</span></td>
+          <td><span class="who"><s class="av" style="--c:{{ u.color }}">{{ u.ini }}</s>{{ u.name }}</span></td>
           <td><div class="stack" title="열린 업무 {{ n }}개">{% for k in ('doing','review','todo') %}{% if c[k] %}<i class="s-{{ k }}" style="width:{{ (c[k] / mx * 100)|round(1) }}%"></i>{% endif %}{% endfor %}</div></td>
           <td class="n">{{ c.todo }}</td><td class="n">{{ c.doing }}</td><td class="n">{{ c.review }}</td><td class="n {{ 'red' if od }}">{{ od }}</td>
         </tr>
@@ -63,7 +63,7 @@
       {% for e in events %}
       <a class="agenda" href="{{ url_for('flow.event', id=e.id) }}" style="--c:{{ e.project.color if e.project else '#4C6FB5' }}">
         <time><b>{{ e.start.strftime('%d') }}</b>{{ '월화수목금토일'[e.start.weekday()] }}</time>
-        <div><b>{{ e.title }}</b><span>{{ '종일' if e.all_day else e.start.strftime('%H:%M') ~ (' – ' ~ e.end.strftime('%H:%M') if e.end else '') }}{{ ' · ' ~ e.place if e.place }}</span></div>
+        <div><b>{{ e.title }}</b><span>{{ e.when }}{{ ' · ' ~ e.place if e.place }}</span></div>
         {{ avs(e.attendees, 4) }}
       </a>
       {% else %}<p class="empty">이번 주 일정이 없습니다.</p>{% endfor %}

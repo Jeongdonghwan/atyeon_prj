@@ -86,12 +86,11 @@ def log(text, task=None, notify=()):
 
 
 def system_task(title, body, link_type, link_id, due=None, project=None):
-    """사이트 이벤트(행사 신청·문의) → 총관리자에게 업무 자동 생성. 사이트 쪽 commit 이후 호출."""
+    """사이트 이벤트(행사 신청·문의) → 담당자 없는 업무 자동 생성 + 관리자 알림(업무 분담에서 배정). 사이트 쪽 commit 이후 호출."""
     admins = FlowUser.query.filter_by(role="admin", active=True).all()
     if not admins: return
     t = Task(title=title, body=body, link_type=link_type, link_id=link_id, due=due or date.today() + timedelta(days=1),
              priority="high", project=project)
-    t.assignees = admins
     db.session.add(t); db.session.flush()
     for a in admins:
         db.session.add(Notice(user_id=a.id, text=f"[자동] {title}", task_id=t.id))
@@ -115,7 +114,8 @@ def on_inquiry(q):
 def dashboard():
     mine = Task.query.filter(Task.assignees.any(id=g.fu.id), Task.status != "done").order_by(Task.due.is_(None), Task.due).all()
     week = date.today() + timedelta(days=7)
-    events = FlowEvent.query.filter(FlowEvent.start >= datetime.combine(date.today(), datetime.min.time()),
+    t0 = datetime.combine(date.today(), datetime.min.time())
+    events = FlowEvent.query.filter(db.or_(FlowEvent.start >= t0, FlowEvent.end > t0),
                                     FlowEvent.start < datetime.combine(week, datetime.min.time())).order_by(FlowEvent.start).all()
     overdue = Task.query.filter(Task.status != "done", Task.due < date.today()).order_by(Task.due).all()
     review = Task.query.filter(Task.status == "review", Task.requester_id == g.fu.id).all()
@@ -141,7 +141,8 @@ def notices_read():
 
 
 # ---------- 업무 ----------
-def users(): return FlowUser.query.filter_by(active=True).order_by(FlowUser.id).all()
+def users():  # 업무에 쓰는 사람(담당·참석·분담). 관리자 계정은 운영용이라 빠진다
+    return FlowUser.query.filter(FlowUser.active.is_(True), FlowUser.role != "admin").order_by(FlowUser.id).all()
 
 
 @bp.route("/tasks")
@@ -308,13 +309,22 @@ def calendar_feed():
     return jsonify(out)
 
 
+def _when(e, f):
+    """f: 폼 또는 쿼리. date~date2 기간, 종일이면 end=마지막날+1(캘린더 규칙)."""
+    e.all_day = bool(f.get("all_day"))
+    d = date.fromisoformat(f.get("date") or date.today().isoformat())
+    d2 = max(d, date.fromisoformat(f.get("date2"))) if f.get("date2") else d
+    if e.all_day:
+        e.start = datetime.combine(d, datetime.min.time()); e.end = datetime.combine(d2 + timedelta(days=1), datetime.min.time())
+    else:
+        e.start = datetime.fromisoformat(f"{d}T{f.get('t0') or '10:00'}")
+        e.end = max(e.start, datetime.fromisoformat(f"{d2}T{f.get('t1') or f.get('t0') or '11:00'}"))
+
+
 def _apply_event(e):
     f = request.form
     e.title = f.get("title", "").strip() or "(일정)"
-    e.all_day = "all_day" in f
-    d = f.get("date") or date.today().isoformat()
-    e.start = datetime.fromisoformat(d + ("T00:00" if e.all_day else "T" + (f.get("t0") or "10:00")))
-    e.end = None if e.all_day else datetime.fromisoformat(d + "T" + (f.get("t1") or f.get("t0") or "11:00"))
+    _when(e, f)
     e.place = f.get("place") or None; e.memo = f.get("memo") or None
     e.project_id = f.get("project_id", type=int) or None
     ids = [int(x) for x in f.getlist("attendees") if x.isdigit()]
@@ -333,11 +343,11 @@ def event(id=None):
             log(f"{g.fu.name}님이 일정을 삭제했습니다: {e.title}"); db.session.delete(e); db.session.commit()
             return redirect(url_for("flow.calendar"))
         added = _apply_event(e); db.session.add(e); db.session.flush()
-        log(f"{g.fu.name}님이 일정을 {'수정' if id else '등록'}했습니다: {e.start:%m/%d} {e.title}", notify=added)
+        log(f"{g.fu.name}님이 일정을 {'수정' if id else '등록'}했습니다: {e.start:%m/%d}{e.last_day != e.start.date() and f'~{e.last_day:%m/%d}' or ''} {e.title}", notify=added)
         db.session.commit(); flash("저장했습니다.")
         return redirect(url_for("flow.calendar"))
     if not id and request.args.get("date"):
-        e.start = datetime.fromisoformat(request.args["date"] + "T10:00")
+        _when(e, request.args)
     return render_template("flow/event.html", e=e, users=users(), projects=Project.query.filter_by(archived=False).all())
 
 
@@ -365,7 +375,7 @@ def apply_template(p, owner=None):
     for off, title, pr in EVENT_TEMPLATE:
         due = d0 + timedelta(days=off)
         t = Task(project=p, title=title, priority=pr, due=due, start=due - timedelta(days=0 if off >= 0 else (4 if pr == "high" else 2)), requester=owner)
-        if owner: t.assignees = [owner]
+        if owner and not owner.is_admin: t.assignees = [owner]
         db.session.add(t)
     return len(EVENT_TEMPLATE)
 

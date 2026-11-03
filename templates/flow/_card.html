@@ -1,5 +1,5 @@
 {% macro avs(us, n=3) -%}
-<span class="avs">{% for u in us[:n] %}<s class="av" style="--c:{{ u.color }}" title="{{ u.name }}">{{ u.name[-2:] }}</s>{% endfor %}{% if us|length > n %}<s class="av more">+{{ us|length - n }}</s>{% endif %}</span>
+<span class="avs">{% for u in us[:n] %}<s class="av" style="--c:{{ u.color }}" title="{{ u.name }}">{{ u.ini }}</s>{% endfor %}{% if us|length > n %}<s class="av more">+{{ us|length - n }}</s>{% endif %}</span>
 {%- endmacro %}
 
 {% macro status(s) -%}<span class="stt s-{{ s }}">{{ STATUS[s] }}</span>{%- endmacro %}

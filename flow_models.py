@@ -1,4 +1,4 @@
-"""/flow 업무 공유: 사용자·프로젝트·업무·일정·댓글·활동·알림. 기존 사이트 테이블은 건드리지 않고 flow_ 접두 테이블만 추가."""
+from datetime import datetime, timedelta
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db
@@ -41,6 +41,9 @@ class FlowUser(db.Model):
     def is_admin(self): return self.role == "admin"
     @property
     def role_ko(self): return ROLES.get(self.role, self.role)
+
+    @property
+    def ini(self): return "관리" if self.is_admin else self.name[-2:]
 
 
 class Project(db.Model):
@@ -124,6 +127,19 @@ class FlowEvent(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now)
     attendees = db.relationship("FlowUser", secondary=event_attendee, lazy="subquery")
     project = db.relationship("Project")
+
+    @property
+    def last_day(self):  # 마지막 날(포함). 종일 일정의 end는 다음날 0시(캘린더 규칙)
+        if not self.end: return self.start.date()
+        return (self.end - timedelta(days=1)).date() if self.all_day else self.end.date()
+
+    @property
+    def when(self):
+        multi = self.last_day != self.start.date()
+        rng = f" ~ {self.last_day:%m.%d}" if multi else ""
+        if self.all_day: return ("종일" if not multi else f"{self.start:%m.%d}{rng} · {(self.last_day - self.start.date()).days + 1}일")
+        if multi: return f"{self.start:%m.%d %H:%M} ~ {self.end:%m.%d %H:%M}"
+        return self.start.strftime("%H:%M") + (f" – {self.end:%H:%M}" if self.end else "")
 
 
 class Comment(db.Model):

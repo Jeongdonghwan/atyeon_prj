@@ -17,7 +17,7 @@
   </section>{% endif %}
   {% for u, ts in cols %}
   <section class="lane" data-user="{{ u.id }}" style="--c:{{ u.color }}">
-    <header><s class="av" style="--c:{{ u.color }}">{{ u.name[-2:] }}</s><div><b>{{ u.name }}</b><small>{{ ts|length }}개 · 지연 {{ ts|selectattr('overdue')|list|length }}</small></div>
+    <header><s class="av" style="--c:{{ u.color }}">{{ u.ini }}</s><div><b>{{ u.name }}</b><small>{{ ts|length }}개 · 지연 {{ ts|selectattr('overdue')|list|length }}</small></div>
       <a href="{{ url_for('flow.tasks', u=u.id) }}" class="lnk">보드</a></header>
     <div class="drop">{% for t in ts %}{{ card(t, true, u.id) }}{% else %}<p class="empty">열린 업무 없음</p>{% endfor %}</div>
   </section>
