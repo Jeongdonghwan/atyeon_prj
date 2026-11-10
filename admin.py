@@ -225,7 +225,7 @@ def inquiry_read(id):
 
 CONFIG_KEYS = [("site_name", "사이트명"), ("tagline", "슬로건"), ("email", "대표 이메일"), ("phone", "전화"),
                ("address", "주소"), ("youtube", "YouTube URL"), ("instagram", "Instagram URL"),
-               ("og_image", "기본 OG 이미지 URL"),
+               ("og_image", "기본 OG 이미지 URL (비우면 /static/og/default.jpg)"), ("openchat", "카카오 오픈채팅 링크 (행사 페이지 문의)"),
                ("img_gallery", "상황 이미지 · 갤러리 공간 (About/Partnership/3대 사업)"), ("img_museum", "상황 이미지 · 전시 관람 (Global)"),
                ("img_studio", "상황 이미지 · 작가 작업실 (작가·작품/Contact)"), ("img_class", "상황 이미지 · 수업 (Academy)"),
                ("img_mentor", "상황 이미지 · 작가와의 만남 (Mirini)"),

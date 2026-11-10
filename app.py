@@ -58,6 +58,8 @@ def img(v, w=1200):
 
 
 app.jinja_env.globals["_img"] = img
+# 행사 전용 OG 카드: static/og/<슬러그>.jpg 가 있으면 그걸 쓴다 (1200×630)
+app.jinja_env.globals["og_card"] = lambda slug: f"/static/og/{slug}.jpg" if os.path.exists(os.path.join(app.static_folder, "og", f"{slug}.jpg")) else ""
 app.register_blueprint(seo.bp)
 app.register_blueprint(flow.bp)
 

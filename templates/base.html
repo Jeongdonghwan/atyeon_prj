@@ -15,6 +15,7 @@
 <meta property="og:description" content="{{ self.desc() }}">
 {% if can %}<meta property="og:url" content="{{ can }}">{% endif %}
 {% set ogi = self.og()|trim %}<meta property="og:image" content="{{ ogi if ogi.startswith('http') else seo.abs_url(ogi) }}">
+{% if '/static/og/' in ogi %}<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="{{ self.title() }}">{% endif %}
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ self.title() }}">
 <meta name="twitter:description" content="{{ self.desc() }}">
@@ -24,7 +25,7 @@
 <link rel="alternate" type="application/rss+xml" title="아르테연 ARTEYEON" href="{{ seo.SITE_URL }}/rss.xml">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230A1630'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23F3E9D2' font-family='serif'%3EA%3C/text%3E%3C/svg%3E">
 {% block jsonld %}{% endblock %}
-{% if false %}{% block og %}{{ cfg('og_image') or '/static/event/poster-program.webp' }}{% endblock %}{% endif %}
+{% if false %}{% block og %}{{ cfg('og_image') or '/static/og/default.jpg' }}{% endblock %}{% endif %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Serif+KR:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}">

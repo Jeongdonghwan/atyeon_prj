@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ '신청 완료' if done else e.program_title ~ ' 참가 신청' }} | {{ e.title_ko }} | 아르테연{% endblock %}
+{% block og %}{{ og_card(e.slug) or img(e.poster or e.cover, 1200) }}{% endblock %}
 {% block body %}
 {% set wd = '월화수목금토일'[e.start_date.weekday()] %}
 <div class="ev">

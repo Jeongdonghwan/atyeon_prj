@@ -758,3 +758,5 @@ body.menu{overflow:hidden}
 .ap-qty button{border-radius:0}
 @media (max-width:900px){.ev-dock{border-radius:0}.ev-dock i{padding:14px 22px;box-shadow:none}}
 .lp .card .split>div,.ev-f,.ev-f .seats,.free,.ticket.sm,.evpop .x{border-radius:2px}
+.ev .btn.kakao,.lp .ev-end .btn.kakao{background:#FEE500;color:#191919;border-color:#FEE500;font-weight:600}.ev .btn.kakao::before{display:none}.ev .btn.kakao:hover,.lp .ev-end .btn.kakao:hover{background:#F2D900;color:#191919;border-color:#F2D900}
+.ev .facts dd a{text-decoration:underline;text-underline-offset:3px}
