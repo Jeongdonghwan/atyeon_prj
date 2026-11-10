@@ -7,7 +7,7 @@ from xml.sax.saxutils import escape
 from flask import Blueprint, Response, url_for, request, g
 from models import Artist, Artwork, Exhibition, Journal, SiteConfig
 
-SITE_URL = os.getenv("SITE_URL", "http://211.45.175.195:8144").rstrip("/")
+SITE_URL = os.getenv("SITE_URL", "https://arteyeon.co.kr").rstrip("/")
 BRAND = "아르테연"
 BRAND_EN = "ARTEYEON"
 BRAND_FULL = f"{BRAND} {BRAND_EN}"
